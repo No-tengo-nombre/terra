@@ -33,6 +33,7 @@ set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
 
 # Names for the different libraries in the project
 set(PROJECT_UTILS_NAME ${PROJECT_NAME}_utils)
+set(PROJECT_RENDER_NAME ${PROJECT_NAME}_render)
 set(PROJECT_CORE_NAME ${PROJECT_NAME}_core)
 set(PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/include)
 

@@ -1,1 +1,2 @@
-add_subdirectory(terra)
+add_subdirectory(terra_render)
+add_subdirectory(terra_utils)

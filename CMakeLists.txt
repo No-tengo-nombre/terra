@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.23)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+project(terra VERSION 0.1)
+set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
+
+# Output for files
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_PDB_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pdb)
+set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pdb)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin/debug)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/lib/debug)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/lib/debug)
+set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/pdb/debug)
+set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/pdb/debug)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/pdb)
+set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/pdb)
+
+# Directory of the code
+set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
+
+# Names for the different libraries in the project
+set(PROJECT_UTILS_NAME ${PROJECT_NAME}_utils)
+set(PROJECT_CORE_NAME ${PROJECT_NAME}_core)
+set(PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/include)
+
+option(TERRA_BUILD_EXAMPLES "Build the examples that come with the package."
+       OFF)
+option(TERRA_BUILD_TESTS "Build the tests that come with the package." OFF)
+option(TERRA_INSTALL "Install target." OFF)
+
+add_compile_definitions(LOG_USE_COLOR)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  add_compile_definitions(TERRA_BUILD_TYPE_RELEASE)
+  add_compile_definitions(TERRA_DISABLE_LOGGING)
+else()
+  add_compile_definitions(TERRA_BUILD_TYPE_DEBUG)
+endif()
+
+add_subdirectory(dependencies)
+add_subdirectory(src)
+
+if(${TERRA_BUILD_EXAMPLES})
+  add_subdirectory(examples)
+endif()
+
+if(${TERRA_BUILD_TESTS})
+  include(CTest)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

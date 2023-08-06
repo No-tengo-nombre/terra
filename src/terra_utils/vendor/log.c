@@ -138,7 +138,7 @@ static void init_event(log_Event *ev, void *udata) {
 
 
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
-#ifndef GENUS_DISABLE_LOGGING
+#ifndef TERRA_DISABLE_LOGGING
   log_Event ev = {
     .fmt   = fmt,
     .file  = file,

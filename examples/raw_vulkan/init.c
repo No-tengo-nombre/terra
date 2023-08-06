@@ -280,5 +280,7 @@ status_t retrieve_device_queue(terrar_app_t *app) {
     log_debug("retrieving graphics queue");
     vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice, app->vk_surface).gfamily, 0,
                      &app->vk_gqueue);
+    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice, app->vk_surface).pfamily, 0,
+                     &app->vk_pqueue);
     return STATUS_SUCCESS;
 }

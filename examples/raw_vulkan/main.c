@@ -14,10 +14,7 @@ status_t start(void *app) {
     init_instance(app_p);
     choose_pdevice(app_p);
     create_ldevice(app_p);
-
-    log_debug("retrieving graphics queue");
-    vkGetDeviceQueue(app_p->vk_ldevice, find_queue_families(app_p->vk_pdevice).family, 0,
-                     &app_p->vk_gqueue);
+    retrieve_device_queue(app_p);
 
     return STATUS_SUCCESS;
 }

@@ -248,3 +248,10 @@ status_t create_ldevice(terrar_app_t *app) {
     }
     return STATUS_SUCCESS;
 }
+
+status_t retrieve_device_queue(terrar_app_t *app) {
+    log_debug("retrieving graphics queue");
+    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice).family, 0,
+                     &app->vk_gqueue);
+    return STATUS_SUCCESS;
+}

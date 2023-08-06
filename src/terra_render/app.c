@@ -34,7 +34,7 @@ status_t terrar_app_run(terrar_app_t *app) {
         return STATUS_SUCCESS;
     }
     if (start_status == STATUS_FAILURE) {
-        log_warn("application failed on startup");
+        log_fatal("application failed on startup");
         return STATUS_FAILURE;
     }
 
@@ -49,8 +49,15 @@ status_t terrar_app_run(terrar_app_t *app) {
         log_debug("application cleanup");
         cleanup_status = app->cleanup(app);
     }
-    if (loop_status == STATUS_FAILURE || cleanup_status == STATUS_FAILURE) {
-        log_warn("application failed");
+    if (loop_status == STATUS_FAILURE) {
+        log_fatal("application failed in loop");
+        if (cleanup_status == STATUS_FAILURE) {
+            log_fatal("could not perform cleanup");
+        }
+        return STATUS_FAILURE;
+    }
+    if (cleanup_status == STATUS_FAILURE) {
+        log_fatal("application failed on cleanup");
         return STATUS_FAILURE;
     }
     return STATUS_SUCCESS;

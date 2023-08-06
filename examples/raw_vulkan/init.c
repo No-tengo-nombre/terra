@@ -82,7 +82,10 @@ queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surfac
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, props);
 
     for (int i = 0; i < count; i++) {
-        // vkGetPhysicalDeviceSurfaceSupportKHR(device, i, )
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &indices.pfound);
+        if (indices.pfound) {
+            indices.pfamily = i;
+        }
         if (props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.gfamily = i;
             indices.gfound = 1;
@@ -93,6 +96,7 @@ queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surfac
 
 uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface) {
     queue_indices_t queue = find_queue_families(device, surface);
+    log_debug("%i %i", queue.gfound, queue.pfound);
     if (!queue.gfound || !queue.pfound) {
         return -1;
     }
@@ -132,10 +136,11 @@ result_t get_physical_device(terrar_app_t *app) {
     }
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
 
-    uint32_t score = -2;
-    uint32_t new_score = 0;
+    int32_t score = -2;
+    int32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
         new_score = rate_device(devices[i], app->vk_surface);
+        log_debug("score for device %i: %i", i, new_score);
         if (score == -2) {
             device = devices[i];
             score = new_score;

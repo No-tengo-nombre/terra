@@ -16,7 +16,6 @@ terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup) {
     app.loop = loop;
     app.cleanup = cleanup;
     app.state = terrar_state_default();
-    app.glfw_window = NULL;
     return app;
 }
 

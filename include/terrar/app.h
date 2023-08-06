@@ -24,6 +24,7 @@ typedef struct terrar_app_t {
     VkPhysicalDevice vk_pdevice;
     VkDevice vk_ldevice;
     VkQueue vk_gqueue;
+    VkQueue vk_pqueue;
     VkSurfaceKHR vk_surface;
 } terrar_app_t;
 

@@ -65,6 +65,7 @@ int check_validation_layer_support(void) {
             return 0;
         }
     }
+    free(properties);
     return 1;
 }
 
@@ -91,6 +92,7 @@ queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surfac
             indices.gfound = 1;
         }
     }
+    free(props);
     return indices;
 }
 
@@ -158,17 +160,15 @@ result_t get_physical_device(terrar_app_t *app) {
         result.status = STATUS_SUCCESS;
         result.value = device;
     }
+    free(devices);
     return result;
 }
 
-VkDeviceQueueCreateInfo create_device_queue_info(terrar_app_t *app, float *prio) {
-    // We can assume the device is valid
-    queue_indices_t queue = find_queue_families(app->vk_pdevice, app->vk_surface);
-
+VkDeviceQueueCreateInfo create_device_queue_info(queue_indices_t *queue, uint32_t index, float *prio) {
     VkDeviceQueueCreateInfo queue_info;
     queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_info.queueCount = 1;
-    queue_info.queueFamilyIndex = queue.gfamily;
+    queue_info.queueFamilyIndex = index;
     queue_info.pQueuePriorities = prio;
     queue_info.pNext = NULL;
     queue_info.flags = 0;
@@ -181,7 +181,7 @@ VkPhysicalDeviceFeatures create_device_features(void) {
     return device_features;
 }
 
-VkDeviceCreateInfo create_device_info(VkDeviceQueueCreateInfo *queue_info,
+VkDeviceCreateInfo create_device_info(VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
                                       VkPhysicalDeviceFeatures *device_features) {
     VkDeviceCreateInfo device_info;
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -254,11 +254,21 @@ status_t choose_pdevice(terrar_app_t *app) {
 status_t create_ldevice(terrar_app_t *app) {
     log_debug("creating device queue info");
     float queue_prio = 1.0f;
-    VkDeviceQueueCreateInfo queue_info = create_device_queue_info(app, &queue_prio);
+    queue_indices_t queue = find_queue_families(app->vk_pdevice, app->vk_surface);
+    VkDeviceQueueCreateInfo queue_infos[2];
+    uint32_t queue_count = 1;
+    if (queue.gfamily == queue.pfamily) {
+        queue_infos[0] = create_device_queue_info(&queue, queue.gfamily, &queue_prio);
+    } else {
+        queue_infos[0] = create_device_queue_info(&queue, queue.gfamily, &queue_prio);
+        queue_infos[1] = create_device_queue_info(&queue, queue.pfamily, &queue_prio);
+        queue_count = 2;
+    }
+    log_debug("using %i queues", queue_count);
     log_debug("creating device features");
     VkPhysicalDeviceFeatures device_features = create_device_features();
     log_debug("creating logical device info");
-    VkDeviceCreateInfo device_info = create_device_info(&queue_info, &device_features);
+    VkDeviceCreateInfo device_info = create_device_info(queue_infos, queue_count, &device_features);
     if (vkCreateDevice(app->vk_pdevice, &device_info, NULL, &app->vk_ldevice) != VK_SUCCESS) {
         log_error("could not create logical device");
         return STATUS_FAILURE;

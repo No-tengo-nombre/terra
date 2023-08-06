@@ -30,7 +30,7 @@ status_t loop(void *app) {
     terrar_app_t *app_p = (terrar_app_t *)app;
 
     if (glfwWindowShouldClose(app_p->glfw_window)) {
-        log_info("terminating program loop");
+        log_info("Terminating program loop");
         return STATUS_EXIT;
     }
 

@@ -12,6 +12,11 @@ const char *REQUESTED_VALIDATION_LAYERS[VALIDATION_LAYER_TOTAL] = {
     "VK_LAYER_KHRONOS_validation",
 };
 
+#define DEVICE_EXTENSION_TOTAL 1
+const char *REQUESTED_DEVICE_EXTENSIONS[DEVICE_EXTENSION_TOTAL] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+};
+
 VkApplicationInfo create_application_info(void) {
     VkApplicationInfo app_info;
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -98,20 +103,22 @@ queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surfac
 
 uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface) {
     queue_indices_t queue = find_queue_families(device, surface);
-    log_debug("%i %i", queue.gfound, queue.pfound);
-    if (!queue.gfound || !queue.pfound) {
-        return -1;
-    }
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceFeatures(device, &feats);
+
+    if (!queue.gfound || !queue.pfound) {
+        log_debug("Device '%s' not suitable", props.deviceName);
+        return -1;
+    }
 
     uint32_t score = 0;
     if (props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
         score += 1000;
     }
     score += props.limits.maxImageDimension2D;
+    log_debug("Device '%s' score: %I32u", props.deviceName, score);
     return score;
 }
 
@@ -142,7 +149,6 @@ result_t get_physical_device(terrar_app_t *app) {
     int32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
         new_score = rate_device(devices[i], app->vk_surface);
-        log_debug("score for device %i: %i", i, new_score);
         if (score == -2) {
             device = devices[i];
             score = new_score;
@@ -159,6 +165,10 @@ result_t get_physical_device(terrar_app_t *app) {
     } else {
         result.status = STATUS_SUCCESS;
         result.value = device;
+
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(device, &props);
+        log_info("using device %s", props.deviceName);
     }
     free(devices);
     return result;

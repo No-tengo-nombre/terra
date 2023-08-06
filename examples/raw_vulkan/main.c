@@ -7,14 +7,19 @@
 
 #include "init.h"
 
+#define _CALL(x)                                                                             \
+    if (x == STATUS_FAILURE)                                                                       \
+    return STATUS_FAILURE
+
 status_t start(void *app) {
     terrar_app_t *app_p = (terrar_app_t *)app;
 
-    init_window(app_p);
-    init_instance(app_p);
-    choose_pdevice(app_p);
-    create_ldevice(app_p);
-    retrieve_device_queue(app_p);
+    _CALL(init_window(app_p));
+    _CALL(init_instance(app_p));
+    _CALL(create_render_surface(app_p));
+    _CALL(choose_pdevice(app_p));
+    _CALL(create_ldevice(app_p));
+    _CALL(retrieve_device_queue(app_p));
 
     return STATUS_SUCCESS;
 }
@@ -35,8 +40,9 @@ status_t loop(void *app) {
 status_t cleanup(void *app) {
     terrar_app_t *app_p = (terrar_app_t *)app;
 
-    // Device must be destroyed before instance
+    vkDestroySurfaceKHR(app_p->vk_instance, app_p->vk_surface, NULL);
     vkDestroyDevice(app_p->vk_ldevice, NULL);
+
     vkDestroyInstance(app_p->vk_instance, NULL);
     glfwDestroyWindow(app_p->glfw_window);
     glfwTerminate();

@@ -68,9 +68,10 @@ int check_validation_layer_support(void) {
     return 1;
 }
 
-queue_indices_t find_queue_families(VkPhysicalDevice device) {
+queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
     queue_indices_t indices;
-    indices.found = 0;
+    indices.gfound = 0;
+    indices.pfound = 0;
 
     uint32_t count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
@@ -81,17 +82,18 @@ queue_indices_t find_queue_families(VkPhysicalDevice device) {
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, props);
 
     for (int i = 0; i < count; i++) {
+        // vkGetPhysicalDeviceSurfaceSupportKHR(device, i, )
         if (props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.family = i;
-            indices.found = 1;
+            indices.gfamily = i;
+            indices.gfound = 1;
         }
     }
     return indices;
 }
 
-uint32_t rate_device(VkPhysicalDevice device) {
-    queue_indices_t queue = find_queue_families(device);
-    if (!queue.found) {
+uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface) {
+    queue_indices_t queue = find_queue_families(device, surface);
+    if (!queue.gfound || !queue.pfound) {
         return -1;
     }
     VkPhysicalDeviceProperties props;
@@ -133,7 +135,7 @@ result_t get_physical_device(terrar_app_t *app) {
     uint32_t score = -2;
     uint32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
-        new_score = rate_device(devices[i]);
+        new_score = rate_device(devices[i], app->vk_surface);
         if (score == -2) {
             device = devices[i];
             score = new_score;
@@ -156,12 +158,12 @@ result_t get_physical_device(terrar_app_t *app) {
 
 VkDeviceQueueCreateInfo create_device_queue_info(terrar_app_t *app, float *prio) {
     // We can assume the device is valid
-    queue_indices_t queue = find_queue_families(app->vk_pdevice);
+    queue_indices_t queue = find_queue_families(app->vk_pdevice, app->vk_surface);
 
     VkDeviceQueueCreateInfo queue_info;
     queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_info.queueCount = 1;
-    queue_info.queueFamilyIndex = queue.family;
+    queue_info.queueFamilyIndex = queue.gfamily;
     queue_info.pQueuePriorities = prio;
     queue_info.pNext = NULL;
     queue_info.flags = 0;
@@ -223,6 +225,16 @@ status_t init_instance(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
+status_t create_render_surface(terrar_app_t *app) {
+    log_debug("creating render surface");
+    if (glfwCreateWindowSurface(app->vk_instance, app->glfw_window, NULL, &app->vk_surface) !=
+        VK_SUCCESS) {
+        log_error("failed to create render surface");
+        return STATUS_FAILURE;
+    }
+    return STATUS_SUCCESS;
+}
+
 status_t choose_pdevice(terrar_app_t *app) {
     log_debug("choosing physical device");
     result_t result = get_physical_device(app);
@@ -251,7 +263,7 @@ status_t create_ldevice(terrar_app_t *app) {
 
 status_t retrieve_device_queue(terrar_app_t *app) {
     log_debug("retrieving graphics queue");
-    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice).family, 0,
+    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice, app->vk_surface).gfamily, 0,
                      &app->vk_gqueue);
     return STATUS_SUCCESS;
 }

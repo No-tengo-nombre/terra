@@ -17,10 +17,14 @@ typedef struct terrar_app_t {
 
     terrar_app_state_t state;
     void *glfw_window;
+
+    /* Vulkan attributes */
+
     VkInstance vk_instance;
     VkPhysicalDevice vk_pdevice;
     VkDevice vk_ldevice;
     VkQueue vk_gqueue;
+    VkSurfaceKHR vk_surface;
 } terrar_app_t;
 
 terrar_app_state_t terrar_state_default(void);

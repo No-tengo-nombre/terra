@@ -18,6 +18,9 @@ typedef struct terrar_app_t {
     terrar_app_state_t state;
     void *glfw_window;
     VkInstance vk_instance;
+    VkPhysicalDevice vk_pdevice;
+    VkDevice vk_ldevice;
+    VkQueue vk_gqueue;
 } terrar_app_t;
 
 terrar_app_state_t terrar_state_default(void);

@@ -49,6 +49,9 @@ _deps
 # External projects
 *-prefix/
 
+### VisualStudio Code ###
+.vscode
+
 ### terra ###
 bin/
 build/

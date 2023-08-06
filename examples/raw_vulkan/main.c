@@ -7,7 +7,9 @@
 
 #include "init.h"
 
-#define _CALL(x)                                                                             \
+// TODO: Move the raw *Vulkan* code to `terra_render`
+
+#define _CALL(x)                                                                                   \
     if (x == STATUS_FAILURE)                                                                       \
     return STATUS_FAILURE
 

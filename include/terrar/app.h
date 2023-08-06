@@ -14,6 +14,7 @@ typedef struct terrar_app_t {
     status_t (*cleanup)(void *);
 
     terrar_app_state_t state;
+    void *glfw_window;
 } terrar_app_t;
 
 terrar_app_state_t terrar_state_default(void);

@@ -16,14 +16,12 @@ terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup) {
     app.loop = loop;
     app.cleanup = cleanup;
     app.state = terrar_state_default();
+    app.glfw_window = NULL;
     return app;
 }
 
 terrar_app_t terrar_app_new_wstate(terrar_app_state_t state, void *start, void *loop, void *cleanup) {
-    terrar_app_t app;
-    app.start = start;
-    app.loop = loop;
-    app.cleanup = cleanup;
+    terrar_app_t app = terrar_app_new(start, loop, cleanup);
     app.state = state;
     return app;
 }

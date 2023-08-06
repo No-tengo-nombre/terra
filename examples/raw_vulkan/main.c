@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -38,8 +37,14 @@ VkInstanceCreateInfo create_instance_info(VkApplicationInfo *app_info) {
     instance_info.pApplicationInfo = app_info;
     instance_info.enabledExtensionCount = extension_count;
     instance_info.ppEnabledExtensionNames = extensions;
-    instance_info.enabledLayerCount = 0;
+    instance_info.flags = 0;
     instance_info.pNext = NULL;
+#ifndef NDEBUG
+    instance_info.enabledLayerCount = VALIDATION_LAYER_TOTAL;
+    instance_info.ppEnabledLayerNames = REQUESTED_VALIDATION_LAYERS;
+#else
+    instance_info.enabledLayerCount = 0;
+#endif
     return instance_info;
 }
 
@@ -79,7 +84,14 @@ status_t start(void *app) {
         glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Terra - Raw Vulkan example", NULL, NULL);
     app_p->glfw_window = window;
 
-    // Initialize Vulkan
+// Initialize Vulkan
+#ifndef NDEBUG
+    log_debug("checking validation layers support");
+    if (!check_validation_layer_support()) {
+        return STATUS_FAILURE;
+    }
+#endif
+
     log_debug("creating app info");
     VkApplicationInfo app_info = create_application_info();
 
@@ -90,13 +102,6 @@ status_t start(void *app) {
     if (vkCreateInstance(&instance_info, NULL, &app_p->vk_instance) != VK_SUCCESS) {
         return STATUS_FAILURE;
     }
-
-    #ifndef NDEBUG
-    log_debug("checking validation layers support");
-    if (!check_validation_layer_support()) {
-        return STATUS_FAILURE;
-    }
-    #endif
 
     return STATUS_SUCCESS;
 }

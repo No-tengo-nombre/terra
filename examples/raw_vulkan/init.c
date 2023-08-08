@@ -21,8 +21,10 @@ VkApplicationInfo create_application_info(terrar_app_t *app) {
     VkApplicationInfo app_info;
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.apiVersion = VK_API_VERSION_1_3;
-    app_info.applicationVersion = VK_MAKE_API_VERSION(1, 1, 0, 0);
-    app_info.engineVersion = VK_MAKE_API_VERSION(1, 1, 0, 0);
+    app_info.applicationVersion =
+        VK_MAKE_API_VERSION(1, app->version_major, app->version_minor, app->version_patch);
+    app_info.engineVersion = VK_MAKE_API_VERSION(
+        1, TERRAR_ENGINE_VERSION_MAJOR, TERRAR_ENGINE_VERSION_MINOR, TERRAR_ENGINE_VERSION_PATCH);
     app_info.pApplicationName = app->app_name;
     app_info.pEngineName = "Terra";
     app_info.pNext = NULL;
@@ -230,8 +232,7 @@ status_t init_window(terrar_app_t *app) {
     if (app->window_title != NULL) {
         title = app->window_title;
     }
-    GLFWwindow *window =
-        glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title, NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title, NULL, NULL);
     app->glfw_window = window;
     return STATUS_SUCCESS;
 }

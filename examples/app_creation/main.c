@@ -18,7 +18,7 @@ status_t loop(void *app) {
 }
 
 int main(void) {
-    terrar_app_t app = terrar_app_new(&start, &loop, NULL, "Terra (example) - App creation", NULL);
+    terrar_app_t app = terrar_app_new(&start, &loop, NULL, "Terra (example) - App creation");
     status_t app_status = terrar_app_run(&app);
     switch (app_status) {
         case STATUS_SUCCESS:

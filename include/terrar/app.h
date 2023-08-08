@@ -10,8 +10,9 @@
 PREFIXES
 --------
 For queues
-(g) Capable of rendering graphics.
-(p) Capable of presenting graphics.
+(q) Refering to queues
+(g) Capable of rendering graphics
+(p) Capable of presenting graphics
 
 For devices
 (p) Physical device
@@ -39,7 +40,7 @@ typedef struct terrar_app_t {
 
     /* Vulkan attributes */
 
-    terrar_queue_t vk_queues;
+    terrar_queue_t vk_qinfo;
     VkInstance vk_instance;
     VkPhysicalDevice vk_pdevice;
     VkDevice vk_ldevice;

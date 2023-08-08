@@ -271,7 +271,7 @@ status_t choose_pdevice(terrar_app_t *app) {
         return STATUS_FAILURE;
     }
     app->vk_pdevice = result.value;
-    app->vk_queues = result.queue;
+    app->vk_qinfo = result.queue;
     return STATUS_SUCCESS;
 }
 
@@ -280,11 +280,11 @@ status_t create_ldevice(terrar_app_t *app) {
     float queue_prio = 1.0f;
     VkDeviceQueueCreateInfo queue_infos[2];
     uint32_t queue_count = 1;
-    if (app->vk_queues.gfamily == app->vk_queues.pfamily) {
-        queue_infos[0] = create_device_queue_info(app->vk_queues.gfamily, &queue_prio);
+    if (app->vk_qinfo.gfamily == app->vk_qinfo.pfamily) {
+        queue_infos[0] = create_device_queue_info(app->vk_qinfo.gfamily, &queue_prio);
     } else {
-        queue_infos[0] = create_device_queue_info(app->vk_queues.gfamily, &queue_prio);
-        queue_infos[1] = create_device_queue_info(app->vk_queues.pfamily, &queue_prio);
+        queue_infos[0] = create_device_queue_info(app->vk_qinfo.gfamily, &queue_prio);
+        queue_infos[1] = create_device_queue_info(app->vk_qinfo.pfamily, &queue_prio);
         queue_count = 2;
     }
     log_debug("Using %i queues", queue_count);
@@ -301,7 +301,7 @@ status_t create_ldevice(terrar_app_t *app) {
 
 status_t retrieve_device_queue(terrar_app_t *app) {
     log_debug("Retrieving graphics queue");
-    vkGetDeviceQueue(app->vk_ldevice, app->vk_queues.gfamily, 0, &app->vk_gqueue);
-    vkGetDeviceQueue(app->vk_ldevice, app->vk_queues.pfamily, 0, &app->vk_pqueue);
+    vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.gfamily, 0, &app->vk_gqueue);
+    vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.pfamily, 0, &app->vk_pqueue);
     return STATUS_SUCCESS;
 }

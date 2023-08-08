@@ -47,6 +47,6 @@ status_t cleanup(terrar_app_t *app) {
 }
 
 int main(void) {
-    terrar_app_t app = terrar_app_new(&start, &loop, &cleanup);
+    terrar_app_t app = terrar_app_new(&start, &loop, &cleanup, "Terra (example) - Raw Vulkan", NULL);
     return terrar_app_run(&app);
 }

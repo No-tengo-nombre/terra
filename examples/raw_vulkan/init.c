@@ -17,19 +17,19 @@ const char *REQUESTED_DEVICE_EXTENSIONS[DEVICE_EXTENSION_TOTAL] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-VkApplicationInfo create_application_info(void) {
+VkApplicationInfo create_application_info(terrar_app_t *app) {
     VkApplicationInfo app_info;
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.apiVersion = VK_API_VERSION_1_3;
     app_info.applicationVersion = VK_MAKE_API_VERSION(1, 1, 0, 0);
     app_info.engineVersion = VK_MAKE_API_VERSION(1, 1, 0, 0);
-    app_info.pApplicationName = "Terra - Raw Vulkan Example";
-    app_info.pEngineName = "No engine";
+    app_info.pApplicationName = app->app_name;
+    app_info.pEngineName = "Terra";
     app_info.pNext = NULL;
     return app_info;
 }
 
-VkInstanceCreateInfo create_instance_info(VkApplicationInfo *app_info) {
+VkInstanceCreateInfo create_instance_info(terrar_app_t *app, VkApplicationInfo *app_info) {
     VkInstanceCreateInfo instance_info;
     uint32_t extension_count = 0;
     const char **extensions;
@@ -226,8 +226,12 @@ status_t init_window(terrar_app_t *app) {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    const char *title = app->app_name;
+    if (app->window_title != NULL) {
+        title = app->window_title;
+    }
     GLFWwindow *window =
-        glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Terra - Raw Vulkan example", NULL, NULL);
+        glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, title, NULL, NULL);
     app->glfw_window = window;
     return STATUS_SUCCESS;
 }
@@ -242,9 +246,9 @@ status_t init_instance(terrar_app_t *app) {
     }
 #endif
     log_debug("Creating app info");
-    VkApplicationInfo app_info = create_application_info();
+    VkApplicationInfo app_info = create_application_info(app);
     log_debug("Creating instance info");
-    VkInstanceCreateInfo instance_info = create_instance_info(&app_info);
+    VkInstanceCreateInfo instance_info = create_instance_info(app, &app_info);
     log_debug("Creating instance");
     if (vkCreateInstance(&instance_info, NULL, &app->vk_instance) != VK_SUCCESS) {
         log_error("Could not create Vulkan instance");

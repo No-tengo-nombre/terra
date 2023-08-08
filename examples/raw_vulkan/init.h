@@ -13,14 +13,7 @@ PREFIXES
 (p) Capable of presenting graphics.
 */
 
-typedef struct queue_indices_t {
-    uint32_t gfamily;
-    uint32_t pfamily;
-    int gfound;
-    int pfound;
-} queue_indices_t;
-
-queue_indices_t find_queue_families(VkPhysicalDevice, VkSurfaceKHR);
+terrar_queue_t find_queue_families(VkPhysicalDevice, VkSurfaceKHR);
 
 status_t init_window(terrar_app_t *);
 status_t init_instance(terrar_app_t *);

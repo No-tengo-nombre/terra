@@ -74,41 +74,50 @@ int check_validation_layer_support(void) {
     return 1;
 }
 
-queue_indices_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
-    queue_indices_t indices;
+terrar_queue_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
+    terrar_queue_t indices;
     indices.gfound = 0;
     indices.pfound = 0;
+    VkPhysicalDeviceProperties dev_props;
+    vkGetPhysicalDeviceProperties(device, &dev_props);
 
     uint32_t count = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
-    VkQueueFamilyProperties *props = malloc(count * sizeof(VkQueueFamilyProperties));
-    if (props == NULL) {
+    VkQueueFamilyProperties *qprops = malloc(count * sizeof(VkQueueFamilyProperties));
+    if (qprops == NULL) {
         return indices;
     }
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, props);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
 
+    int pfound = 0;
     for (int i = 0; i < count; i++) {
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &indices.pfound);
-        if (indices.pfound) {
-            indices.pfamily = i;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &pfound);
+        unsigned char qflags_bin[5];
+        for (int b = 0; b < 4; b++) {
+            qflags_bin[b] = (qprops[i].queueFlags >> (3 - b)) & 1 ? '1' : '0';
         }
-        if (props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        qflags_bin[4] = '\0';
+        log_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount, qflags_bin);
+        if (pfound) {
+            indices.pfamily = i;
+            indices.pfound = 1;
+        }
+        if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.gfamily = i;
             indices.gfound = 1;
         }
     }
-    free(props);
+    free(qprops);
     return indices;
 }
 
-uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface) {
-    queue_indices_t queue = find_queue_families(device, surface);
+uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue_t *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceFeatures(device, &feats);
 
-    if (!queue.gfound || !queue.pfound) {
+    if (!queue->gfound || !queue->pfound) {
         log_debug("Device '%s' not suitable", props.deviceName);
         return -1;
     }
@@ -124,12 +133,14 @@ uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface) {
 
 typedef struct result_t {
     void *value;
+    terrar_queue_t queue;
     uint32_t status;
 } result_t;
 
 result_t get_physical_device(terrar_app_t *app) {
     result_t result;
     VkPhysicalDevice device = VK_NULL_HANDLE;
+    terrar_queue_t device_queue;
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
     if (device_count == 0) {
@@ -148,7 +159,8 @@ result_t get_physical_device(terrar_app_t *app) {
     int32_t score = -2;
     int32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
-        new_score = rate_device(devices[i], app->vk_surface);
+        device_queue = find_queue_families(devices[i], app->vk_surface);
+        new_score = rate_device(devices[i], app->vk_surface, &device_queue);
         if (score == -2) {
             device = devices[i];
             score = new_score;
@@ -165,6 +177,7 @@ result_t get_physical_device(terrar_app_t *app) {
     } else {
         result.status = STATUS_SUCCESS;
         result.value = device;
+        result.queue = device_queue;
 
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(device, &props);
@@ -174,7 +187,7 @@ result_t get_physical_device(terrar_app_t *app) {
     return result;
 }
 
-VkDeviceQueueCreateInfo create_device_queue_info(queue_indices_t *queue, uint32_t index, float *prio) {
+VkDeviceQueueCreateInfo create_device_queue_info(uint32_t index, float *prio) {
     VkDeviceQueueCreateInfo queue_info;
     queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_info.queueCount = 1;
@@ -258,23 +271,23 @@ status_t choose_pdevice(terrar_app_t *app) {
         return STATUS_FAILURE;
     }
     app->vk_pdevice = result.value;
+    app->vk_queues = result.queue;
     return STATUS_SUCCESS;
 }
 
 status_t create_ldevice(terrar_app_t *app) {
     log_debug("Creating device queue info");
     float queue_prio = 1.0f;
-    queue_indices_t queue = find_queue_families(app->vk_pdevice, app->vk_surface);
     VkDeviceQueueCreateInfo queue_infos[2];
     uint32_t queue_count = 1;
-    if (queue.gfamily == queue.pfamily) {
-        queue_infos[0] = create_device_queue_info(&queue, queue.gfamily, &queue_prio);
+    if (app->vk_queues.gfamily == app->vk_queues.pfamily) {
+        queue_infos[0] = create_device_queue_info(app->vk_queues.gfamily, &queue_prio);
     } else {
-        queue_infos[0] = create_device_queue_info(&queue, queue.gfamily, &queue_prio);
-        queue_infos[1] = create_device_queue_info(&queue, queue.pfamily, &queue_prio);
+        queue_infos[0] = create_device_queue_info(app->vk_queues.gfamily, &queue_prio);
+        queue_infos[1] = create_device_queue_info(app->vk_queues.pfamily, &queue_prio);
         queue_count = 2;
     }
-    log_debug("Ising %i queues", queue_count);
+    log_debug("Using %i queues", queue_count);
     log_debug("Creating device features");
     VkPhysicalDeviceFeatures device_features = create_device_features();
     log_debug("Creating logical device info");
@@ -288,9 +301,7 @@ status_t create_ldevice(terrar_app_t *app) {
 
 status_t retrieve_device_queue(terrar_app_t *app) {
     log_debug("Retrieving graphics queue");
-    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice, app->vk_surface).gfamily, 0,
-                     &app->vk_gqueue);
-    vkGetDeviceQueue(app->vk_ldevice, find_queue_families(app->vk_pdevice, app->vk_surface).pfamily, 0,
-                     &app->vk_pqueue);
+    vkGetDeviceQueue(app->vk_ldevice, app->vk_queues.gfamily, 0, &app->vk_gqueue);
+    vkGetDeviceQueue(app->vk_ldevice, app->vk_queues.pfamily, 0, &app->vk_pqueue);
     return STATUS_SUCCESS;
 }

@@ -6,6 +6,18 @@
 
 #include <terra/status.h>
 
+/*
+PREFIXES
+--------
+For queues
+(g) Capable of rendering graphics.
+(p) Capable of presenting graphics.
+
+For devices
+(p) Physical device
+(l) Logical device
+*/
+
 typedef struct terrar_app_state_t {
     uint64_t i;
 } terrar_app_state_t;

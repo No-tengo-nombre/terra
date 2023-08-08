@@ -6,13 +6,6 @@
 #include <terrar/app.h>
 #include <terrar/vulkan.h>
 
-/*
-PREFIXES
---------
-(g) Capable of rendering graphics.
-(p) Capable of presenting graphics.
-*/
-
 terrar_queue_t find_queue_families(VkPhysicalDevice, VkSurfaceKHR);
 
 status_t init_window(terrar_app_t *);

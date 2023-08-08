@@ -283,6 +283,7 @@ status_t create_ldevice(terrar_app_t *app) {
     float queue_prio = 1.0f;
     VkDeviceQueueCreateInfo queue_infos[2];
     uint32_t queue_count = 1;
+    // TODO: Figure out a better way to store the queue info
     if (app->vk_qinfo.gfamily == app->vk_qinfo.pfamily) {
         queue_infos[0] = create_device_queue_info(app->vk_qinfo.gfamily, &queue_prio);
     } else {

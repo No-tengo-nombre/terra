@@ -1,17 +1,19 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <terra/status.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/setup.h>
 #include <terrar/vulkan.h>
 
-#define VALIDATION_LAYER_TOTAL 1
-const char *REQUESTED_VALIDATION_LAYERS[VALIDATION_LAYER_TOTAL] = {
+#define _MAX_LAYER_SIZE 128
+#define _VALIDATION_LAYER_TOTAL 1
+const char *_VALIDATION_LAYERS[_VALIDATION_LAYER_TOTAL] = {
     "VK_LAYER_KHRONOS_validation",
 };
 
-#define DEVICE_EXTENSION_TOTAL 1
-const char *REQUESTED_DEVICE_EXTENSIONS[DEVICE_EXTENSION_TOTAL] = {
+#define _DEVICE_EXTENSION_TOTAL 1
+const char *_DEVICE_EXTENSIONS[_DEVICE_EXTENSION_TOTAL] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
@@ -41,8 +43,8 @@ VkInstanceCreateInfo create_instance_info(terrar_app_t *app, VkApplicationInfo *
     instance_info.flags = 0;
     instance_info.pNext = NULL;
 #ifndef NDEBUG
-    instance_info.enabledLayerCount = VALIDATION_LAYER_TOTAL;
-    instance_info.ppEnabledLayerNames = REQUESTED_VALIDATION_LAYERS;
+    instance_info.enabledLayerCount = _VALIDATION_LAYER_TOTAL;
+    instance_info.ppEnabledLayerNames = _VALIDATION_LAYERS;
 #else
     instance_info.enabledLayerCount = 0;
 #endif
@@ -58,10 +60,10 @@ int check_validation_layer_support(void) {
     }
     vkEnumerateInstanceLayerProperties(&layers, properties);
 
-    for (int i = 0; i < VALIDATION_LAYER_TOTAL; i++) {
+    for (int i = 0; i < _VALIDATION_LAYER_TOTAL; i++) {
         int found = 0;
         for (int j = 0; j < layers; j++) {
-            if (strcmp(REQUESTED_VALIDATION_LAYERS[i], properties[j].layerName) == 0) {
+            if (strncmp(_VALIDATION_LAYERS[i], properties[j].layerName, _MAX_LAYER_SIZE) == 0) {
                 found = 1;
                 break;
             }

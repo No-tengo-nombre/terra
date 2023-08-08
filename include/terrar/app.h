@@ -43,6 +43,8 @@ typedef struct terrar_app_t {
     uint32_t version_patch;
     const char *window_title;
     const char *app_name;
+    uint32_t window_width;
+    uint32_t window_height;
 
     terrar_app_state_t state;
     void *glfw_window;

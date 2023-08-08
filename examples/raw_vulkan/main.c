@@ -1,11 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
-
-#include "init.h"
+#include <terrar/setup.h>
 
 // TODO: Move the raw *Vulkan* code to `terra_render`
 

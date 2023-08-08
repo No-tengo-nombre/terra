@@ -21,6 +21,8 @@ terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup, const char *
     app.version_major = 1;
     app.version_minor = 0;
     app.version_patch = 0;
+    app.window_width = 800;
+    app.window_height = 600;
     return app;
 }
 

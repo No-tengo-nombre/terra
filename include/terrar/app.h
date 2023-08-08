@@ -30,9 +30,9 @@ typedef struct terrar_queue_t {
 } terrar_queue_t;
 
 typedef struct terrar_app_t {
-    status_t (*start)(void *);
-    status_t (*loop)(void *);
-    status_t (*cleanup)(void *);
+    status_t (*start)(struct terrar_app_t *);
+    status_t (*loop)(struct terrar_app_t *);
+    status_t (*cleanup)(struct terrar_app_t *);
 
     terrar_app_state_t state;
     void *glfw_window;

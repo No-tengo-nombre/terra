@@ -13,23 +13,19 @@
     if (x == STATUS_FAILURE)                                                                       \
     return STATUS_FAILURE
 
-status_t start(void *app) {
-    terrar_app_t *app_p = (terrar_app_t *)app;
-
-    _CALL(init_window(app_p));
-    _CALL(init_instance(app_p));
-    _CALL(create_render_surface(app_p));
-    _CALL(choose_pdevice(app_p));
-    _CALL(create_ldevice(app_p));
-    _CALL(retrieve_device_queue(app_p));
+status_t start(terrar_app_t *app) {
+    _CALL(init_window(app));
+    _CALL(init_instance(app));
+    _CALL(create_render_surface(app));
+    _CALL(choose_pdevice(app));
+    _CALL(create_ldevice(app));
+    _CALL(retrieve_device_queue(app));
 
     return STATUS_SUCCESS;
 }
 
-status_t loop(void *app) {
-    terrar_app_t *app_p = (terrar_app_t *)app;
-
-    if (glfwWindowShouldClose(app_p->glfw_window)) {
+status_t loop(terrar_app_t *app) {
+    if (glfwWindowShouldClose(app->glfw_window)) {
         log_info("Terminating program loop");
         return STATUS_EXIT;
     }
@@ -39,14 +35,12 @@ status_t loop(void *app) {
     return STATUS_SUCCESS;
 }
 
-status_t cleanup(void *app) {
-    terrar_app_t *app_p = (terrar_app_t *)app;
+status_t cleanup(terrar_app_t *app) {
+    vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
+    vkDestroyDevice(app->vk_ldevice, NULL);
 
-    vkDestroySurfaceKHR(app_p->vk_instance, app_p->vk_surface, NULL);
-    vkDestroyDevice(app_p->vk_ldevice, NULL);
-
-    vkDestroyInstance(app_p->vk_instance, NULL);
-    glfwDestroyWindow(app_p->glfw_window);
+    vkDestroyInstance(app->vk_instance, NULL);
+    glfwDestroyWindow(app->glfw_window);
     glfwTerminate();
 
     return STATUS_SUCCESS;

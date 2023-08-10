@@ -9,12 +9,12 @@
     return STATUS_FAILURE
 
 status_t start(terrar_app_t *app) {
-    _CALL(init_window(app));
-    _CALL(init_instance(app));
-    _CALL(create_render_surface(app));
-    _CALL(choose_pdevice(app));
-    _CALL(create_ldevice(app));
-    _CALL(retrieve_device_queue(app));
+    _CALL(terrar_init_window(app));
+    _CALL(terrar_init_instance(app));
+    _CALL(terrar_create_render_surface(app));
+    _CALL(terrar_choose_pdevice(app));
+    _CALL(terrar_create_ldevice(app));
+    _CALL(terrar_retrieve_device_queue(app));
 
     return STATUS_SUCCESS;
 }

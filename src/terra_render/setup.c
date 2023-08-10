@@ -5,7 +5,7 @@
 
 #include "vk_setup.h"
 
-status_t init_window(terrar_app_t *app) {
+status_t terrar_init_window(terrar_app_t *app) {
     log_debug("Initializing GLFW and window");
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -19,7 +19,7 @@ status_t init_window(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
-status_t init_instance(terrar_app_t *app) {
+status_t terrar_init_instance(terrar_app_t *app) {
     // Initialize Vulkan
 #ifndef NDEBUG
     log_debug("Checking validation layers support");
@@ -40,7 +40,7 @@ status_t init_instance(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
-status_t create_render_surface(terrar_app_t *app) {
+status_t terrar_create_render_surface(terrar_app_t *app) {
     log_debug("Creating render surface");
     if (glfwCreateWindowSurface(app->vk_instance, app->glfw_window, NULL, &app->vk_surface) !=
         VK_SUCCESS) {
@@ -50,7 +50,7 @@ status_t create_render_surface(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
-status_t choose_pdevice(terrar_app_t *app) {
+status_t terrar_choose_pdevice(terrar_app_t *app) {
     log_debug("Choosing physical device");
     result_t result = get_physical_device(app);
     if (result.status == STATUS_FAILURE) {
@@ -62,7 +62,7 @@ status_t choose_pdevice(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
-status_t create_ldevice(terrar_app_t *app) {
+status_t terrar_create_ldevice(terrar_app_t *app) {
     log_debug("Creating device queue info");
     float queue_prio = 1.0f;
     VkDeviceQueueCreateInfo queue_infos[2];
@@ -87,7 +87,7 @@ status_t create_ldevice(terrar_app_t *app) {
     return STATUS_SUCCESS;
 }
 
-status_t retrieve_device_queue(terrar_app_t *app) {
+status_t terrar_retrieve_device_queue(terrar_app_t *app) {
     log_debug("Retrieving graphics queue");
     vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.gfamily, 0, &app->vk_gqueue);
     vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.pfamily, 0, &app->vk_pqueue);

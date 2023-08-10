@@ -3,19 +3,19 @@
 #include <terrar/app.h>
 #include <terrar/vulkan.h>
 
-typedef struct result_t {
+typedef struct terrar_result {
     void *value;
-    terrar_queue_t queue;
+    terrar_queue queue;
     uint32_t status;
-} result_t;
+} terrar_result;
 
-VkApplicationInfo create_application_info(terrar_app_t *);
-VkInstanceCreateInfo create_instance_info(terrar_app_t *, VkApplicationInfo *);
-int check_validation_layer_support(void);
-terrar_queue_t find_queue_families(VkPhysicalDevice, VkSurfaceKHR);
-uint32_t rate_device(VkPhysicalDevice, VkSurfaceKHR, terrar_queue_t *);
-result_t get_physical_device(terrar_app_t *);
-VkDeviceQueueCreateInfo create_device_queue_info(uint32_t, float *);
-VkPhysicalDeviceFeatures create_device_features(void);
-VkDeviceCreateInfo create_device_info(VkDeviceQueueCreateInfo *, uint32_t,
+VkApplicationInfo terrar_create_application_info(terrar_app *);
+VkInstanceCreateInfo terrar_create_instance_info(terrar_app *, VkApplicationInfo *);
+int terrar_check_validation_layer_support(void);
+terrar_queue terrar_find_queue_families(VkPhysicalDevice, VkSurfaceKHR);
+uint32_t terrar_rate_device(VkPhysicalDevice, VkSurfaceKHR, terrar_queue *);
+terrar_result terrar_get_physical_device(terrar_app *);
+VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t, float *);
+VkPhysicalDeviceFeatures terrar_create_device_features(void);
+VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *, uint32_t,
                                       VkPhysicalDeviceFeatures *);

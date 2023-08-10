@@ -4,14 +4,14 @@
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 
-terrar_app_state_t terrar_state_default(void) {
-    terrar_app_state_t s;
+terrar_app_state terrar_state_default(void) {
+    terrar_app_state s;
     s.i = 0;
     return s;
 }
 
-terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name) {
-    terrar_app_t app;
+terrar_app terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name) {
+    terrar_app app;
     app.start = start;
     app.loop = loop;
     app.cleanup = cleanup;
@@ -26,18 +26,18 @@ terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup, const char *
     return app;
 }
 
-terrar_app_t terrar_app_new_wstate(terrar_app_state_t state, void *start, void *loop, void *cleanup,
+terrar_app terrar_app_new_wstate(terrar_app_state state, void *start, void *loop, void *cleanup,
                                    const char *app_name) {
-    terrar_app_t app = terrar_app_new(start, loop, cleanup, app_name);
+    terrar_app app = terrar_app_new(start, loop, cleanup, app_name);
     app.state = state;
     return app;
 }
 
-terra_status_t terrar_app_run(terrar_app_t *app) {
+terra_status terrar_app_run(terrar_app *app) {
     log_debug("Application start");
-    terra_status_t start_status = app->start(app);
-    terra_status_t loop_status = TERRA_STATUS_SUCCESS;
-    terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;
+    terra_status start_status = app->start(app);
+    terra_status loop_status = TERRA_STATUS_SUCCESS;
+    terra_status cleanup_status = TERRA_STATUS_SUCCESS;
     if (start_status == TERRA_STATUS_EXIT) {
         return TERRA_STATUS_SUCCESS;
     }

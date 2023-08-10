@@ -21,21 +21,21 @@ For devices
 (l) Logical device
 */
 
-typedef struct terrar_app_state_t {
+typedef struct terrar_app_state {
     uint64_t i;
-} terrar_app_state_t;
+} terrar_app_state;
 
-typedef struct terrar_queue_t {
+typedef struct terrar_queue {
     uint32_t gfamily;
     uint32_t pfamily;
     int gfound;
     int pfound;
-} terrar_queue_t;
+} terrar_queue;
 
-typedef struct terrar_app_t {
-    terra_status_t (*start)(struct terrar_app_t *);
-    terra_status_t (*loop)(struct terrar_app_t *);
-    terra_status_t (*cleanup)(struct terrar_app_t *);
+typedef struct terrar_app {
+    terra_status (*start)(struct terrar_app *);
+    terra_status (*loop)(struct terrar_app *);
+    terra_status (*cleanup)(struct terrar_app *);
 
     /* Application metadata */
     uint32_t version_major;
@@ -46,23 +46,23 @@ typedef struct terrar_app_t {
     uint32_t window_width;
     uint32_t window_height;
 
-    terrar_app_state_t state;
+    terrar_app_state state;
     void *glfw_window;
 
     /* Vulkan attributes */
 
-    terrar_queue_t vk_qinfo;
+    terrar_queue vk_qinfo;
     VkInstance vk_instance;
     VkPhysicalDevice vk_pdevice;
     VkDevice vk_ldevice;
     VkQueue vk_gqueue;
     VkQueue vk_pqueue;
     VkSurfaceKHR vk_surface;
-} terrar_app_t;
+} terrar_app;
 
-terrar_app_state_t terrar_state_default(void);
+terrar_app_state terrar_state_default(void);
 
-terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name);
-terrar_app_t terrar_app_new_wstate(terrar_app_state_t state, void *start, void *loop, void *cleanup,
+terrar_app terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name);
+terrar_app terrar_app_new_wstate(terrar_app_state state, void *start, void *loop, void *cleanup,
                                    const char *app_name);
-terra_status_t terrar_app_run(terrar_app_t *app);
+terra_status terrar_app_run(terrar_app *app);

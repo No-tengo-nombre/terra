@@ -8,7 +8,7 @@
     if (x == TERRA_STATUS_FAILURE)                                                                       \
     return TERRA_STATUS_FAILURE
 
-terra_status_t start(terrar_app_t *app) {
+terra_status start(terrar_app *app) {
     _CALL(terrar_init_window(app));
     _CALL(terrar_init_instance(app));
     _CALL(terrar_create_render_surface(app));
@@ -19,7 +19,7 @@ terra_status_t start(terrar_app_t *app) {
     return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t loop(terrar_app_t *app) {
+terra_status loop(terrar_app *app) {
     if (glfwWindowShouldClose(app->glfw_window)) {
         log_info("Terminating program loop");
         return TERRA_STATUS_EXIT;
@@ -30,7 +30,7 @@ terra_status_t loop(terrar_app_t *app) {
     return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t cleanup(terrar_app_t *app) {
+terra_status cleanup(terrar_app *app) {
     vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
     vkDestroyDevice(app->vk_ldevice, NULL);
 
@@ -42,6 +42,6 @@ terra_status_t cleanup(terrar_app_t *app) {
 }
 
 int main(void) {
-    terrar_app_t app = terrar_app_new(&start, &loop, &cleanup, "Terra (example) - Raw Vulkan");
+    terrar_app app = terrar_app_new(&start, &loop, &cleanup, "Terra (example) - Raw Vulkan");
     return terrar_app_run(&app);
 }

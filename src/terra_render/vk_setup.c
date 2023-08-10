@@ -18,7 +18,7 @@ const char *_DEVICE_EXTENSIONS[_DEVICE_EXTENSION_TOTAL] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-VkApplicationInfo create_application_info(terrar_app_t *app) {
+VkApplicationInfo terrar_create_application_info(terrar_app *app) {
     VkApplicationInfo app_info;
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.apiVersion = VK_API_VERSION_1_3;
@@ -32,7 +32,7 @@ VkApplicationInfo create_application_info(terrar_app_t *app) {
     return app_info;
 }
 
-VkInstanceCreateInfo create_instance_info(terrar_app_t *app, VkApplicationInfo *app_info) {
+VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app, VkApplicationInfo *app_info) {
     VkInstanceCreateInfo instance_info;
     uint32_t extension_count = 0;
     const char **extensions;
@@ -52,7 +52,7 @@ VkInstanceCreateInfo create_instance_info(terrar_app_t *app, VkApplicationInfo *
     return instance_info;
 }
 
-int check_validation_layer_support(void) {
+int terrar_check_validation_layer_support(void) {
     uint32_t layers;
     vkEnumerateInstanceLayerProperties(&layers, NULL);
     VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
@@ -77,8 +77,8 @@ int check_validation_layer_support(void) {
     return 1;
 }
 
-terrar_queue_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
-    terrar_queue_t indices;
+terrar_queue terrar_find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
+    terrar_queue indices;
     indices.gfound = 0;
     indices.pfound = 0;
     VkPhysicalDeviceProperties dev_props;
@@ -114,7 +114,7 @@ terrar_queue_t find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface
     return indices;
 }
 
-uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue_t *queue) {
+uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
     vkGetPhysicalDeviceProperties(device, &props);
@@ -134,10 +134,10 @@ uint32_t rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue
     return score;
 }
 
-result_t get_physical_device(terrar_app_t *app) {
-    result_t result;
+terrar_result terrar_get_physical_device(terrar_app *app) {
+    terrar_result result;
     VkPhysicalDevice device = VK_NULL_HANDLE;
-    terrar_queue_t device_queue;
+    terrar_queue device_queue;
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
     if (device_count == 0) {
@@ -156,8 +156,8 @@ result_t get_physical_device(terrar_app_t *app) {
     int32_t score = -2;
     int32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
-        device_queue = find_queue_families(devices[i], app->vk_surface);
-        new_score = rate_device(devices[i], app->vk_surface, &device_queue);
+        device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
+        new_score = terrar_rate_device(devices[i], app->vk_surface, &device_queue);
         if (score == -2) {
             device = devices[i];
             score = new_score;
@@ -184,7 +184,7 @@ result_t get_physical_device(terrar_app_t *app) {
     return result;
 }
 
-VkDeviceQueueCreateInfo create_device_queue_info(uint32_t index, float *prio) {
+VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t index, float *prio) {
     VkDeviceQueueCreateInfo queue_info;
     queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_info.queueCount = 1;
@@ -195,13 +195,13 @@ VkDeviceQueueCreateInfo create_device_queue_info(uint32_t index, float *prio) {
     return queue_info;
 }
 
-VkPhysicalDeviceFeatures create_device_features(void) {
+VkPhysicalDeviceFeatures terrar_create_device_features(void) {
     VkPhysicalDeviceFeatures device_features = {VK_FALSE};
     device_features.geometryShader = VK_TRUE;
     return device_features;
 }
 
-VkDeviceCreateInfo create_device_info(VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
+VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
                                       VkPhysicalDeviceFeatures *device_features) {
     VkDeviceCreateInfo device_info;
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

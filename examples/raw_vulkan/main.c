@@ -5,10 +5,10 @@
 // TODO: Move the raw *Vulkan* code to `terra_render`
 
 #define _CALL(x)                                                                                   \
-    if (x == STATUS_FAILURE)                                                                       \
-    return STATUS_FAILURE
+    if (x == TERRA_STATUS_FAILURE)                                                                       \
+    return TERRA_STATUS_FAILURE
 
-status_t start(terrar_app_t *app) {
+terra_status_t start(terrar_app_t *app) {
     _CALL(terrar_init_window(app));
     _CALL(terrar_init_instance(app));
     _CALL(terrar_create_render_surface(app));
@@ -16,21 +16,21 @@ status_t start(terrar_app_t *app) {
     _CALL(terrar_create_ldevice(app));
     _CALL(terrar_retrieve_device_queue(app));
 
-    return STATUS_SUCCESS;
+    return TERRA_STATUS_SUCCESS;
 }
 
-status_t loop(terrar_app_t *app) {
+terra_status_t loop(terrar_app_t *app) {
     if (glfwWindowShouldClose(app->glfw_window)) {
         log_info("Terminating program loop");
-        return STATUS_EXIT;
+        return TERRA_STATUS_EXIT;
     }
 
     glfwPollEvents();
 
-    return STATUS_SUCCESS;
+    return TERRA_STATUS_SUCCESS;
 }
 
-status_t cleanup(terrar_app_t *app) {
+terra_status_t cleanup(terrar_app_t *app) {
     vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
     vkDestroyDevice(app->vk_ldevice, NULL);
 
@@ -38,7 +38,7 @@ status_t cleanup(terrar_app_t *app) {
     glfwDestroyWindow(app->glfw_window);
     glfwTerminate();
 
-    return STATUS_SUCCESS;
+    return TERRA_STATUS_SUCCESS;
 }
 
 int main(void) {

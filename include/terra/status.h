@@ -1,7 +1,7 @@
 #pragma once
 
-typedef enum status_t {
-    STATUS_SUCCESS = 0,
-    STATUS_FAILURE = 1,
-    STATUS_EXIT = 2,
-} status_t;
+typedef enum terra_status_t {
+    TERRA_STATUS_SUCCESS = 0,
+    TERRA_STATUS_FAILURE = 1,
+    TERRA_STATUS_EXIT = 2,
+} terra_status_t;

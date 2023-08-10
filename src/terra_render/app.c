@@ -33,22 +33,22 @@ terrar_app_t terrar_app_new_wstate(terrar_app_state_t state, void *start, void *
     return app;
 }
 
-status_t terrar_app_run(terrar_app_t *app) {
+terra_status_t terrar_app_run(terrar_app_t *app) {
     log_debug("Application start");
-    status_t start_status = app->start(app);
-    status_t loop_status = STATUS_SUCCESS;
-    status_t cleanup_status = STATUS_SUCCESS;
-    if (start_status == STATUS_EXIT) {
-        return STATUS_SUCCESS;
+    terra_status_t start_status = app->start(app);
+    terra_status_t loop_status = TERRA_STATUS_SUCCESS;
+    terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;
+    if (start_status == TERRA_STATUS_EXIT) {
+        return TERRA_STATUS_SUCCESS;
     }
-    if (start_status == STATUS_FAILURE) {
+    if (start_status == TERRA_STATUS_FAILURE) {
         log_fatal("Application failed on startup");
-        return STATUS_FAILURE;
+        return TERRA_STATUS_FAILURE;
     }
 
     if ((void *)app->loop != NULL) {
         log_debug("Application loop");
-        while (loop_status == STATUS_SUCCESS) {
+        while (loop_status == TERRA_STATUS_SUCCESS) {
             loop_status = app->loop(app);
             app->state.i++;
         }
@@ -57,16 +57,16 @@ status_t terrar_app_run(terrar_app_t *app) {
         log_debug("Application cleanup");
         cleanup_status = app->cleanup(app);
     }
-    if (loop_status == STATUS_FAILURE) {
+    if (loop_status == TERRA_STATUS_FAILURE) {
         log_fatal("Application failed in loop");
-        if (cleanup_status == STATUS_FAILURE) {
+        if (cleanup_status == TERRA_STATUS_FAILURE) {
             log_fatal("could not perform cleanup");
         }
-        return STATUS_FAILURE;
+        return TERRA_STATUS_FAILURE;
     }
-    if (cleanup_status == STATUS_FAILURE) {
+    if (cleanup_status == TERRA_STATUS_FAILURE) {
         log_fatal("Application failed on cleanup");
-        return STATUS_FAILURE;
+        return TERRA_STATUS_FAILURE;
     }
-    return STATUS_SUCCESS;
+    return TERRA_STATUS_SUCCESS;
 }

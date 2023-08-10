@@ -142,13 +142,13 @@ result_t get_physical_device(terrar_app_t *app) {
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
     if (device_count == 0) {
         log_error("Failed to find GPUs that support Vulkan");
-        result.status = STATUS_FAILURE;
+        result.status = TERRA_STATUS_FAILURE;
         return result;
     }
     VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
     if (devices == NULL) {
         log_error("Could not allocate enough memory for the devices");
-        result.status = STATUS_FAILURE;
+        result.status = TERRA_STATUS_FAILURE;
         return result;
     }
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
@@ -170,9 +170,9 @@ result_t get_physical_device(terrar_app_t *app) {
     }
     if (score == -1) {
         log_error("No devices are suitable for the application");
-        result.status = STATUS_FAILURE;
+        result.status = TERRA_STATUS_FAILURE;
     } else {
-        result.status = STATUS_SUCCESS;
+        result.status = TERRA_STATUS_SUCCESS;
         result.value = device;
         result.queue = device_queue;
 

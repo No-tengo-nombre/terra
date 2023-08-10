@@ -33,9 +33,9 @@ typedef struct terrar_queue_t {
 } terrar_queue_t;
 
 typedef struct terrar_app_t {
-    status_t (*start)(struct terrar_app_t *);
-    status_t (*loop)(struct terrar_app_t *);
-    status_t (*cleanup)(struct terrar_app_t *);
+    terra_status_t (*start)(struct terrar_app_t *);
+    terra_status_t (*loop)(struct terrar_app_t *);
+    terra_status_t (*cleanup)(struct terrar_app_t *);
 
     /* Application metadata */
     uint32_t version_major;
@@ -65,4 +65,4 @@ terrar_app_state_t terrar_state_default(void);
 terrar_app_t terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name);
 terrar_app_t terrar_app_new_wstate(terrar_app_state_t state, void *start, void *loop, void *cleanup,
                                    const char *app_name);
-status_t terrar_app_run(terrar_app_t *app);
+terra_status_t terrar_app_run(terrar_app_t *app);

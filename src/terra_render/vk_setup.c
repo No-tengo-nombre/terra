@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,6 +17,7 @@ const char *_VALIDATION_LAYERS[_VALIDATION_LAYER_TOTAL] = {
 #define _DEVICE_EXTENSION_TOTAL 1
 const char *_DEVICE_EXTENSIONS[_DEVICE_EXTENSION_TOTAL] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    // "VK_KHR_swapchaain",
 };
 
 VkApplicationInfo terrar_create_application_info(terrar_app *app) {
@@ -114,13 +116,47 @@ terrar_queue terrar_find_queue_families(VkPhysicalDevice device, VkSurfaceKHR su
     return indices;
 }
 
+int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
+                                   size_t target_total) {
+    uint32_t ext_total;
+    vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
+    VkExtensionProperties *ext_props = malloc(ext_total * sizeof(VkExtensionProperties));
+    vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
+
+    int all_found = 1;
+    for (int i = 0; i < target_total; i++) {
+        int found = 0;
+        for (int j = 0; j < ext_total; j++) {
+            if (strncmp(target[i], ext_props[j].extensionName, _MAX_LAYER_SIZE) == 0) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            log_warn("Extension %s was not found", target[i]);
+            all_found = 0;
+            break;
+        }
+        log_debug("Extension %s was found", target[i]);
+    }
+
+    free(ext_props);
+    return all_found;
+}
+
 uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceFeatures(device, &feats);
 
-    if (!queue->gfound || !queue->pfound) {
+    int extensions_supported =
+        terrar_check_device_extensions(device, _DEVICE_EXTENSIONS, _DEVICE_EXTENSION_TOTAL);
+    if (extensions_supported) {
+        log_debug("Device '%s' supports all extensions", props.deviceName);
+    }
+
+    if (!queue->gfound || !queue->pfound || !extensions_supported) {
         log_debug("Device '%s' not suitable", props.deviceName);
         return -1;
     }
@@ -156,6 +192,9 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
     int32_t score = -2;
     int32_t new_score = 0;
     for (int i = 0; i < device_count; i++) {
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(devices[i], &props);
+        log_info("Evaluating device '%s'", props.deviceName);
         device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
         new_score = terrar_rate_device(devices[i], app->vk_surface, &device_queue);
         if (score == -2) {
@@ -201,8 +240,9 @@ VkPhysicalDeviceFeatures terrar_create_device_features(void) {
     return device_features;
 }
 
-VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
-                                      VkPhysicalDeviceFeatures *device_features) {
+VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info,
+                                             uint32_t queue_count,
+                                             VkPhysicalDeviceFeatures *device_features) {
     VkDeviceCreateInfo device_info;
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_info.queueCreateInfoCount = 1;

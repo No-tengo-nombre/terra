@@ -249,10 +249,14 @@ VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info
     device_info.pEnabledFeatures = device_features;
 
     device_info.pNext = NULL;
-    device_info.enabledExtensionCount = 0;
-    device_info.enabledLayerCount = 0;
     device_info.flags = 0;
-    device_info.ppEnabledExtensionNames = NULL;
+
+    // The validation checks are done, so it can be assumed that the requested features
+    // are available
+    device_info.enabledLayerCount = 0;
     device_info.ppEnabledLayerNames = NULL;
+
+    device_info.enabledExtensionCount = _DEVICE_EXTENSION_TOTAL;
+    device_info.ppEnabledExtensionNames = _DEVICE_EXTENSIONS;
     return device_info;
 }

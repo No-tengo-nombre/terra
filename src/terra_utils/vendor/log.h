@@ -8,14 +8,13 @@
 #ifndef LOG_H
 #define LOG_H
 
-#define __FILENAME__ (__FILE__ + SOURCE_PATH_SIZE)
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <time.h>
 
 #define LOG_VERSION "0.1.0"
+#define __FILENAME__ (__FILE__ + SOURCE_PATH_SIZE)
 
 typedef struct {
   va_list ap;

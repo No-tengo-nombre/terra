@@ -51,6 +51,11 @@ else()
   add_compile_definitions(TERRA_BUILD_TYPE_DEBUG)
 endif()
 
+string(LENGTH "${CMAKE_SOURCE_DIR}/" SOURCE_PATH_SIZE)
+add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
+
+# Subdirectories
+
 add_subdirectory(dependencies)
 add_subdirectory(src)
 

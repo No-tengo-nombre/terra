@@ -154,6 +154,11 @@ terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
     return details;
 }
 
+// TODO: Implement swapchain choosing
+VkSurfaceFormatKHR terrar_choose_swapchain(terrar_swapchain_details *sc_details) {
+
+}
+
 uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;

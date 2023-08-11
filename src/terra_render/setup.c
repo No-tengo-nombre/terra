@@ -79,7 +79,8 @@ terra_status terrar_create_ldevice(terrar_app *app) {
     log_debug("Creating device features");
     VkPhysicalDeviceFeatures device_features = terrar_create_device_features();
     log_debug("Creating logical device info");
-    VkDeviceCreateInfo device_info = terrar_create_device_info(queue_infos, queue_count, &device_features);
+    VkDeviceCreateInfo device_info =
+        terrar_create_device_info(queue_infos, queue_count, &device_features);
     if (vkCreateDevice(app->vk_pdevice, &device_info, NULL, &app->vk_ldevice) != VK_SUCCESS) {
         log_error("Could not create logical device");
         return TERRA_STATUS_FAILURE;

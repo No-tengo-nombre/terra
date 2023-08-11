@@ -3,14 +3,15 @@
 #include <terra/status.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
+#include <terrar/vulkan.h>
 
 terrar_app_state terrar_state_default(void) {
     terrar_app_state s;
     s.i = 0;
     return s;
 }
-
 terrar_app terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name) {
+
     terrar_app app;
     app.start = start;
     app.loop = loop;
@@ -84,4 +85,8 @@ terra_status terrar_app_cleanup(terrar_app *app) {
     glfwTerminate();
 
     return TERRA_STATUS_SUCCESS;
+}
+
+int terrar_app_should_close(terrar_app *app) {
+    return glfwWindowShouldClose(app->glfw_window);
 }

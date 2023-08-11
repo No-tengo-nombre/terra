@@ -20,7 +20,7 @@ terra_status start(terrar_app *app) {
 }
 
 terra_status loop(terrar_app *app) {
-    if (glfwWindowShouldClose(app->glfw_window)) {
+    if (terrar_app_should_close(app)) {
         log_info("Terminating program loop");
         return TERRA_STATUS_EXIT;
     }

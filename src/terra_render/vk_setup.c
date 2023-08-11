@@ -143,6 +143,26 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
     return all_found;
 }
 
+terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device, VkSurfaceKHR surface) {
+    log_debug("Querying surface capabilities");
+    terrar_swapchain_details details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+    log_debug("Querying surface formats");
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, NULL);
+    details.formats = malloc(details.format_count * sizeof(VkSurfaceFormatKHR));
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, details.formats);
+
+    log_debug("Querying surface present modes");
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, NULL);
+    details.modes = malloc(details.mode_count * sizeof(VkPresentModeKHR));
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, details.modes);
+
+    free(details.formats);
+    free(details.modes);
+    return details;
+}
+
 uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
@@ -151,11 +171,17 @@ uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terra
 
     int extensions_supported =
         terrar_check_device_extensions(device, _DEVICE_EXTENSIONS, _DEVICE_EXTENSION_TOTAL);
+    int adequate_sc = 0;
     if (extensions_supported) {
         log_debug("Device '%s' supports all extensions", props.deviceName);
+        terrar_swapchain_details sc_details = terrar_check_swapchain_support(device, surface);
+        adequate_sc = (sc_details.format_count != 0) && (sc_details.mode_count != 0);
+        if (adequate_sc) {
+            log_debug("Device '%s' has adequate swapchain", props.deviceName);
+        }
     }
 
-    if (!queue->gfound || !queue->pfound || !extensions_supported) {
+    if (!queue->gfound || !queue->pfound || !extensions_supported || !adequate_sc) {
         log_debug("Device '%s' not suitable", props.deviceName);
         return -1;
     }

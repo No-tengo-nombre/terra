@@ -26,4 +26,4 @@ terrar_result terrar_get_physical_device(terrar_app *);
 VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t, float *);
 VkPhysicalDeviceFeatures terrar_create_device_features(void);
 VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *, uint32_t,
-                                             VkPhysicalDeviceFeatures *);
+                                             VkPhysicalDeviceFeatures *, const char **, uint32_t);

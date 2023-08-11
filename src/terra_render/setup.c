@@ -1,5 +1,6 @@
 #include <terra/status.h>
 #include <terra_utils/vendor/log.h>
+#include <terrar/defaults.h>
 #include <terrar/setup.h>
 #include <terrar/vulkan.h>
 
@@ -80,7 +81,8 @@ terra_status terrar_create_ldevice(terrar_app *app) {
     VkPhysicalDeviceFeatures device_features = terrar_create_device_features();
     log_debug("Creating logical device info");
     VkDeviceCreateInfo device_info =
-        terrar_create_device_info(queue_infos, queue_count, &device_features);
+        terrar_create_device_info(queue_infos, queue_count, &device_features,
+                                  TERRAR_DEVICE_EXTENSIONS, TERRAR_DEVICE_EXTENSION_TOTAL);
     if (vkCreateDevice(app->vk_pdevice, &device_info, NULL, &app->vk_ldevice) != VK_SUCCESS) {
         log_error("Could not create logical device");
         return TERRA_STATUS_FAILURE;

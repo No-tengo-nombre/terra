@@ -4,20 +4,10 @@
 
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
+#include <terrar/defaults.h>
 #include <terrar/vulkan.h>
 
 #include "vk_setup.h"
-
-#define _MAX_LAYER_SIZE 128
-#define _VALIDATION_LAYER_TOTAL 1
-const char *_VALIDATION_LAYERS[_VALIDATION_LAYER_TOTAL] = {
-    "VK_LAYER_KHRONOS_validation",
-};
-
-#define _DEVICE_EXTENSION_TOTAL 1
-const char *_DEVICE_EXTENSIONS[_DEVICE_EXTENSION_TOTAL] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-};
 
 VkApplicationInfo terrar_create_application_info(terrar_app *app) {
     VkApplicationInfo app_info;
@@ -45,8 +35,8 @@ VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app, VkApplicationI
     instance_info.flags = 0;
     instance_info.pNext = NULL;
 #ifndef NDEBUG
-    instance_info.enabledLayerCount = _VALIDATION_LAYER_TOTAL;
-    instance_info.ppEnabledLayerNames = _VALIDATION_LAYERS;
+    instance_info.enabledLayerCount = TERRAR_VALIDATION_LAYER_TOTAL;
+    instance_info.ppEnabledLayerNames = TERRAR_VALIDATION_LAYERS;
 #else
     instance_info.enabledLayerCount = 0;
 #endif
@@ -62,10 +52,10 @@ int terrar_check_validation_layer_support(void) {
     }
     vkEnumerateInstanceLayerProperties(&layers, properties);
 
-    for (int i = 0; i < _VALIDATION_LAYER_TOTAL; i++) {
+    for (int i = 0; i < TERRAR_VALIDATION_LAYER_TOTAL; i++) {
         int found = 0;
         for (int j = 0; j < layers; j++) {
-            if (strncmp(_VALIDATION_LAYERS[i], properties[j].layerName, _MAX_LAYER_SIZE) == 0) {
+            if (strcmp(TERRAR_VALIDATION_LAYERS[i], properties[j].layerName) == 0) {
                 found = 1;
                 break;
             }
@@ -126,7 +116,7 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
     for (int i = 0; i < target_total; i++) {
         int found = 0;
         for (int j = 0; j < ext_total; j++) {
-            if (strncmp(target[i], ext_props[j].extensionName, _MAX_LAYER_SIZE) == 0) {
+            if (strcmp(target[i], ext_props[j].extensionName) == 0) {
                 found = 1;
                 break;
             }
@@ -170,8 +160,8 @@ uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terra
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceFeatures(device, &feats);
 
-    int extensions_supported =
-        terrar_check_device_extensions(device, _DEVICE_EXTENSIONS, _DEVICE_EXTENSION_TOTAL);
+    int extensions_supported = terrar_check_device_extensions(device, TERRAR_DEVICE_EXTENSIONS,
+                                                              TERRAR_DEVICE_EXTENSION_TOTAL);
     int adequate_sc = 0;
     if (extensions_supported) {
         log_debug("Device '%s' supports all extensions", props.deviceName);
@@ -268,7 +258,9 @@ VkPhysicalDeviceFeatures terrar_create_device_features(void) {
 
 VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info,
                                              uint32_t queue_count,
-                                             VkPhysicalDeviceFeatures *device_features) {
+                                             VkPhysicalDeviceFeatures *device_features,
+                                             const char **device_extensions,
+                                             uint32_t device_extension_count) {
     VkDeviceCreateInfo device_info;
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_info.queueCreateInfoCount = 1;
@@ -283,7 +275,7 @@ VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info
     device_info.enabledLayerCount = 0;
     device_info.ppEnabledLayerNames = NULL;
 
-    device_info.enabledExtensionCount = _DEVICE_EXTENSION_TOTAL;
-    device_info.ppEnabledExtensionNames = _DEVICE_EXTENSIONS;
+    device_info.enabledExtensionCount = device_extension_count;
+    device_info.ppEnabledExtensionNames = device_extensions;
     return device_info;
 }

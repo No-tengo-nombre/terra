@@ -17,7 +17,6 @@ const char *_VALIDATION_LAYERS[_VALIDATION_LAYER_TOTAL] = {
 #define _DEVICE_EXTENSION_TOTAL 1
 const char *_DEVICE_EXTENSIONS[_DEVICE_EXTENSION_TOTAL] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    // "VK_KHR_swapchaain",
 };
 
 VkApplicationInfo terrar_create_application_info(terrar_app *app) {

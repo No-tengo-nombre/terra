@@ -31,13 +31,7 @@ terra_status loop(terrar_app *app) {
 }
 
 terra_status cleanup(terrar_app *app) {
-    vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
-    vkDestroyDevice(app->vk_ldevice, NULL);
-
-    vkDestroyInstance(app->vk_instance, NULL);
-    glfwDestroyWindow(app->glfw_window);
-    glfwTerminate();
-
+    _CALL(terrar_app_cleanup(app));
     return TERRA_STATUS_SUCCESS;
 }
 

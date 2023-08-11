@@ -66,3 +66,6 @@ terrar_app terrar_app_new(void *start, void *loop, void *cleanup, const char *ap
 terrar_app terrar_app_new_wstate(terrar_app_state state, void *start, void *loop, void *cleanup,
                                    const char *app_name);
 terra_status terrar_app_run(terrar_app *app);
+terra_status terrar_app_cleanup(terrar_app *app);
+
+// int terrar_app_should_close(terrar_app *app);

@@ -143,7 +143,8 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
     return all_found;
 }
 
-terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device, VkSurfaceKHR surface) {
+terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
+                                                        VkSurfaceKHR surface) {
     log_debug("Querying surface capabilities");
     terrar_swapchain_details details;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);

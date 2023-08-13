@@ -81,6 +81,37 @@ static void file_callback(log_Event *ev) {
 }
 
 
+static void stdout_callback_internal(log_Event *ev) {
+  char buf[16];
+  buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
+#ifdef LOG_USE_COLOR
+  fprintf(
+    ev->udata, "[I] %s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+    buf, level_colors[ev->level], level_strings[ev->level],
+    ev->file, ev->line);
+#else
+  fprintf(
+    ev->udata, "[I] %s %-5s %s:%d: ",
+    buf, level_strings[ev->level], ev->file, ev->line);
+#endif
+  vfprintf(ev->udata, ev->fmt, ev->ap);
+  fprintf(ev->udata, "\n");
+  fflush(ev->udata);
+}
+
+
+static void file_callback_internal(log_Event *ev) {
+  char buf[64];
+  buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
+  fprintf(
+    ev->udata, "[I] %s %-5s %s:%d: ",
+    buf, level_strings[ev->level], ev->file, ev->line);
+  vfprintf(ev->udata, ev->fmt, ev->ap);
+  fprintf(ev->udata, "\n");
+  fflush(ev->udata);
+}
+
+
 static void lock(void)   {
   if (L.lock) { L.lock(true, L.udata); }
 }
@@ -128,6 +159,11 @@ int log_add_fp(FILE *fp, int level) {
 }
 
 
+int log_add_fp_internal(FILE *fp, int level) {
+  return log_add_callback(file_callback_internal, fp, level);
+}
+
+
 static void init_event(log_Event *ev, void *udata) {
   if (!ev->time) {
     time_t t = time(NULL);
@@ -152,6 +188,38 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
     init_event(&ev, stderr);
     va_start(ev.ap, fmt);
     stdout_callback(&ev);
+    va_end(ev.ap);
+  }
+
+  for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
+    Callback *cb = &L.callbacks[i];
+    if (level >= cb->level) {
+      init_event(&ev, cb->udata);
+      va_start(ev.ap, fmt);
+      cb->fn(&ev);
+      va_end(ev.ap);
+    }
+  }
+
+  unlock();
+#endif
+}
+
+void log_log_internal(int level, const char *file, int line, const char *fmt, ...) {
+#ifndef TERRA_DISABLE_LOGGING
+  log_Event ev = {
+    .fmt   = fmt,
+    .file  = file,
+    .line  = line,
+    .level = level,
+  };
+
+  lock();
+
+  if (!L.quiet && level >= L.level) {
+    init_event(&ev, stderr);
+    va_start(ev.ap, fmt);
+    stdout_callback_internal(&ev);
     va_end(ev.ap);
   }
 

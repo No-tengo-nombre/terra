@@ -91,7 +91,7 @@ terrar_queue terrar_find_queue_families(VkPhysicalDevice device, VkSurfaceKHR su
             qflags_bin[b] = (qprops[i].queueFlags >> (3 - b)) & 1 ? '1' : '0';
         }
         qflags_bin[4] = '\0';
-        log_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount, qflags_bin);
+        logi_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount, qflags_bin);
         if (pfound) {
             indices.pfamily = i;
             indices.pfound = 1;
@@ -122,11 +122,11 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
             }
         }
         if (!found) {
-            log_warn("Extension %s was not found", target[i]);
+            logi_warn("Extension %s was not found", target[i]);
             all_found = 0;
             break;
         }
-        log_debug("Extension %s was found", target[i]);
+        logi_debug("Extension %s was found", target[i]);
     }
 
     free(ext_props);
@@ -135,16 +135,16 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
 
 terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
                                                         VkSurfaceKHR surface) {
-    log_debug("Querying surface capabilities");
+    logi_debug("Querying surface capabilities");
     terrar_swapchain_details details;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 
-    log_debug("Querying surface formats");
+    logi_debug("Querying surface formats");
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, NULL);
     details.formats = malloc(details.format_count * sizeof(VkSurfaceFormatKHR));
     vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, details.formats);
 
-    log_debug("Querying surface present modes");
+    logi_debug("Querying surface present modes");
     vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, NULL);
     details.modes = malloc(details.mode_count * sizeof(VkPresentModeKHR));
     vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, details.modes);
@@ -161,7 +161,7 @@ VkSurfaceFormatKHR terrar_sc_choose_format(terrar_app *app, terrar_swapchain_det
             return f;
         }
     }
-    log_warn("Desired surface format not found, defaulting to first");
+    logi_warn("Desired surface format not found, defaulting to first");
     return sc_details->formats[0];
 }
 
@@ -173,7 +173,7 @@ VkPresentModeKHR terrar_sc_choose_present_mode(terrar_app *app,
             return m;
         }
     }
-    log_warn("Desired present mode not found, defaulting to FIFO");
+    logi_warn("Desired present mode not found, defaulting to FIFO");
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -203,16 +203,16 @@ uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device, VkSurfaceK
                                                               app->conf->device_extensions_total);
     int adequate_sc = 0;
     if (extensions_supported) {
-        log_debug("Device '%s' supports all extensions", props.deviceName);
+        logi_debug("Device '%s' supports all extensions", props.deviceName);
         terrar_swapchain_details sc_details = terrar_check_swapchain_support(device, surface);
         adequate_sc = (sc_details.format_count != 0) && (sc_details.mode_count != 0);
         if (adequate_sc) {
-            log_debug("Device '%s' has adequate swapchain", props.deviceName);
+            logi_debug("Device '%s' has adequate swapchain", props.deviceName);
         }
     }
 
     if (!queue->gfound || !queue->pfound || !extensions_supported || !adequate_sc) {
-        log_debug("Device '%s' not suitable", props.deviceName);
+        logi_debug("Device '%s' not suitable", props.deviceName);
         return -1;
     }
 
@@ -221,7 +221,7 @@ uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device, VkSurfaceK
         score += 1000;
     }
     score += props.limits.maxImageDimension2D;
-    log_debug("Device '%s' score: %I32u", props.deviceName, score);
+    logi_debug("Device '%s' score: %I32u", props.deviceName, score);
     return score;
 }
 
@@ -232,13 +232,13 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
     uint32_t device_count = 0;
     vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
     if (device_count == 0) {
-        log_error("Failed to find GPUs that support Vulkan");
+        logi_error("Failed to find GPUs that support Vulkan");
         result.status = TERRA_STATUS_FAILURE;
         return result;
     }
     VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
     if (devices == NULL) {
-        log_error("Could not allocate enough memory for the devices");
+        logi_error("Could not allocate enough memory for the devices");
         result.status = TERRA_STATUS_FAILURE;
         return result;
     }
@@ -249,7 +249,7 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
     for (int i = 0; i < device_count; i++) {
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(devices[i], &props);
-        log_info("Evaluating device '%s'", props.deviceName);
+        logi_info("Evaluating device '%s'", props.deviceName);
         device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
         new_score = terrar_rate_device(app, devices[i], app->vk_surface, &device_queue);
         if (score == -2) {
@@ -263,7 +263,7 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
         }
     }
     if (score == -1) {
-        log_error("No devices are suitable for the application");
+        logi_error("No devices are suitable for the application");
         result.status = TERRA_STATUS_FAILURE;
     } else {
         result.status = TERRA_STATUS_SUCCESS;
@@ -272,7 +272,7 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
 
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(device, &props);
-        log_info("Using device %s", props.deviceName);
+        logi_info("Using device %s", props.deviceName);
     }
     free(devices);
     return result;

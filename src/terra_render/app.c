@@ -10,26 +10,44 @@ terrar_app_state terrar_state_default(void) {
     s.i = 0;
     return s;
 }
-terrar_app terrar_app_new(void *start, void *loop, void *cleanup, const char *app_name) {
 
+terrar_app_metadata terrar_metadata_default(void) {
+    terrar_app_metadata meta;
+    meta.vmajor = 1;
+    meta.vminor = 0;
+    meta.vpatch = 0;
+    meta.app_name = "Terrar - Default application";
+    meta.window_title = NULL;
+    meta.window_width = 800;
+    meta.window_height = 600;
+    return meta;
+}
+
+terrar_app_config terrar_config_default(void) {
+    terrar_app_config conf = {
+        .validation_layers_total = 1,
+        .device_extensions_total = 1,
+        .validation_layers = {"VK_LAYER_KHRONOS_validation"},
+        .device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME},
+    };
+    return conf;
+}
+
+terrar_app terrar_app_new(void *start, void *loop, void *cleanup, terrar_app_metadata *meta,
+                          terrar_app_config *conf) {
     terrar_app app;
     app.start = start;
     app.loop = loop;
     app.cleanup = cleanup;
     app.state = terrar_state_default();
-    app.app_name = app_name;
-    app.window_title = NULL;
-    app.version_major = 1;
-    app.version_minor = 0;
-    app.version_patch = 0;
-    app.window_width = 800;
-    app.window_height = 600;
+    app.meta = meta;
+    app.conf = conf;
     return app;
 }
 
 terrar_app terrar_app_new_wstate(terrar_app_state state, void *start, void *loop, void *cleanup,
-                                 const char *app_name) {
-    terrar_app app = terrar_app_new(start, loop, cleanup, app_name);
+                                 terrar_app_metadata *meta, terrar_app_config *conf) {
+    terrar_app app = terrar_app_new(start, loop, cleanup, meta, conf);
     app.state = state;
     return app;
 }
@@ -87,6 +105,4 @@ terra_status terrar_app_cleanup(terrar_app *app) {
     return TERRA_STATUS_SUCCESS;
 }
 
-int terrar_app_should_close(terrar_app *app) {
-    return glfwWindowShouldClose(app->glfw_window);
-}
+int terrar_app_should_close(terrar_app *app) { return glfwWindowShouldClose(app->glfw_window); }

@@ -36,6 +36,11 @@ terra_status cleanup(terrar_app *app) {
 }
 
 int main(void) {
-    terrar_app app = terrar_app_new(&start, &loop, &cleanup, "Terra (example) - Raw Vulkan");
+    terrar_app_metadata meta = terrar_metadata_default();
+    meta.app_name = "Terra (example) - Raw Vulkan";
+
+    terrar_app_config conf = terrar_config_default();
+
+    terrar_app app = terrar_app_new(&start, &loop, &cleanup, &meta, &conf);
     return terrar_app_run(&app);
 }

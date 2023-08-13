@@ -1,6 +1,5 @@
 #include <terra/status.h>
 #include <terra_utils/vendor/log.h>
-#include <terrar/defaults.h>
 #include <terrar/setup.h>
 #include <terrar/vulkan.h>
 
@@ -11,11 +10,12 @@ terra_status terrar_init_window(terrar_app *app) {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    const char *title = app->app_name;
-    if (app->window_title != NULL) {
-        title = app->window_title;
+    const char *title = app->meta->app_name;
+    if (app->meta->window_title != NULL) {
+        title = app->meta->window_title;
     }
-    GLFWwindow *window = glfwCreateWindow(app->window_width, app->window_height, title, NULL, NULL);
+    GLFWwindow *window =
+        glfwCreateWindow(app->meta->window_width, app->meta->window_height, title, NULL, NULL);
     app->glfw_window = window;
     return TERRA_STATUS_SUCCESS;
 }
@@ -24,7 +24,7 @@ terra_status terrar_init_instance(terrar_app *app) {
     // Initialize Vulkan
 #ifndef NDEBUG
     log_debug("Checking validation layers support");
-    if (!terrar_check_validation_layer_support()) {
+    if (!terrar_check_validation_layer_support(app)) {
         log_error("Validation layers required but not supported");
         return TERRA_STATUS_FAILURE;
     }
@@ -82,7 +82,7 @@ terra_status terrar_create_ldevice(terrar_app *app) {
     log_debug("Creating logical device info");
     VkDeviceCreateInfo device_info =
         terrar_create_device_info(queue_infos, queue_count, &device_features,
-                                  TERRAR_DEVICE_EXTENSIONS, TERRAR_DEVICE_EXTENSION_TOTAL);
+                                  app->conf->device_extensions, app->conf->device_extensions_total);
     if (vkCreateDevice(app->vk_pdevice, &device_info, NULL, &app->vk_ldevice) != VK_SUCCESS) {
         log_error("Could not create logical device");
         return TERRA_STATUS_FAILURE;

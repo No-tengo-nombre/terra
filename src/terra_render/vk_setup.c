@@ -4,7 +4,6 @@
 
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
-#include <terrar/defaults.h>
 #include <terrar/vulkan.h>
 
 #include "vk_setup.h"
@@ -14,10 +13,10 @@ VkApplicationInfo terrar_create_application_info(terrar_app *app) {
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.apiVersion = VK_API_VERSION_1_3;
     app_info.applicationVersion =
-        VK_MAKE_API_VERSION(1, app->version_major, app->version_minor, app->version_patch);
+        VK_MAKE_API_VERSION(1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch);
     app_info.engineVersion = VK_MAKE_API_VERSION(
         1, TERRAR_ENGINE_VERSION_MAJOR, TERRAR_ENGINE_VERSION_MINOR, TERRAR_ENGINE_VERSION_PATCH);
-    app_info.pApplicationName = app->app_name;
+    app_info.pApplicationName = app->meta->app_name;
     app_info.pEngineName = "Terra";
     app_info.pNext = NULL;
     return app_info;
@@ -35,15 +34,15 @@ VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app, VkApplicationI
     instance_info.flags = 0;
     instance_info.pNext = NULL;
 #ifndef NDEBUG
-    instance_info.enabledLayerCount = TERRAR_VALIDATION_LAYER_TOTAL;
-    instance_info.ppEnabledLayerNames = TERRAR_VALIDATION_LAYERS;
+    instance_info.enabledLayerCount = app->conf->validation_layers_total;
+    instance_info.ppEnabledLayerNames = app->conf->validation_layers;
 #else
     instance_info.enabledLayerCount = 0;
 #endif
     return instance_info;
 }
 
-int terrar_check_validation_layer_support(void) {
+int terrar_check_validation_layer_support(terrar_app *app) {
     uint32_t layers;
     vkEnumerateInstanceLayerProperties(&layers, NULL);
     VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
@@ -52,10 +51,10 @@ int terrar_check_validation_layer_support(void) {
     }
     vkEnumerateInstanceLayerProperties(&layers, properties);
 
-    for (int i = 0; i < TERRAR_VALIDATION_LAYER_TOTAL; i++) {
+    for (int i = 0; i < app->conf->validation_layers_total; i++) {
         int found = 0;
         for (int j = 0; j < layers; j++) {
-            if (strcmp(TERRAR_VALIDATION_LAYERS[i], properties[j].layerName) == 0) {
+            if (strcmp(app->conf->validation_layers[i], properties[j].layerName) == 0) {
                 found = 1;
                 break;
             }
@@ -155,18 +154,19 @@ terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
 }
 
 // TODO: Implement swapchain choosing
-VkSurfaceFormatKHR terrar_choose_swapchain(terrar_swapchain_details *sc_details) {
+// VkSurfaceFormatKHR terrar_choose_swapchain(terrar_swapchain_details *sc_details) {
 
-}
+// }
 
-uint32_t terrar_rate_device(VkPhysicalDevice device, VkSurfaceKHR surface, terrar_queue *queue) {
+uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device, VkSurfaceKHR surface,
+                            terrar_queue *queue) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceFeatures feats;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceFeatures(device, &feats);
 
-    int extensions_supported = terrar_check_device_extensions(device, TERRAR_DEVICE_EXTENSIONS,
-                                                              TERRAR_DEVICE_EXTENSION_TOTAL);
+    int extensions_supported = terrar_check_device_extensions(device, app->conf->device_extensions,
+                                                              app->conf->device_extensions_total);
     int adequate_sc = 0;
     if (extensions_supported) {
         log_debug("Device '%s' supports all extensions", props.deviceName);
@@ -217,7 +217,7 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
         vkGetPhysicalDeviceProperties(devices[i], &props);
         log_info("Evaluating device '%s'", props.deviceName);
         device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
-        new_score = terrar_rate_device(devices[i], app->vk_surface, &device_queue);
+        new_score = terrar_rate_device(app, devices[i], app->vk_surface, &device_queue);
         if (score == -2) {
             device = devices[i];
             score = new_score;

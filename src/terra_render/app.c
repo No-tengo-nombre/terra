@@ -13,14 +13,15 @@ terrar_app_state terrar_state_default(void) {
 }
 
 terrar_app_metadata terrar_metadata_default(void) {
-    terrar_app_metadata meta;
-    meta.vmajor = 1;
-    meta.vminor = 0;
-    meta.vpatch = 0;
-    meta.app_name = "Terrar - Default application";
-    meta.window_title = NULL;
-    meta.window_width = 800;
-    meta.window_height = 600;
+    terrar_app_metadata meta = {
+        .vmajor = 1,
+        .vminor = 0,
+        .vpatch = 0,
+        .app_name = "Terrar - Default application",
+        .window_title = NULL,
+        .window_width = 800,
+        .window_height = 600,
+    };
     return meta;
 }
 
@@ -36,13 +37,14 @@ terrar_app_config terrar_config_default(void) {
 
 terrar_app terrar_app_new(void *start, void *loop, void *cleanup, terrar_app_metadata *meta,
                           terrar_app_config *conf) {
-    terrar_app app;
-    app.start = start;
-    app.loop = loop;
-    app.cleanup = cleanup;
-    app.state = terrar_state_default();
-    app.meta = meta;
-    app.conf = conf;
+    terrar_app app = {
+        .start = start,
+        .loop = loop,
+        .cleanup = cleanup,
+        .state = terrar_state_default(),
+        .meta = meta,
+        .conf = conf,
+    };
     return app;
 }
 

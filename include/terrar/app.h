@@ -8,9 +8,6 @@
 #define TERRAR_ENGINE_VERSION_MINOR 0
 #define TERRAR_ENGINE_VERSION_PATCH 0
 
-#define _TERRAR_MAX_LAYERS 256
-#define _TERRAR_MAX_EXTENSIONS 256
-
 /*
 PREFIXES
 --------
@@ -49,8 +46,8 @@ typedef struct terrar_app_metadata {
 typedef struct terrar_app_config {
     uint32_t validation_layers_total;
     uint32_t device_extensions_total;
-    const char *validation_layers[_TERRAR_MAX_LAYERS];
-    const char *device_extensions[_TERRAR_MAX_EXTENSIONS];
+    const char **validation_layers;
+    const char **device_extensions;
 } terrar_app_config;
 
 typedef struct terrar_app {
@@ -77,6 +74,7 @@ typedef struct terrar_app {
 
 terrar_app_state terrar_state_default(void);
 terrar_app_metadata terrar_metadata_default(void);
+terrar_app_config terrar_config_new(const char **validation_layers, const char **device_extensions, uint32_t validation_layers_total, uint32_t device_extensions_total);
 terrar_app_config terrar_config_default(void);
 
 terrar_app terrar_app_new(void *start, void *loop, void *cleanup, terrar_app_metadata *meta,

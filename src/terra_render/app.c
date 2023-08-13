@@ -8,6 +8,7 @@
 terrar_app_state terrar_state_default(void) {
     terrar_app_state s;
     s.i = 0;
+    s.should_close = 0;
     return s;
 }
 
@@ -79,7 +80,7 @@ terra_status terrar_app_run(terrar_app *app) {
     if (loop_status == TERRA_STATUS_FAILURE) {
         log_fatal("Application failed in loop");
         if (cleanup_status == TERRA_STATUS_FAILURE) {
-            log_fatal("could not perform cleanup");
+            log_fatal("Could not perform cleanup");
         }
         return TERRA_STATUS_FAILURE;
     }
@@ -105,4 +106,6 @@ terra_status terrar_app_cleanup(terrar_app *app) {
     return TERRA_STATUS_SUCCESS;
 }
 
-int terrar_app_should_close(terrar_app *app) { return glfwWindowShouldClose(app->glfw_window); }
+int terrar_app_should_close(terrar_app *app) {
+    return glfwWindowShouldClose(app->glfw_window) || app->state.should_close;
+}

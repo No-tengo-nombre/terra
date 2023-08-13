@@ -26,6 +26,7 @@ For devices
 
 typedef struct terrar_app_state {
     uint64_t i;
+    int should_close;
 } terrar_app_state;
 
 typedef struct terrar_queue {

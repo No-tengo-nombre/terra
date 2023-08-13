@@ -48,6 +48,10 @@ typedef struct terrar_app_config {
     uint32_t device_extensions_total;
     const char **validation_layers;
     const char **device_extensions;
+
+    VkFormat surface_format;
+    VkColorSpaceKHR color_space;
+    VkPresentModeKHR present_mode;
 } terrar_app_config;
 
 typedef struct terrar_app {

@@ -38,6 +38,7 @@ terrar_app_config terrar_config_new(const char **validation_layers, const char *
         .device_extensions = device_extensions,
         .surface_format = VK_FORMAT_B8G8R8_SRGB,
         .color_space = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+        .present_mode = VK_PRESENT_MODE_MAILBOX_KHR,
     };
     return conf;
 }

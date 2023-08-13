@@ -5,6 +5,7 @@
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 #include <terrar/vulkan.h>
+#include <terrau/math/clamp.h>
 
 #include "vk_setup.h"
 
@@ -153,10 +154,43 @@ terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
     return details;
 }
 
-// TODO: Implement swapchain choosing
-// VkSurfaceFormatKHR terrar_choose_swapchain(terrar_swapchain_details *sc_details) {
+VkSurfaceFormatKHR terrar_sc_choose_format(terrar_app *app, terrar_swapchain_details *sc_details) {
+    for (int i = 0; i < sc_details->format_count; i++) {
+        VkSurfaceFormatKHR f = sc_details->formats[i];
+        if (f.format == app->conf->surface_format && f.colorSpace == app->conf->color_space) {
+            return f;
+        }
+    }
+    log_warn("Desired surface format not found, defaulting to first");
+    return sc_details->formats[0];
+}
 
-// }
+VkPresentModeKHR terrar_sc_choose_present_mode(terrar_app *app,
+                                               terrar_swapchain_details *sc_details) {
+    for (int i = 0; i < sc_details->mode_count; i++) {
+        VkPresentModeKHR m = sc_details->modes[i];
+        if (m == app->conf->present_mode) {
+            return m;
+        }
+    }
+    log_warn("Desired present mode not found, defaulting to FIFO");
+    return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+VkExtent2D terrar_sc_choose_swap_extent(terrar_app *app, terrar_swapchain_details *sc_details) {
+    VkSurfaceCapabilitiesKHR c = sc_details->capabilities;
+    if (c.currentExtent.width != UINT32_MAX) {
+        return c.currentExtent;
+    } else {
+        int w, h;
+        glfwGetFramebufferSize(app->glfw_window, &w, &h);
+        VkExtent2D extent = {
+            terrau_clamp_u32((uint32_t)w, c.minImageExtent.width, c.maxImageExtent.width),
+            terrau_clamp_u32((uint32_t)h, c.minImageExtent.height, c.maxImageExtent.height),
+        };
+        return extent;
+    }
+}
 
 uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device, VkSurfaceKHR surface,
                             terrar_queue *queue) {

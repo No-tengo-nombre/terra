@@ -18,12 +18,13 @@ terra_status loop(void *app) {
 }
 
 int main(void) {
-  terrar_app_metadata meta = terrar_metadata_default();
+  terrar_app_metadata meta = terrar_app_metadata_default();
   meta.app_name = "Terra (example) - App creation";
 
-  terrar_app_config conf = terrar_config_default();
+  terrar_app_config conf = terrar_app_config_default();
 
-  terrar_app app = terrar_app_new(&start, &loop, NULL, &meta, &conf);
+  terrar_app app;
+  terrar_app_new(&start, &loop, NULL, &meta, &conf, &app);
   terra_status app_status = terrar_app_run(&app);
   switch (app_status) {
   case TERRA_STATUS_SUCCESS:

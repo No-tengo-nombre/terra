@@ -76,20 +76,22 @@ typedef struct terrar_app {
   VkSurfaceKHR vk_surface;
 } terrar_app;
 
-terrar_app_state terrar_state_default(void);
-terrar_app_metadata terrar_metadata_default(void);
-terrar_app_config terrar_config_new(const char **validation_layers,
-                                    const char **device_extensions,
-                                    uint32_t validation_layers_total,
-                                    uint32_t device_extensions_total);
-terrar_app_config terrar_config_default(void);
+terrar_app_state terrar_app_state_default(void);
+terrar_app_metadata terrar_app_metadata_default(void);
+terra_status terrar_app_config_new(const char **validation_layers,
+                                   const char **device_extensions,
+                                   uint32_t validation_layers_total,
+                                   uint32_t device_extensions_total,
+                                   terrar_app_config *out);
+terrar_app_config terrar_app_config_default(void);
 
-terrar_app terrar_app_new(void *start, void *loop, void *cleanup,
-                          terrar_app_metadata *meta, terrar_app_config *conf);
-terrar_app terrar_app_new_wstate(terrar_app_state state, void *start,
-                                 void *loop, void *cleanup,
-                                 terrar_app_metadata *meta,
-                                 terrar_app_config *conf);
+terra_status terrar_app_new(void *start, void *loop, void *cleanup,
+                            terrar_app_metadata *meta, terrar_app_config *conf,
+                            terrar_app *out);
+terra_status terrar_app_new_wstate(terrar_app_state state, void *start,
+                                   void *loop, void *cleanup,
+                                   terrar_app_metadata *meta,
+                                   terrar_app_config *conf, terrar_app *out);
 terra_status terrar_app_run(terrar_app *app);
 terra_status terrar_app_cleanup(terrar_app *app);
 

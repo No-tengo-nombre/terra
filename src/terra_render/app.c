@@ -8,14 +8,14 @@
 const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
 const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-terrar_app_state terrar_state_default(void) {
+terrar_app_state terrar_app_state_default(void) {
   terrar_app_state s;
   s.i = 0;
   s.should_close = 0;
   return s;
 }
 
-terrar_app_metadata terrar_metadata_default(void) {
+terrar_app_metadata terrar_app_metadata_default(void) {
   terrar_app_metadata meta = {
       .vmajor = 1,
       .vminor = 0,
@@ -28,10 +28,11 @@ terrar_app_metadata terrar_metadata_default(void) {
   return meta;
 }
 
-terrar_app_config terrar_config_new(const char **validation_layers,
-                                    const char **device_extensions,
-                                    uint32_t validation_layers_total,
-                                    uint32_t device_extensions_total) {
+terra_status terrar_app_config_new(const char **validation_layers,
+                                   const char **device_extensions,
+                                   uint32_t validation_layers_total,
+                                   uint32_t device_extensions_total,
+                                   terrar_app_config *out) {
   terrar_app_config conf = {
       .validation_layers_total = validation_layers_total,
       .device_extensions_total = device_extensions_total,
@@ -41,34 +42,39 @@ terrar_app_config terrar_config_new(const char **validation_layers,
       .color_space = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
       .present_mode = VK_PRESENT_MODE_MAILBOX_KHR,
   };
+  *out = conf;
+  return TERRA_STATUS_SUCCESS;
+}
+
+terrar_app_config terrar_app_config_default(void) {
+  terrar_app_config conf;
+  terrar_app_config_new(DEFAULT_VALIDATION_LAYERS, DEFAULT_DEVICE_EXTENSIONS, 1,
+                        1, &conf);
   return conf;
 }
 
-terrar_app_config terrar_config_default(void) {
-  return terrar_config_new(DEFAULT_VALIDATION_LAYERS, DEFAULT_DEVICE_EXTENSIONS,
-                           1, 1);
-}
-
-terrar_app terrar_app_new(void *start, void *loop, void *cleanup,
-                          terrar_app_metadata *meta, terrar_app_config *conf) {
+terra_status terrar_app_new(void *start, void *loop, void *cleanup,
+                            terrar_app_metadata *meta, terrar_app_config *conf,
+                            terrar_app *out) {
   terrar_app app = {
       .start = start,
       .loop = loop,
       .cleanup = cleanup,
-      .state = terrar_state_default(),
+      .state = terrar_app_state_default(),
       .meta = meta,
       .conf = conf,
   };
-  return app;
+  *out = app;
+  return TERRA_STATUS_SUCCESS;
 }
 
-terrar_app terrar_app_new_wstate(terrar_app_state state, void *start,
-                                 void *loop, void *cleanup,
-                                 terrar_app_metadata *meta,
-                                 terrar_app_config *conf) {
-  terrar_app app = terrar_app_new(start, loop, cleanup, meta, conf);
-  app.state = state;
-  return app;
+terra_status terrar_app_new_wstate(terrar_app_state state, void *start,
+                                   void *loop, void *cleanup,
+                                   terrar_app_metadata *meta,
+                                   terrar_app_config *conf, terrar_app *out) {
+  terrar_app_new(start, loop, cleanup, meta, conf, out);
+  out->state = state;
+  return TERRA_STATUS_SUCCESS;
 }
 
 terra_status terrar_app_run(terrar_app *app) {

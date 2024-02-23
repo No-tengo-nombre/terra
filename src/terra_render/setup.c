@@ -5,7 +5,7 @@
 
 #include "vk_setup.h"
 
-terra_status terrar_init_window(terrar_app *app) {
+terra_status terrar_setup_init_window(terrar_app *app) {
   logi_debug("Initializing GLFW and window");
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -20,7 +20,7 @@ terra_status terrar_init_window(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_init_instance(terrar_app *app) {
+terra_status terrar_setup_init_instance(terrar_app *app) {
   // Initialize Vulkan
 #ifndef NDEBUG
   logi_debug("Checking validation layers support");
@@ -42,7 +42,7 @@ terra_status terrar_init_instance(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_create_render_surface(terrar_app *app) {
+terra_status terrar_setup_create_render_surface(terrar_app *app) {
   logi_debug("Creating render surface");
   if (glfwCreateWindowSurface(app->vk_instance, app->glfw_window, NULL,
                               &app->vk_surface) != VK_SUCCESS) {
@@ -52,7 +52,7 @@ terra_status terrar_create_render_surface(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_choose_pdevice(terrar_app *app) {
+terra_status terrar_setup_choose_pdevice(terrar_app *app) {
   logi_debug("Choosing physical device");
   terrar_result result = terrar_get_physical_device(app);
   if (result.status == TERRA_STATUS_FAILURE) {
@@ -64,7 +64,7 @@ terra_status terrar_choose_pdevice(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_create_ldevice(terrar_app *app) {
+terra_status terrar_setup_create_ldevice(terrar_app *app) {
   logi_debug("Creating device queue info");
   float queue_prio = 1.0f;
   VkDeviceQueueCreateInfo queue_infos[2];
@@ -95,8 +95,10 @@ terra_status terrar_create_ldevice(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_retrieve_device_queue(terrar_app *app) {
-  logi_debug("Retrieving graphics queue");
+terra_status terrar_setup_retrieve_device_queue(terrar_app *app) {
+  logi_debug(
+      "Retrieving graphics queue, graphics family %i, presentation family %i",
+      app->vk_qinfo.gfamily, app->vk_qinfo.pfamily);
   vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.gfamily, 0, &app->vk_gqueue);
   vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.pfamily, 0, &app->vk_pqueue);
   return TERRA_STATUS_SUCCESS;

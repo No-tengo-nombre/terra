@@ -12,10 +12,17 @@ release_mode=0
 examples=0
 testing=0
 verbose=0
+python_install=0
 
-while getopts "visetrdwlG:R:P:" arg
+while getopts "hcxvisetrdwlpG:R:P:" arg
 do
     case "$arg" in
+        c)
+            sys/clean.sh
+            ;;
+        x)
+            params+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
+            ;;
         i)
             params+=" -DTERRA_INSTALL=ON"
             ;;
@@ -45,6 +52,9 @@ do
             ;;
         v)
             verbose=1
+            ;;
+        p)
+            python_install=1
             ;;
         G)
             force_generator="${OPTARG}"
@@ -82,7 +92,7 @@ elif [[ "${platform}" == "LINUX" ]]; then
 fi
 
 if [[ "${force_generator}" != "" ]]; then
-    generator=force_generator
+    generator=$force_generator
 fi
 
 echo -e "\n\nBuilding with parameters \x1b[32;20m'${params}'\x1b[0m"
@@ -112,8 +122,8 @@ fi
 if [[ "${example}" != "" ]]; then
     echo -e "\n\nRunning example '\x1b[32;20m${example}\x1b[0m'"
     if [ $release_mode -eq 1 ]; then
-        ./bin/examples/${example}
+        ./bin/ex.${example}
     else
-        ./bin/debug/examples/${example}
+        ./bin/debug/ex.${example}
     fi
 fi

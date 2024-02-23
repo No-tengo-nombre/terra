@@ -1,7 +1,7 @@
 #pragma once
 
-#include <terra/status.h>
 #include "app.h"
+#include <terra/status.h>
 
 terra_status terrar_init_window(terrar_app *);
 terra_status terrar_init_instance(terrar_app *);

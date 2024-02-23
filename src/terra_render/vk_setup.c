@@ -10,311 +10,333 @@
 #include "vk_setup.h"
 
 VkApplicationInfo terrar_create_application_info(terrar_app *app) {
-    VkApplicationInfo app_info;
-    app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.apiVersion = VK_API_VERSION_1_3;
-    app_info.applicationVersion =
-        VK_MAKE_API_VERSION(1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch);
-    app_info.engineVersion = VK_MAKE_API_VERSION(
-        1, TERRAR_ENGINE_VERSION_MAJOR, TERRAR_ENGINE_VERSION_MINOR, TERRAR_ENGINE_VERSION_PATCH);
-    app_info.pApplicationName = app->meta->app_name;
-    app_info.pEngineName = "Terra";
-    app_info.pNext = NULL;
-    return app_info;
+  VkApplicationInfo app_info;
+  app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+  app_info.apiVersion = VK_API_VERSION_1_3;
+  app_info.applicationVersion = VK_MAKE_API_VERSION(
+      1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch);
+  app_info.engineVersion = VK_MAKE_API_VERSION(1, TERRAR_ENGINE_VERSION_MAJOR,
+                                               TERRAR_ENGINE_VERSION_MINOR,
+                                               TERRAR_ENGINE_VERSION_PATCH);
+  app_info.pApplicationName = app->meta->app_name;
+  app_info.pEngineName = "Terra";
+  app_info.pNext = NULL;
+  return app_info;
 }
 
-VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app, VkApplicationInfo *app_info) {
-    VkInstanceCreateInfo instance_info;
-    uint32_t extension_count = 0;
-    const char **extensions;
-    extensions = glfwGetRequiredInstanceExtensions(&extension_count);
-    instance_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    instance_info.pApplicationInfo = app_info;
-    instance_info.enabledExtensionCount = extension_count;
-    instance_info.ppEnabledExtensionNames = extensions;
-    instance_info.flags = 0;
-    instance_info.pNext = NULL;
+VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app,
+                                                 VkApplicationInfo *app_info) {
+  VkInstanceCreateInfo instance_info;
+  uint32_t extension_count = 0;
+  const char **extensions;
+  extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+  instance_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  instance_info.pApplicationInfo = app_info;
+  instance_info.enabledExtensionCount = extension_count;
+  instance_info.ppEnabledExtensionNames = extensions;
+  instance_info.flags = 0;
+  instance_info.pNext = NULL;
 #ifndef NDEBUG
-    instance_info.enabledLayerCount = app->conf->validation_layers_total;
-    instance_info.ppEnabledLayerNames = app->conf->validation_layers;
+  instance_info.enabledLayerCount = app->conf->validation_layers_total;
+  instance_info.ppEnabledLayerNames = app->conf->validation_layers;
 #else
-    instance_info.enabledLayerCount = 0;
+  instance_info.enabledLayerCount = 0;
 #endif
-    return instance_info;
+  return instance_info;
 }
 
 int terrar_check_validation_layer_support(terrar_app *app) {
-    uint32_t layers;
-    vkEnumerateInstanceLayerProperties(&layers, NULL);
-    VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
-    if (properties == NULL) {
-        return 0;
-    }
-    vkEnumerateInstanceLayerProperties(&layers, properties);
+  uint32_t layers;
+  vkEnumerateInstanceLayerProperties(&layers, NULL);
+  VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
+  if (properties == NULL) {
+    return 0;
+  }
+  vkEnumerateInstanceLayerProperties(&layers, properties);
 
-    for (int i = 0; i < app->conf->validation_layers_total; i++) {
-        int found = 0;
-        for (int j = 0; j < layers; j++) {
-            if (strcmp(app->conf->validation_layers[i], properties[j].layerName) == 0) {
-                found = 1;
-                break;
-            }
-        }
-        if (!found) {
-            return 0;
-        }
+  for (int i = 0; i < app->conf->validation_layers_total; i++) {
+    int found = 0;
+    for (int j = 0; j < layers; j++) {
+      if (strcmp(app->conf->validation_layers[i], properties[j].layerName) ==
+          0) {
+        found = 1;
+        break;
+      }
     }
-    free(properties);
-    return 1;
+    if (!found) {
+      return 0;
+    }
+  }
+  free(properties);
+  return 1;
 }
 
-terrar_queue terrar_find_queue_families(VkPhysicalDevice device, VkSurfaceKHR surface) {
-    terrar_queue indices;
-    indices.gfound = 0;
-    indices.pfound = 0;
-    VkPhysicalDeviceProperties dev_props;
-    vkGetPhysicalDeviceProperties(device, &dev_props);
+terrar_queue terrar_find_queue_families(VkPhysicalDevice device,
+                                        VkSurfaceKHR surface) {
+  terrar_queue indices;
+  indices.gfound = 0;
+  indices.pfound = 0;
+  VkPhysicalDeviceProperties dev_props;
+  vkGetPhysicalDeviceProperties(device, &dev_props);
 
-    uint32_t count = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
-    VkQueueFamilyProperties *qprops = malloc(count * sizeof(VkQueueFamilyProperties));
-    if (qprops == NULL) {
-        return indices;
-    }
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
-
-    int pfound = 0;
-    for (int i = 0; i < count; i++) {
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &pfound);
-        unsigned char qflags_bin[5];
-        for (int b = 0; b < 4; b++) {
-            qflags_bin[b] = (qprops[i].queueFlags >> (3 - b)) & 1 ? '1' : '0';
-        }
-        qflags_bin[4] = '\0';
-        logi_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount, qflags_bin);
-        if (pfound) {
-            indices.pfamily = i;
-            indices.pfound = 1;
-        }
-        if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.gfamily = i;
-            indices.gfound = 1;
-        }
-    }
-    free(qprops);
+  uint32_t count = 0;
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
+  VkQueueFamilyProperties *qprops =
+      malloc(count * sizeof(VkQueueFamilyProperties));
+  if (qprops == NULL) {
     return indices;
+  }
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
+
+  int pfound = 0;
+  for (int i = 0; i < count; i++) {
+    vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &pfound);
+    unsigned char qflags_bin[5];
+    for (int b = 0; b < 4; b++) {
+      qflags_bin[b] = (qprops[i].queueFlags >> (3 - b)) & 1 ? '1' : '0';
+    }
+    qflags_bin[4] = '\0';
+    logi_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount,
+               qflags_bin);
+    if (pfound) {
+      indices.pfamily = i;
+      indices.pfound = 1;
+    }
+    if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+      indices.gfamily = i;
+      indices.gfound = 1;
+    }
+  }
+  free(qprops);
+  return indices;
 }
 
 int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
                                    size_t target_total) {
-    uint32_t ext_total;
-    vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
-    VkExtensionProperties *ext_props = malloc(ext_total * sizeof(VkExtensionProperties));
-    vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
+  uint32_t ext_total;
+  vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
+  VkExtensionProperties *ext_props =
+      malloc(ext_total * sizeof(VkExtensionProperties));
+  vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
 
-    int all_found = 1;
-    for (int i = 0; i < target_total; i++) {
-        int found = 0;
-        for (int j = 0; j < ext_total; j++) {
-            if (strcmp(target[i], ext_props[j].extensionName) == 0) {
-                found = 1;
-                break;
-            }
-        }
-        if (!found) {
-            logi_warn("Extension %s was not found", target[i]);
-            all_found = 0;
-            break;
-        }
-        logi_debug("Extension %s was found", target[i]);
+  int all_found = 1;
+  for (int i = 0; i < target_total; i++) {
+    int found = 0;
+    for (int j = 0; j < ext_total; j++) {
+      if (strcmp(target[i], ext_props[j].extensionName) == 0) {
+        found = 1;
+        break;
+      }
     }
+    if (!found) {
+      logi_warn("Extension %s was not found", target[i]);
+      all_found = 0;
+      break;
+    }
+    logi_debug("Extension %s was found", target[i]);
+  }
 
-    free(ext_props);
-    return all_found;
+  free(ext_props);
+  return all_found;
 }
 
 terrar_swapchain_details terrar_check_swapchain_support(VkPhysicalDevice device,
                                                         VkSurfaceKHR surface) {
-    logi_debug("Querying surface capabilities");
-    terrar_swapchain_details details;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+  logi_debug("Querying surface capabilities");
+  terrar_swapchain_details details;
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface,
+                                            &details.capabilities);
 
-    logi_debug("Querying surface formats");
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, NULL);
-    details.formats = malloc(details.format_count * sizeof(VkSurfaceFormatKHR));
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count, details.formats);
+  logi_debug("Querying surface formats");
+  vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count,
+                                       NULL);
+  details.formats = malloc(details.format_count * sizeof(VkSurfaceFormatKHR));
+  vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &details.format_count,
+                                       details.formats);
 
-    logi_debug("Querying surface present modes");
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, NULL);
-    details.modes = malloc(details.mode_count * sizeof(VkPresentModeKHR));
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &details.mode_count, details.modes);
+  logi_debug("Querying surface present modes");
+  vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface,
+                                            &details.mode_count, NULL);
+  details.modes = malloc(details.mode_count * sizeof(VkPresentModeKHR));
+  vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface,
+                                            &details.mode_count, details.modes);
 
-    free(details.formats);
-    free(details.modes);
-    return details;
+  free(details.formats);
+  free(details.modes);
+  return details;
 }
 
-VkSurfaceFormatKHR terrar_sc_choose_format(terrar_app *app, terrar_swapchain_details *sc_details) {
-    for (int i = 0; i < sc_details->format_count; i++) {
-        VkSurfaceFormatKHR f = sc_details->formats[i];
-        if (f.format == app->conf->surface_format && f.colorSpace == app->conf->color_space) {
-            return f;
-        }
+VkSurfaceFormatKHR
+terrar_sc_choose_format(terrar_app *app, terrar_swapchain_details *sc_details) {
+  for (int i = 0; i < sc_details->format_count; i++) {
+    VkSurfaceFormatKHR f = sc_details->formats[i];
+    if (f.format == app->conf->surface_format &&
+        f.colorSpace == app->conf->color_space) {
+      return f;
     }
-    logi_warn("Desired surface format not found, defaulting to first");
-    return sc_details->formats[0];
+  }
+  logi_warn("Desired surface format not found, defaulting to first");
+  return sc_details->formats[0];
 }
 
-VkPresentModeKHR terrar_sc_choose_present_mode(terrar_app *app,
-                                               terrar_swapchain_details *sc_details) {
-    for (int i = 0; i < sc_details->mode_count; i++) {
-        VkPresentModeKHR m = sc_details->modes[i];
-        if (m == app->conf->present_mode) {
-            return m;
-        }
+VkPresentModeKHR
+terrar_sc_choose_present_mode(terrar_app *app,
+                              terrar_swapchain_details *sc_details) {
+  for (int i = 0; i < sc_details->mode_count; i++) {
+    VkPresentModeKHR m = sc_details->modes[i];
+    if (m == app->conf->present_mode) {
+      return m;
     }
-    logi_warn("Desired present mode not found, defaulting to FIFO");
-    return VK_PRESENT_MODE_FIFO_KHR;
+  }
+  logi_warn("Desired present mode not found, defaulting to FIFO");
+  return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D terrar_sc_choose_swap_extent(terrar_app *app, terrar_swapchain_details *sc_details) {
-    VkSurfaceCapabilitiesKHR c = sc_details->capabilities;
-    if (c.currentExtent.width != UINT32_MAX) {
-        return c.currentExtent;
-    } else {
-        int w, h;
-        glfwGetFramebufferSize(app->glfw_window, &w, &h);
-        VkExtent2D extent = {
-            terrau_clamp_u32((uint32_t)w, c.minImageExtent.width, c.maxImageExtent.width),
-            terrau_clamp_u32((uint32_t)h, c.minImageExtent.height, c.maxImageExtent.height),
-        };
-        return extent;
-    }
+VkExtent2D terrar_sc_choose_swap_extent(terrar_app *app,
+                                        terrar_swapchain_details *sc_details) {
+  VkSurfaceCapabilitiesKHR c = sc_details->capabilities;
+  if (c.currentExtent.width != UINT32_MAX) {
+    return c.currentExtent;
+  } else {
+    int w, h;
+    glfwGetFramebufferSize(app->glfw_window, &w, &h);
+    VkExtent2D extent = {
+        terrau_clamp_u32((uint32_t)w, c.minImageExtent.width,
+                         c.maxImageExtent.width),
+        terrau_clamp_u32((uint32_t)h, c.minImageExtent.height,
+                         c.maxImageExtent.height),
+    };
+    return extent;
+  }
 }
 
-uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device, VkSurfaceKHR surface,
-                            terrar_queue *queue) {
-    VkPhysicalDeviceProperties props;
-    VkPhysicalDeviceFeatures feats;
-    vkGetPhysicalDeviceProperties(device, &props);
-    vkGetPhysicalDeviceFeatures(device, &feats);
+uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device,
+                            VkSurfaceKHR surface, terrar_queue *queue) {
+  VkPhysicalDeviceProperties props;
+  VkPhysicalDeviceFeatures feats;
+  vkGetPhysicalDeviceProperties(device, &props);
+  vkGetPhysicalDeviceFeatures(device, &feats);
 
-    int extensions_supported = terrar_check_device_extensions(device, app->conf->device_extensions,
-                                                              app->conf->device_extensions_total);
-    int adequate_sc = 0;
-    if (extensions_supported) {
-        logi_debug("Device '%s' supports all extensions", props.deviceName);
-        terrar_swapchain_details sc_details = terrar_check_swapchain_support(device, surface);
-        adequate_sc = (sc_details.format_count != 0) && (sc_details.mode_count != 0);
-        if (adequate_sc) {
-            logi_debug("Device '%s' has adequate swapchain", props.deviceName);
-        }
+  int extensions_supported = terrar_check_device_extensions(
+      device, app->conf->device_extensions, app->conf->device_extensions_total);
+  int adequate_sc = 0;
+  if (extensions_supported) {
+    logi_debug("Device '%s' supports all extensions", props.deviceName);
+    terrar_swapchain_details sc_details =
+        terrar_check_swapchain_support(device, surface);
+    adequate_sc =
+        (sc_details.format_count != 0) && (sc_details.mode_count != 0);
+    if (adequate_sc) {
+      logi_debug("Device '%s' has adequate swapchain", props.deviceName);
     }
+  }
 
-    if (!queue->gfound || !queue->pfound || !extensions_supported || !adequate_sc) {
-        logi_debug("Device '%s' not suitable", props.deviceName);
-        return -1;
-    }
+  if (!queue->gfound || !queue->pfound || !extensions_supported ||
+      !adequate_sc) {
+    logi_debug("Device '%s' not suitable", props.deviceName);
+    return -1;
+  }
 
-    uint32_t score = 0;
-    if (props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-        score += 1000;
-    }
-    score += props.limits.maxImageDimension2D;
-    logi_debug("Device '%s' score: %I32u", props.deviceName, score);
-    return score;
+  uint32_t score = 0;
+  if (props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+    score += 1000;
+  }
+  score += props.limits.maxImageDimension2D;
+  logi_debug("Device '%s' score: %I32u", props.deviceName, score);
+  return score;
 }
 
 terrar_result terrar_get_physical_device(terrar_app *app) {
-    terrar_result result;
-    VkPhysicalDevice device = VK_NULL_HANDLE;
-    terrar_queue device_queue;
-    uint32_t device_count = 0;
-    vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
-    if (device_count == 0) {
-        logi_error("Failed to find GPUs that support Vulkan");
-        result.status = TERRA_STATUS_FAILURE;
-        return result;
-    }
-    VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
-    if (devices == NULL) {
-        logi_error("Could not allocate enough memory for the devices");
-        result.status = TERRA_STATUS_FAILURE;
-        return result;
-    }
-    vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
-
-    int32_t score = -2;
-    int32_t new_score = 0;
-    for (int i = 0; i < device_count; i++) {
-        VkPhysicalDeviceProperties props;
-        vkGetPhysicalDeviceProperties(devices[i], &props);
-        logi_info("Evaluating device '%s'", props.deviceName);
-        device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
-        new_score = terrar_rate_device(app, devices[i], app->vk_surface, &device_queue);
-        if (score == -2) {
-            device = devices[i];
-            score = new_score;
-            continue;
-        }
-        if (new_score > score) {
-            device = devices[i];
-            score = new_score;
-        }
-    }
-    if (score == -1) {
-        logi_error("No devices are suitable for the application");
-        result.status = TERRA_STATUS_FAILURE;
-    } else {
-        result.status = TERRA_STATUS_SUCCESS;
-        result.value = device;
-        result.queue = device_queue;
-
-        VkPhysicalDeviceProperties props;
-        vkGetPhysicalDeviceProperties(device, &props);
-        logi_info("Using device %s", props.deviceName);
-    }
-    free(devices);
+  terrar_result result;
+  VkPhysicalDevice device = VK_NULL_HANDLE;
+  terrar_queue device_queue;
+  uint32_t device_count = 0;
+  vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
+  if (device_count == 0) {
+    logi_error("Failed to find GPUs that support Vulkan");
+    result.status = TERRA_STATUS_FAILURE;
     return result;
+  }
+  VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
+  if (devices == NULL) {
+    logi_error("Could not allocate enough memory for the devices");
+    result.status = TERRA_STATUS_FAILURE;
+    return result;
+  }
+  vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
+
+  int32_t score = -2;
+  int32_t new_score = 0;
+  for (int i = 0; i < device_count; i++) {
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(devices[i], &props);
+    logi_info("Evaluating device '%s'", props.deviceName);
+    device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
+    new_score =
+        terrar_rate_device(app, devices[i], app->vk_surface, &device_queue);
+    if (score == -2) {
+      device = devices[i];
+      score = new_score;
+      continue;
+    }
+    if (new_score > score) {
+      device = devices[i];
+      score = new_score;
+    }
+  }
+  if (score == -1) {
+    logi_error("No devices are suitable for the application");
+    result.status = TERRA_STATUS_FAILURE;
+  } else {
+    result.status = TERRA_STATUS_SUCCESS;
+    result.value = device;
+    result.queue = device_queue;
+
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(device, &props);
+    logi_info("Using device %s", props.deviceName);
+  }
+  free(devices);
+  return result;
 }
 
-VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t index, float *prio) {
-    VkDeviceQueueCreateInfo queue_info;
-    queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queue_info.queueCount = 1;
-    queue_info.queueFamilyIndex = index;
-    queue_info.pQueuePriorities = prio;
-    queue_info.pNext = NULL;
-    queue_info.flags = 0;
-    return queue_info;
+VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t index,
+                                                        float *prio) {
+  VkDeviceQueueCreateInfo queue_info;
+  queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  queue_info.queueCount = 1;
+  queue_info.queueFamilyIndex = index;
+  queue_info.pQueuePriorities = prio;
+  queue_info.pNext = NULL;
+  queue_info.flags = 0;
+  return queue_info;
 }
 
 VkPhysicalDeviceFeatures terrar_create_device_features(void) {
-    VkPhysicalDeviceFeatures device_features = {VK_FALSE};
-    device_features.geometryShader = VK_TRUE;
-    return device_features;
+  VkPhysicalDeviceFeatures device_features = {VK_FALSE};
+  device_features.geometryShader = VK_TRUE;
+  return device_features;
 }
 
-VkDeviceCreateInfo terrar_create_device_info(VkDeviceQueueCreateInfo *queue_info,
-                                             uint32_t queue_count,
-                                             VkPhysicalDeviceFeatures *device_features,
-                                             const char **device_extensions,
-                                             uint32_t device_extension_count) {
-    VkDeviceCreateInfo device_info;
-    device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    device_info.queueCreateInfoCount = 1;
-    device_info.pQueueCreateInfos = queue_info;
-    device_info.pEnabledFeatures = device_features;
+VkDeviceCreateInfo terrar_create_device_info(
+    VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
+    VkPhysicalDeviceFeatures *device_features, const char **device_extensions,
+    uint32_t device_extension_count) {
+  VkDeviceCreateInfo device_info;
+  device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  device_info.queueCreateInfoCount = 1;
+  device_info.pQueueCreateInfos = queue_info;
+  device_info.pEnabledFeatures = device_features;
 
-    device_info.pNext = NULL;
-    device_info.flags = 0;
+  device_info.pNext = NULL;
+  device_info.flags = 0;
 
-    // The validation checks are done, so it can be assumed that the requested features
-    // are available
-    device_info.enabledLayerCount = 0;
-    device_info.ppEnabledLayerNames = NULL;
+  // The validation checks are done, so it can be assumed that the requested
+  // features are available
+  device_info.enabledLayerCount = 0;
+  device_info.ppEnabledLayerNames = NULL;
 
-    device_info.enabledExtensionCount = device_extension_count;
-    device_info.ppEnabledExtensionNames = device_extensions;
-    return device_info;
+  device_info.enabledExtensionCount = device_extension_count;
+  device_info.ppEnabledExtensionNames = device_extensions;
+  return device_info;
 }

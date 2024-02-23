@@ -19,52 +19,52 @@ do
     case "$arg" in
         c)
             sys/clean.sh
-            ;;
+        ;;
         x)
             params+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
-            ;;
+        ;;
         i)
             params+=" -DTERRA_INSTALL=ON"
-            ;;
+        ;;
         s)
             params+=" -DBUILD_SHARED_LIBS=OFF"
-            ;;
+        ;;
         h)
             params+=" -DBUILD_SHARED_LIBS=ON"
-            ;;
+        ;;
         e)
             examples=1
-            ;;
+        ;;
         t)
             testing=1
-            ;;
+        ;;
         r)
             release_mode=1
-            ;;
+        ;;
         d)
             release_mode=0
-            ;;
+        ;;
         w)
             platform="WINDOWS"
-            ;;
+        ;;
         l)
             platform="LINUX"
-            ;;
+        ;;
         v)
             verbose=1
-            ;;
+        ;;
         p)
             python_install=1
-            ;;
+        ;;
         G)
             force_generator="${OPTARG}"
-            ;;
+        ;;
         R)
             example="${OPTARG}"
-            ;;
+        ;;
         P)
             platform="${OPTARG}"
-            ;;
+        ;;
     esac
 done
 
@@ -87,7 +87,7 @@ fi
 
 if [[ "${platform}" == "WINDOWS" ]]; then
     generator="Visual Studio 17 2022"
-elif [[ "${platform}" == "LINUX" ]]; then
+    elif [[ "${platform}" == "LINUX" ]]; then
     generator="Unix Makefiles"
 fi
 

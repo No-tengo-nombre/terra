@@ -11,10 +11,10 @@ do
     case "$arg" in
         C)
             config=$OPTARG
-            ;;
+        ;;
         v)
             params+=" --verbose"
-            ;;
+        ;;
     esac
 done
 

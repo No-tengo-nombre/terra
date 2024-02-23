@@ -1,2 +1,2 @@
 add_subdirectory(app_creation)
-add_subdirectory(raw_vulkan)
+add_subdirectory(triangle)

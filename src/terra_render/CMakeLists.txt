@@ -1,7 +1,9 @@
 file(GLOB RENDER_ROOT_SOURCE *.c)
 file(GLOB RENDER_ROOT_HEADER *.h)
+file(GLOB RENDER_VK_SOURCE vk/*.c)
+file(GLOB RENDER_VK_HEADER vk/*.h)
 
-add_library(${PROJECT_RENDER_NAME} ${RENDER_ROOT_HEADER} ${RENDER_ROOT_SOURCE})
+add_library(${PROJECT_RENDER_NAME} ${RENDER_ROOT_HEADER} ${RENDER_ROOT_SOURCE} ${RENDER_VK_HEADER} ${RENDER_VK_SOURCE})
 
 target_link_libraries(${PROJECT_RENDER_NAME} PUBLIC ${PROJECT_UTILS_NAME} glfw
                                                     cglm ${Vulkan_LIBRARIES})

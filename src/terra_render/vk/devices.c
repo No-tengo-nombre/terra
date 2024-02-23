@@ -9,7 +9,7 @@
 #include <terrar/vulkan.h>
 #include <terrau/math/clamp.h>
 
-#include "vk_setup.h"
+#include <terrar/vk/devices.h>
 
 terra_status terrar_vk_create_application_info(terrar_app *app,
                                                VkApplicationInfo *out) {

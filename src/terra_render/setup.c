@@ -2,9 +2,8 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/setup.h>
+#include <terrar/vk/devices.h>
 #include <terrar/vulkan.h>
-
-#include "vk_setup.h"
 
 terra_status terrar_setup_init_window(terrar_app *app) {
   logi_debug("Initializing GLFW and window");

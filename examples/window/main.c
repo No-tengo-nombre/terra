@@ -35,7 +35,7 @@ terra_status cleanup(terrar_app *app) {
 
 int main(void) {
   terrar_app_metadata meta = terrar_metadata_default();
-  meta.app_name = "Terra (example) - Triangle";
+  meta.app_name = "Terra (example) - Window";
 
   terrar_app_config conf = terrar_config_default();
 

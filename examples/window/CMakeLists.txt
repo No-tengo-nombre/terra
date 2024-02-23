@@ -1,7 +1,7 @@
 file(GLOB EXAMPLE_ROOT_SOURCE *.c)
 file(GLOB EXAMPLE_ROOT_HEADER *.h)
 
-set(EXAMPLE_NAME ex.triangle)
+set(EXAMPLE_NAME ex.window)
 
 add_executable(${EXAMPLE_NAME} ${EXAMPLE_ROOT_HEADER} ${EXAMPLE_ROOT_SOURCE})
 

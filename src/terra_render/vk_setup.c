@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <terra/status.h>
+#include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 #include <terrar/vulkan.h>
@@ -9,43 +11,42 @@
 
 #include "vk_setup.h"
 
-VkApplicationInfo terrar_create_application_info(terrar_app *app) {
-  VkApplicationInfo app_info;
-  app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  app_info.apiVersion = VK_API_VERSION_1_3;
-  app_info.applicationVersion = VK_MAKE_API_VERSION(
+terra_status terrar_vk_create_application_info(terrar_app *app,
+                                               VkApplicationInfo *out) {
+  out->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+  out->apiVersion = VK_API_VERSION_1_3;
+  out->applicationVersion = VK_MAKE_API_VERSION(
       1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch);
-  app_info.engineVersion = VK_MAKE_API_VERSION(1, TERRAR_ENGINE_VERSION_MAJOR,
-                                               TERRAR_ENGINE_VERSION_MINOR,
-                                               TERRAR_ENGINE_VERSION_PATCH);
-  app_info.pApplicationName = app->meta->app_name;
-  app_info.pEngineName = "Terra";
-  app_info.pNext = NULL;
-  return app_info;
+  out->engineVersion = VK_MAKE_API_VERSION(1, TERRAR_ENGINE_VERSION_MAJOR,
+                                           TERRAR_ENGINE_VERSION_MINOR,
+                                           TERRAR_ENGINE_VERSION_PATCH);
+  out->pApplicationName = app->meta->app_name;
+  out->pEngineName = "Terra";
+  out->pNext = NULL;
+  return TERRA_STATUS_SUCCESS;
 }
 
-VkInstanceCreateInfo terrar_create_instance_info(terrar_app *app,
-                                                 VkApplicationInfo *app_info) {
-  VkInstanceCreateInfo instance_info;
+terra_status terrar_vk_create_instance_info(terrar_app *app,
+                                            VkApplicationInfo *app_info,
+                                            VkInstanceCreateInfo *out) {
   uint32_t extension_count = 0;
-  const char **extensions;
-  extensions = glfwGetRequiredInstanceExtensions(&extension_count);
-  instance_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  instance_info.pApplicationInfo = app_info;
-  instance_info.enabledExtensionCount = extension_count;
-  instance_info.ppEnabledExtensionNames = extensions;
-  instance_info.flags = 0;
-  instance_info.pNext = NULL;
+  const char **extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+  out->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  out->pApplicationInfo = app_info;
+  out->enabledExtensionCount = extension_count;
+  out->ppEnabledExtensionNames = extensions;
+  out->flags = 0;
+  out->pNext = NULL;
 #ifndef NDEBUG
-  instance_info.enabledLayerCount = app->conf->validation_layers_total;
-  instance_info.ppEnabledLayerNames = app->conf->validation_layers;
+  out->enabledLayerCount = app->conf->validation_layers_total;
+  out->ppEnabledLayerNames = app->conf->validation_layers;
 #else
-  instance_info.enabledLayerCount = 0;
+  out->enabledLayerCount = 0;
 #endif
-  return instance_info;
+  return TERRA_STATUS_SUCCESS;
 }
 
-int terrar_check_validation_layer_support(terrar_app *app) {
+int terrar_vk_check_validation_layer_support(terrar_app *app) {
   uint32_t layers;
   vkEnumerateInstanceLayerProperties(&layers, NULL);
   VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
@@ -71,11 +72,11 @@ int terrar_check_validation_layer_support(terrar_app *app) {
   return 1;
 }
 
-terrar_queue terrar_find_queue_families(VkPhysicalDevice device,
-                                        VkSurfaceKHR surface) {
-  terrar_queue indices;
-  indices.gfound = 0;
-  indices.pfound = 0;
+terra_status terrar_vk_find_queue_families(VkPhysicalDevice device,
+                                           VkSurfaceKHR surface,
+                                           terrar_queue *out) {
+  out->gfound = 0;
+  out->pfound = 0;
   VkPhysicalDeviceProperties dev_props;
   vkGetPhysicalDeviceProperties(device, &dev_props);
 
@@ -84,7 +85,7 @@ terrar_queue terrar_find_queue_families(VkPhysicalDevice device,
   VkQueueFamilyProperties *qprops =
       malloc(count * sizeof(VkQueueFamilyProperties));
   if (qprops == NULL) {
-    return indices;
+    return TERRA_STATUS_FAILURE;
   }
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
 
@@ -99,16 +100,16 @@ terrar_queue terrar_find_queue_families(VkPhysicalDevice device,
     logi_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount,
                qflags_bin);
     if (pfound) {
-      indices.pfamily = i;
-      indices.pfound = 1;
+      out->pfamily = i;
+      out->pfound = 1;
     }
     if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-      indices.gfamily = i;
-      indices.gfound = 1;
+      out->gfamily = i;
+      out->gfound = 1;
     }
   }
   free(qprops);
-  return indices;
+  return TERRA_STATUS_SUCCESS;
 }
 
 int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
@@ -210,8 +211,9 @@ VkExtent2D terrar_sc_choose_swap_extent(terrar_app *app,
   }
 }
 
-uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device,
-                            VkSurfaceKHR surface, terrar_queue *queue) {
+terra_status terrar_vk_rate_device(terrar_app *app, VkPhysicalDevice device,
+                                   VkSurfaceKHR surface, terrar_queue *queue,
+                                   uint32_t *out) {
   VkPhysicalDeviceProperties props;
   VkPhysicalDeviceFeatures feats;
   vkGetPhysicalDeviceProperties(device, &props);
@@ -234,7 +236,7 @@ uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device,
   if (!queue->gfound || !queue->pfound || !extensions_supported ||
       !adequate_sc) {
     logi_debug("Device '%s' not suitable", props.deviceName);
-    return -1;
+    return TERRA_STATUS_FAILURE;
   }
 
   uint32_t score = 0;
@@ -243,25 +245,24 @@ uint32_t terrar_rate_device(terrar_app *app, VkPhysicalDevice device,
   }
   score += props.limits.maxImageDimension2D;
   logi_debug("Device '%s' score: %I32u", props.deviceName, score);
-  return score;
+  *out = score;
+  return TERRA_STATUS_SUCCESS;
 }
 
-terrar_result terrar_get_physical_device(terrar_app *app) {
-  terrar_result result;
+terra_status terrar_vk_get_physical_device(terrar_app *app,
+                                           terrar_result *out) {
   VkPhysicalDevice device = VK_NULL_HANDLE;
   terrar_queue device_queue;
   uint32_t device_count = 0;
   vkEnumeratePhysicalDevices(app->vk_instance, &device_count, NULL);
   if (device_count == 0) {
     logi_error("Failed to find GPUs that support Vulkan");
-    result.status = TERRA_STATUS_FAILURE;
-    return result;
+    return TERRA_STATUS_FAILURE;
   }
   VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
   if (devices == NULL) {
     logi_error("Could not allocate enough memory for the devices");
-    result.status = TERRA_STATUS_FAILURE;
-    return result;
+    return TERRA_STATUS_FAILURE;
   }
   vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
 
@@ -271,9 +272,12 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(devices[i], &props);
     logi_info("Evaluating device '%s'", props.deviceName);
-    device_queue = terrar_find_queue_families(devices[i], app->vk_surface);
-    new_score =
-        terrar_rate_device(app, devices[i], app->vk_surface, &device_queue);
+    TERRA_CALL_I(terrar_vk_find_queue_families(devices[i], app->vk_surface,
+                                               &device_queue),
+                 "Failed creating device queue");
+    TERRA_CALL_I(terrar_vk_rate_device(app, devices[i], app->vk_surface,
+                                       &device_queue, &new_score),
+                 "Failed rating device");
     if (score == -2) {
       device = devices[i];
       score = new_score;
@@ -286,57 +290,53 @@ terrar_result terrar_get_physical_device(terrar_app *app) {
   }
   if (score == -1) {
     logi_error("No devices are suitable for the application");
-    result.status = TERRA_STATUS_FAILURE;
+    return TERRA_STATUS_FAILURE;
   } else {
-    result.status = TERRA_STATUS_SUCCESS;
-    result.value = device;
-    result.queue = device_queue;
+    out->value = device;
+    out->queue = device_queue;
 
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(device, &props);
     logi_info("Using device %s", props.deviceName);
   }
   free(devices);
-  return result;
+  return TERRA_STATUS_SUCCESS;
 }
 
-VkDeviceQueueCreateInfo terrar_create_device_queue_info(uint32_t index,
-                                                        float *prio) {
-  VkDeviceQueueCreateInfo queue_info;
-  queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  queue_info.queueCount = 1;
-  queue_info.queueFamilyIndex = index;
-  queue_info.pQueuePriorities = prio;
-  queue_info.pNext = NULL;
-  queue_info.flags = 0;
-  return queue_info;
+terra_status terrar_vk_create_device_queue_info(uint32_t index, float *prio,
+                                                VkDeviceQueueCreateInfo *out) {
+  out->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+  out->queueCount = 1;
+  out->queueFamilyIndex = index;
+  out->pQueuePriorities = prio;
+  out->pNext = NULL;
+  out->flags = 0;
+  return TERRA_STATUS_SUCCESS;
 }
 
-VkPhysicalDeviceFeatures terrar_create_device_features(void) {
-  VkPhysicalDeviceFeatures device_features = {VK_FALSE};
-  device_features.geometryShader = VK_TRUE;
-  return device_features;
+terra_status terrar_vk_create_device_features(VkPhysicalDeviceFeatures *out) {
+  out->geometryShader = VK_TRUE;
+  return TERRA_STATUS_SUCCESS;
 }
 
-VkDeviceCreateInfo terrar_create_device_info(
+terra_status terrar_vk_create_device_info(
     VkDeviceQueueCreateInfo *queue_info, uint32_t queue_count,
     VkPhysicalDeviceFeatures *device_features, const char **device_extensions,
-    uint32_t device_extension_count) {
-  VkDeviceCreateInfo device_info;
-  device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  device_info.queueCreateInfoCount = 1;
-  device_info.pQueueCreateInfos = queue_info;
-  device_info.pEnabledFeatures = device_features;
+    uint32_t device_extension_count, VkDeviceCreateInfo *out) {
+  out->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  out->queueCreateInfoCount = 1;
+  out->pQueueCreateInfos = queue_info;
+  out->pEnabledFeatures = device_features;
 
-  device_info.pNext = NULL;
-  device_info.flags = 0;
+  out->pNext = NULL;
+  out->flags = 0;
 
   // The validation checks are done, so it can be assumed that the requested
   // features are available
-  device_info.enabledLayerCount = 0;
-  device_info.ppEnabledLayerNames = NULL;
+  out->enabledLayerCount = 0;
+  out->ppEnabledLayerNames = NULL;
 
-  device_info.enabledExtensionCount = device_extension_count;
-  device_info.ppEnabledExtensionNames = device_extensions;
-  return device_info;
+  out->enabledExtensionCount = device_extension_count;
+  out->ppEnabledExtensionNames = device_extensions;
+  return TERRA_STATUS_SUCCESS;
 }

@@ -3,15 +3,14 @@
 #include <terra/status.h>
 #include <terrar/app.h>
 
-terra_status start(void *app) {
+terra_status start(terrar_app *app) {
   printf("Starting application\n");
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status loop(void *app) {
-  terrar_app *app_p = (terrar_app *)app;
-  printf("Iteration %I64u\n", app_p->state.i);
-  if (app_p->state.i >= 10) {
+terra_status loop(terrar_app *app) {
+  printf("Iteration %I64u\n", app->state.i);
+  if (app->state.i >= 10) {
     return TERRA_STATUS_EXIT;
   }
   return TERRA_STATUS_SUCCESS;

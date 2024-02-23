@@ -73,13 +73,17 @@ terra_status terrar_setup_create_ldevice(terrar_app *app) {
   uint32_t queue_count = 1;
   // TODO: Figure out a better way to store the queue info
   if (app->vk_qinfo.gfamily == app->vk_qinfo.pfamily) {
+    logi_info(
+        "Creating single device queue info for graphics and presentation");
     TERRA_CALL_I(terrar_vk_create_device_queue_info(app->vk_qinfo.gfamily,
                                                     &queue_prio, queue_infos),
                  "Failed creating device queue info");
   } else {
+    logi_info("Creating device queue info for graphics");
     TERRA_CALL_I(terrar_vk_create_device_queue_info(app->vk_qinfo.gfamily,
                                                     &queue_prio, queue_infos),
                  "Failed creating device graphics queue info");
+    logi_info("Creating device queue info for presentation");
     TERRA_CALL_I(terrar_vk_create_device_queue_info(
                      app->vk_qinfo.pfamily, &queue_prio, queue_infos + 1),
                  "Failed creating device presentation queue info");

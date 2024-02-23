@@ -102,10 +102,12 @@ terra_status terrar_vk_find_queue_families(VkPhysicalDevice device,
     if (pfound) {
       out->pfamily = i;
       out->pfound = 1;
+      logi_debug("Setting %i as processing queue", i);
     }
     if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
       out->gfamily = i;
       out->gfound = 1;
+      logi_debug("Setting %i as graphics queue", i);
     }
   }
   free(qprops);
@@ -324,7 +326,7 @@ terra_status terrar_vk_create_device_info(
     VkPhysicalDeviceFeatures *device_features, const char **device_extensions,
     uint32_t device_extension_count, VkDeviceCreateInfo *out) {
   out->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  out->queueCreateInfoCount = 1;
+  out->queueCreateInfoCount = queue_count;
   out->pQueueCreateInfos = queue_info;
   out->pEnabledFeatures = device_features;
 

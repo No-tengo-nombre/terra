@@ -1,18 +1,21 @@
 #include <terrar/app.h>
 #include <terrar/setup.h>
+#include <terrar/vk/swapchain.h>
 #include <terrau/log.h>
-
-#define _CALL(x)                                                               \
-  if (x == TERRA_STATUS_FAILURE)                                               \
-  return TERRA_STATUS_FAILURE
+#include <terrau/macros.h>
 
 terra_status_t start(terrar_app_t *app) {
-  _CALL(terrar_init_window(app));
-  _CALL(terrar_init_instance(app));
-  _CALL(terrar_create_render_surface(app));
-  _CALL(terrar_choose_pdevice(app));
-  _CALL(terrar_create_ldevice(app));
-  _CALL(terrar_retrieve_device_queue(app));
+  TERRA_CALL(terrar_init_window(app), "Failed initializing window");
+  TERRA_CALL(terrar_init_instance(app), "Failed initializing instance");
+  TERRA_CALL(terrar_create_render_surface(app),
+             "Failed creating render surface");
+  TERRA_CALL(terrar_choose_pdevice(app), "Failed choosing physical device");
+  TERRA_CALL(terrar_create_ldevice(app), "Failed creating logical device");
+  TERRA_CALL(terrar_retrieve_device_queue(app),
+             "Failed retrieving device queue");
+  TERRA_CALL(
+      terrar_vk_create_sc(app, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, NULL),
+      "Failed creating swapchain");
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -29,7 +32,7 @@ terra_status_t loop(terrar_app_t *app) {
 }
 
 terra_status_t cleanup(terrar_app_t *app) {
-  _CALL(terrar_app_cleanup(app));
+  TERRA_CALL(terrar_app_cleanup(app), "Failed cleanup");
   return TERRA_STATUS_SUCCESS;
 }
 

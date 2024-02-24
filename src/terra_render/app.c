@@ -121,6 +121,7 @@ terra_status_t terrar_app_run(terrar_app_t *app) {
 
 terra_status_t terrar_app_cleanup(terrar_app_t *app) {
   logi_debug("Cleaning Vulkan objects");
+  vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
   vkDestroyDevice(app->vk_ldevice, NULL);
 

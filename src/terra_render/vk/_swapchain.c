@@ -79,11 +79,13 @@ _terrar_vk_choose_sc_sharing_mode(terrar_app_t *app,
   if (app->vk_qinfo.gfamily != app->vk_qinfo.pfamily) {
     // TODO: Implement ownership when using different graphics and present
     // queues
+    logi_debug("Using concurrent sharing mode with two queues");
     sc_info->imageSharingMode = VK_SHARING_MODE_CONCURRENT;
     sc_info->queueFamilyIndexCount = 2;
     // This relies on struct alignment, so I might change it
     sc_info->pQueueFamilyIndices = &app->vk_qinfo.gfamily;
   } else {
+    logi_debug("Using exclusive sharing mode with single queue");
     sc_info->imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     sc_info->queueFamilyIndexCount = 0;
     sc_info->pQueueFamilyIndices = NULL;

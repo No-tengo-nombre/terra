@@ -5,7 +5,7 @@
 #include <terrar/vk/devices.h>
 #include <terrar/vulkan.h>
 
-terra_status terrar_init_window(terrar_app *app) {
+terra_status_t terrar_init_window(terrar_app_t *app) {
   logi_debug("Initializing GLFW and window");
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -20,7 +20,7 @@ terra_status terrar_init_window(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_init_instance(terrar_app *app) {
+terra_status_t terrar_init_instance(terrar_app_t *app) {
   // Initialize Vulkan
 #ifndef NDEBUG
   logi_debug("Checking validation layers support");
@@ -45,7 +45,7 @@ terra_status terrar_init_instance(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_create_render_surface(terrar_app *app) {
+terra_status_t terrar_create_render_surface(terrar_app_t *app) {
   logi_debug("Creating render surface");
   if (glfwCreateWindowSurface(app->vk_instance, app->glfw_window, NULL,
                               &app->vk_surface) != VK_SUCCESS) {
@@ -55,9 +55,9 @@ terra_status terrar_create_render_surface(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_choose_pdevice(terrar_app *app) {
+terra_status_t terrar_choose_pdevice(terrar_app_t *app) {
   logi_debug("Choosing physical device");
-  terrar_result result;
+  terrar_result_t result;
   TERRA_CALL_I(terrar_vk_get_physical_device(app, &result),
                "Failed getting physical device");
   app->vk_pdevice = result.value;
@@ -65,7 +65,7 @@ terra_status terrar_choose_pdevice(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_create_ldevice(terrar_app *app) {
+terra_status_t terrar_create_ldevice(terrar_app_t *app) {
   logi_debug("Creating device queue info");
   float queue_prio = 1.0f;
   VkDeviceQueueCreateInfo queue_infos[2];
@@ -108,7 +108,7 @@ terra_status terrar_create_ldevice(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_retrieve_device_queue(terrar_app *app) {
+terra_status_t terrar_retrieve_device_queue(terrar_app_t *app) {
   logi_debug(
       "Retrieving graphics queue, graphics family %i, presentation family %i",
       app->vk_qinfo.gfamily, app->vk_qinfo.pfamily);

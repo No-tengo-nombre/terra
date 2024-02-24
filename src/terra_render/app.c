@@ -8,15 +8,15 @@
 const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
 const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-terrar_app_state terrar_app_state_default(void) {
-  terrar_app_state s;
+terrar_app_state_t terrar_app_state_default(void) {
+  terrar_app_state_t s;
   s.i = 0;
   s.should_close = 0;
   return s;
 }
 
-terrar_app_metadata terrar_app_metadata_default(void) {
-  terrar_app_metadata meta = {
+terrar_app_metadata_t terrar_app_metadata_default(void) {
+  terrar_app_metadata_t meta = {
       .vmajor = 1,
       .vminor = 0,
       .vpatch = 0,
@@ -28,12 +28,12 @@ terrar_app_metadata terrar_app_metadata_default(void) {
   return meta;
 }
 
-terra_status terrar_app_config_new(const char **validation_layers,
+terra_status_t terrar_app_config_new(const char **validation_layers,
                                    const char **device_extensions,
                                    uint32_t validation_layers_total,
                                    uint32_t device_extensions_total,
-                                   terrar_app_config *out) {
-  terrar_app_config conf = {
+                                   terrar_app_config_t *out) {
+  terrar_app_config_t conf = {
       .validation_layers_total = validation_layers_total,
       .device_extensions_total = device_extensions_total,
       .validation_layers = validation_layers,
@@ -46,17 +46,17 @@ terra_status terrar_app_config_new(const char **validation_layers,
   return TERRA_STATUS_SUCCESS;
 }
 
-terrar_app_config terrar_app_config_default(void) {
-  terrar_app_config conf;
+terrar_app_config_t terrar_app_config_default(void) {
+  terrar_app_config_t conf;
   terrar_app_config_new(DEFAULT_VALIDATION_LAYERS, DEFAULT_DEVICE_EXTENSIONS, 1,
                         1, &conf);
   return conf;
 }
 
-terra_status terrar_app_new(void *start, void *loop, void *cleanup,
-                            terrar_app_metadata *meta, terrar_app_config *conf,
-                            terrar_app *out) {
-  terrar_app app = {
+terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
+                            terrar_app_metadata_t *meta, terrar_app_config_t *conf,
+                            terrar_app_t *out) {
+  terrar_app_t app = {
       .start = start,
       .loop = loop,
       .cleanup = cleanup,
@@ -68,20 +68,20 @@ terra_status terrar_app_new(void *start, void *loop, void *cleanup,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_app_new_wstate(terrar_app_state state, void *start,
+terra_status_t terrar_app_new_wstate(terrar_app_state_t state, void *start,
                                    void *loop, void *cleanup,
-                                   terrar_app_metadata *meta,
-                                   terrar_app_config *conf, terrar_app *out) {
+                                   terrar_app_metadata_t *meta,
+                                   terrar_app_config_t *conf, terrar_app_t *out) {
   terrar_app_new(start, loop, cleanup, meta, conf, out);
   out->state = state;
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_app_run(terrar_app *app) {
+terra_status_t terrar_app_run(terrar_app_t *app) {
   logi_info("Application start");
-  terra_status start_status = app->start(app);
-  terra_status loop_status = TERRA_STATUS_SUCCESS;
-  terra_status cleanup_status = TERRA_STATUS_SUCCESS;
+  terra_status_t start_status = app->start(app);
+  terra_status_t loop_status = TERRA_STATUS_SUCCESS;
+  terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;
   if (start_status == TERRA_STATUS_EXIT) {
     return TERRA_STATUS_SUCCESS;
   }
@@ -115,7 +115,7 @@ terra_status terrar_app_run(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_app_cleanup(terrar_app *app) {
+terra_status_t terrar_app_cleanup(terrar_app_t *app) {
   logi_debug("Cleaning Vulkan objects");
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
   vkDestroyDevice(app->vk_ldevice, NULL);
@@ -130,6 +130,6 @@ terra_status terrar_app_cleanup(terrar_app *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-int terrar_app_should_close(terrar_app *app) {
+int terrar_app_should_close(terrar_app_t *app) {
   return glfwWindowShouldClose(app->glfw_window) || app->state.should_close;
 }

@@ -3,12 +3,12 @@
 #include <terra/status.h>
 #include <terrar/app.h>
 
-terra_status start(terrar_app *app) {
+terra_status_t start(terrar_app_t *app) {
   printf("Starting application\n");
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status loop(terrar_app *app) {
+terra_status_t loop(terrar_app_t *app) {
   printf("Iteration %I64u\n", app->state.i);
   if (app->state.i >= 10) {
     return TERRA_STATUS_EXIT;
@@ -17,14 +17,14 @@ terra_status loop(terrar_app *app) {
 }
 
 int main(void) {
-  terrar_app_metadata meta = terrar_app_metadata_default();
+  terrar_app_metadata_t meta = terrar_app_metadata_default();
   meta.app_name = "Terra (example) - App creation";
 
-  terrar_app_config conf = terrar_app_config_default();
+  terrar_app_config_t conf = terrar_app_config_default();
 
-  terrar_app app;
+  terrar_app_t app;
   terrar_app_new(&start, &loop, NULL, &meta, &conf, &app);
-  terra_status app_status = terrar_app_run(&app);
+  terra_status_t app_status = terrar_app_run(&app);
   switch (app_status) {
   case TERRA_STATUS_SUCCESS:
     printf("App finished succesfully\n");

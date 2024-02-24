@@ -5,9 +5,9 @@
 #include <terrar/app.h>
 #include <terrar/vk/swapchain.h>
 
-terra_status terrar_vk_check_sc_support(VkPhysicalDevice device,
+terra_status_t terrar_vk_check_sc_support(VkPhysicalDevice device,
                                         VkSurfaceKHR surface,
-                                        terrar_swapchain_details *out) {
+                                        terrar_vk_sc_details_t *out) {
   logi_debug("Querying surface capabilities");
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface,
                                             &out->capabilities);
@@ -39,8 +39,8 @@ terra_status terrar_vk_check_sc_support(VkPhysicalDevice device,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_vk_choose_sc_format(terrar_app *app,
-                                        terrar_swapchain_details *sc_details,
+terra_status_t terrar_vk_choose_sc_format(terrar_app_t *app,
+                                        terrar_vk_sc_details_t *sc_details,
                                         VkSurfaceFormatKHR *out) {
   for (int i = 0; i < sc_details->format_count; i++) {
     VkSurfaceFormatKHR f = sc_details->formats[i];
@@ -55,9 +55,9 @@ terra_status terrar_vk_choose_sc_format(terrar_app *app,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status
-terrar_vk_choose_sc_present_mode(terrar_app *app,
-                                 terrar_swapchain_details *sc_details,
+terra_status_t
+terrar_vk_choose_sc_present_mode(terrar_app_t *app,
+                                 terrar_vk_sc_details_t *sc_details,
                                  VkPresentModeKHR *out) {
   for (int i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
@@ -71,8 +71,8 @@ terrar_vk_choose_sc_present_mode(terrar_app *app,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status terrar_vk_choose_sc_swap_extent(
-    terrar_app *app, terrar_swapchain_details *sc_details, VkExtent2D *out) {
+terra_status_t terrar_vk_choose_sc_swap_extent(
+    terrar_app_t *app, terrar_vk_sc_details_t *sc_details, VkExtent2D *out) {
   VkSurfaceCapabilitiesKHR c = sc_details->capabilities;
   if (c.currentExtent.width != UINT32_MAX) {
     *out = c.currentExtent;

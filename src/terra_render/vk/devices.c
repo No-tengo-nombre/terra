@@ -160,6 +160,8 @@ terra_status_t terrar_vk_rate_device(terrar_app_t *app, VkPhysicalDevice device,
     terrar_vk_sc_details_t sc_details;
     TERRA_CALL_I(terrar_vk_check_sc_support(device, surface, &sc_details),
                  "Failed checking for swapchain support");
+    TERRA_CALL_I(terrar_vk_sc_details_cleanup(&sc_details),
+                 "Failed cleaning up the swapchain details");
     adequate_sc =
         (sc_details.format_count != 0) && (sc_details.mode_count != 0);
     if (adequate_sc) {

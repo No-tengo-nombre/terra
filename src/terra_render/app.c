@@ -119,7 +119,26 @@ terra_status_t terrar_app_run(terrar_app_t *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t terrar_app_set_image_count(terrar_app_t *app,
+                                          uint32_t new_count) {
+  app->vk_images_count = new_count;
+  void *images = realloc(app->vk_images, new_count * sizeof(VkImage));
+  void *image_views =
+      realloc(app->vk_image_views, new_count * sizeof(VkImageView));
+  if (images == NULL || image_views == NULL) {
+    logi_error("Could not reallocate memory for images or image views");
+    return TERRA_STATUS_FAILURE;
+  }
+  app->vk_images = images;
+  app->vk_image_views = image_views;
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terrar_app_cleanup(terrar_app_t *app) {
+  logi_debug("Releasing heap allocated arrays");
+  free(app->vk_images);
+  free(app->vk_image_views);
+
   logi_debug("Cleaning Vulkan objects");
   vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);

@@ -82,6 +82,7 @@ typedef struct terrar_app {
   VkFormat vk_format;
 
   VkImage *vk_images;
+  VkImageView *vk_image_views;
   uint32_t vk_images_count;
 } terrar_app_t;
 
@@ -103,6 +104,9 @@ terra_status_t terrar_app_new_wstate(terrar_app_state_t state, void *start,
                                      terrar_app_config_t *conf,
                                      terrar_app_t *out);
 terra_status_t terrar_app_run(terrar_app_t *app);
+terra_status_t terrar_app_set_image_count(terrar_app_t *app,
+                                          uint32_t new_count);
+
 terra_status_t terrar_app_cleanup(terrar_app_t *app);
 
 int terrar_app_should_close(terrar_app_t *app);

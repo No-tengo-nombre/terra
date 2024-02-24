@@ -102,9 +102,16 @@ terra_status_t terrar_vk_create_sc(terrar_app_t *app, VkImageUsageFlags usage,
                                           &app->vk_images_count, NULL),
                   "Failed getting number of images");
   app->vk_images = malloc(app->vk_images_count * sizeof(VkImage));
+  app->vk_image_views = malloc(app->vk_images_count * sizeof(VkImageView));
   if (app->vk_images == NULL) {
     logi_error(
         "Could not allocate memory for %i vulkan images in the swapchain",
+        app->vk_images_count);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (app->vk_image_views == NULL) {
+    logi_error(
+        "Could not allocate memory for %i vulkan image views in the swapchain",
         app->vk_images_count);
     return TERRA_STATUS_FAILURE;
   }

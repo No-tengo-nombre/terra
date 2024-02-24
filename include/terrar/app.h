@@ -53,6 +53,7 @@ typedef struct terrar_app_config {
   VkColorSpaceKHR color_space;
   VkPresentModeKHR present_mode;
   uint32_t image_array_layers;
+  VkCompositeAlphaFlagBitsKHR composite_alpha;
 } terrar_app_config_t;
 
 typedef struct terrar_app {

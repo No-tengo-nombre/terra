@@ -1,4 +1,5 @@
 #include <terra/status.h>
+#include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 #include <terrar/vk/swapchain.h>
 #include <terrar/vulkan.h>
@@ -52,5 +53,16 @@ terra_status_t _terrar_vk_choose_sc_swap_extent(
     };
     *out = extent;
   }
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t _terrar_vk_choose_sc_image_count(
+    terrar_app_t *app, terrar_vk_sc_details_t *sc_details, uint32_t *out) {
+  uint32_t count = sc_details->capabilities.minImageCount + 1;
+  if (sc_details->capabilities.maxImageCount > 0 &&
+      count > sc_details->capabilities.maxImageCount) {
+    count = sc_details->capabilities.maxImageCount;
+  }
+  *out = count;
   return TERRA_STATUS_SUCCESS;
 }

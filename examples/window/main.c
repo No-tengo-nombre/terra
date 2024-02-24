@@ -5,17 +5,7 @@
 #include <terrau/macros.h>
 
 terra_status_t start(terrar_app_t *app) {
-  TERRA_CALL(terrar_init_window(app), "Failed initializing window");
-  TERRA_CALL(terrar_init_instance(app), "Failed initializing instance");
-  TERRA_CALL(terrar_create_render_surface(app),
-             "Failed creating render surface");
-  TERRA_CALL(terrar_choose_pdevice(app), "Failed choosing physical device");
-  TERRA_CALL(terrar_create_ldevice(app), "Failed creating logical device");
-  TERRA_CALL(terrar_retrieve_device_queue(app),
-             "Failed retrieving device queue");
-  TERRA_CALL(
-      terrar_vk_create_sc(app, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, NULL),
-      "Failed creating swapchain");
+  TERRA_CALL(terrar_init(app, NULL), "Failed initializing app");
 
   return TERRA_STATUS_SUCCESS;
 }

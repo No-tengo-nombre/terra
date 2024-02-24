@@ -5,6 +5,34 @@
 #include <terrar/vk/devices.h>
 #include <terrar/vulkan.h>
 
+terra_status_t terrar_init_params_default(terrar_init_params_t *out) {
+  out->image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terrar_init(terrar_app_t *app, terrar_init_params_t *params) {
+  terrar_init_params_t p;
+  if (params == NULL) {
+    TERRA_CALL_I(terrar_init_params_default(&p),
+                 "Failed creating default init parameters");
+  } else {
+    p = *params;
+  }
+
+  TERRA_CALL_I(terrar_init_window(app), "Failed initializing window");
+  TERRA_CALL_I(terrar_init_instance(app), "Failed initializing instance");
+  TERRA_CALL_I(terrar_create_render_surface(app),
+               "Failed creating render surface");
+  TERRA_CALL_I(terrar_choose_pdevice(app), "Failed choosing physical device");
+  TERRA_CALL_I(terrar_create_ldevice(app), "Failed creating logical device");
+  TERRA_CALL_I(terrar_retrieve_device_queue(app),
+               "Failed retrieving device queue");
+  TERRA_CALL_I(terrar_vk_create_sc(app, p.image_usage, NULL),
+               "Failed creating swapchain");
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terrar_init_window(terrar_app_t *app) {
   logi_debug("Initializing GLFW and window");
   glfwInit();

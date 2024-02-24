@@ -67,6 +67,9 @@ terra_status_t terrar_vk_create_sc(terrar_app_t *app, VkImageUsageFlags usage,
   TERRA_CALL_I(_terrar_vk_choose_sc_image_count(app, &sc_details, &image_count),
                "Failed choosing swapchain image count");
 
+  app->vk_extent = extent;
+  app->vk_format = sf_format.format;
+
   logi_debug("Creating swapchain creation info struct");
   VkSwapchainCreateInfoKHR sc_info = {VK_FALSE};
   sc_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;

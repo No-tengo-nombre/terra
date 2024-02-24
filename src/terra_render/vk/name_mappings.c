@@ -1,7 +1,7 @@
 #include <terrar/vulkan.h>
-#include <terrau/name_mappings.h>
+#include <terrar/vk/name_mappings.h>
 
-const char *terrau_vk_format_name(VkFormat format) {
+const char *terrar_vk_format_name(VkFormat format) {
   switch (format) {
   case 0:
     return "VK_FORMAT_UNDEFINED";
@@ -762,7 +762,7 @@ const char *terrau_vk_format_name(VkFormat format) {
   }
 }
 
-const char *terrau_vk_colorspace_name(VkColorSpaceKHR color_space) {
+const char *terrar_vk_colorspace_name(VkColorSpaceKHR color_space) {
   switch (color_space) {
   case 0:
     return "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR";

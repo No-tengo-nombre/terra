@@ -43,6 +43,7 @@ terra_status_t terrar_app_config_new(const char **validation_layers,
       .present_mode = VK_PRESENT_MODE_MAILBOX_KHR,
       .image_array_layers = 1,
       .composite_alpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .clipped = VK_TRUE,
   };
   *out = conf;
   return TERRA_STATUS_SUCCESS;

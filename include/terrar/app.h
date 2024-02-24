@@ -54,6 +54,7 @@ typedef struct terrar_app_config {
   VkPresentModeKHR present_mode;
   uint32_t image_array_layers;
   VkCompositeAlphaFlagBitsKHR composite_alpha;
+  uint8_t clipped;
 } terrar_app_config_t;
 
 typedef struct terrar_app {

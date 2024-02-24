@@ -2,6 +2,7 @@
 
 #include "_swapchain.h"
 #include <terra/status.h>
+#include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 #include <terrar/vk/swapchain.h>
@@ -41,5 +42,11 @@ terra_status_t terrar_vk_check_sc_support(VkPhysicalDevice device,
 }
 
 terra_status_t terrar_vk_create_sc(terrar_app_t *app) {
+  terrar_vk_sc_details_t sc_details;
+  VkPresentModeKHR present_mode;
+  VkSurfaceFormatKHR sf_format;
+  VkExtent2D extent;
+  TERRA_CALL_I(terrar_vk_check_sc_support(app->vk_pdevice, app->vk_surface, &sc_details), "Failed evaluating swapchain support");
+
   return TERRA_STATUS_SUCCESS;
 }

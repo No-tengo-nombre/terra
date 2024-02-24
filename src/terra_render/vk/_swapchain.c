@@ -1,12 +1,17 @@
 #include <terra/status.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
+#include <terrar/vk/name_mappings.h>
 #include <terrar/vk/swapchain.h>
 #include <terrar/vulkan.h>
 
 terra_status_t _terrar_vk_choose_sc_format(terrar_app_t *app,
                                            terrar_vk_sc_details_t *sc_details,
                                            VkSurfaceFormatKHR *out) {
+  logi_debug("Desired swapchain format is %u:'%s'", app->conf->surface_format,
+             terrar_vk_format_name(app->conf->surface_format));
+  logi_debug("Desired swapchain colorspace is %u:'%s'", app->conf->color_space,
+             terrar_vk_colorspace_name(app->conf->color_space));
   for (int i = 0; i < sc_details->format_count; i++) {
     VkSurfaceFormatKHR f = sc_details->formats[i];
     if (f.format == app->conf->surface_format &&

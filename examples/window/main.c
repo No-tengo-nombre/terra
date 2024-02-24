@@ -7,12 +7,12 @@
   return TERRA_STATUS_FAILURE
 
 terra_status start(terrar_app *app) {
-  _CALL(terrar_setup_init_window(app));
-  _CALL(terrar_setup_init_instance(app));
-  _CALL(terrar_setup_create_render_surface(app));
-  _CALL(terrar_setup_choose_pdevice(app));
-  _CALL(terrar_setup_create_ldevice(app));
-  _CALL(terrar_setup_retrieve_device_queue(app));
+  _CALL(terrar_init_window(app));
+  _CALL(terrar_init_instance(app));
+  _CALL(terrar_create_render_surface(app));
+  _CALL(terrar_choose_pdevice(app));
+  _CALL(terrar_create_ldevice(app));
+  _CALL(terrar_retrieve_device_queue(app));
 
   return TERRA_STATUS_SUCCESS;
 }

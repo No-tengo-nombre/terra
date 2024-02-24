@@ -9,14 +9,6 @@ typedef struct terrar_result {
   terrar_queue queue;
 } terrar_result;
 
-typedef struct terrar_swapchain_details {
-  VkSurfaceCapabilitiesKHR capabilities;
-  VkSurfaceFormatKHR *formats;
-  VkPresentModeKHR *modes;
-  uint32_t format_count;
-  uint32_t mode_count;
-} terrar_swapchain_details;
-
 terra_status terrar_vk_create_application_info(terrar_app *app,
                                                VkApplicationInfo *out);
 terra_status terrar_vk_create_instance_info(terrar_app *app,

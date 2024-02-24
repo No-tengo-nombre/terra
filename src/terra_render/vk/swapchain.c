@@ -94,6 +94,22 @@ terra_status_t terrar_vk_create_sc(terrar_app_t *app, VkImageUsageFlags usage,
   TERRA_CALL_I(terrar_vk_sc_details_cleanup(&sc_details),
                "Failed cleaning up the swapchain details");
 
+  logi_debug("Getting the images in the swapchain");
+  TERRA_VK_CALL_I(vkGetSwapchainImagesKHR(app->vk_ldevice, app->vk_swapchain,
+                                          &app->vk_images_count, NULL),
+                  "Failed getting number of images");
+  app->vk_images = malloc(app->vk_images_count * sizeof(VkImage));
+  if (app->vk_images == NULL) {
+    logi_error(
+        "Could not allocate memory for %i vulkan images in the swapchain",
+        app->vk_images_count);
+    return TERRA_STATUS_FAILURE;
+  }
+  TERRA_VK_CALL_I(vkGetSwapchainImagesKHR(app->vk_ldevice, app->vk_swapchain,
+                                          &app->vk_images_count,
+                                          app->vk_images),
+                  "Failed getting images");
+
   return TERRA_STATUS_SUCCESS;
 }
 

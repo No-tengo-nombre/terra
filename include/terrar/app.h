@@ -78,6 +78,9 @@ typedef struct terrar_app {
   VkQueue vk_pqueue;
   VkSurfaceKHR vk_surface;
   VkSwapchainKHR vk_swapchain;
+
+  VkImage *vk_images;
+  uint32_t vk_images_count;
 } terrar_app_t;
 
 terrar_app_state_t terrar_app_state_default(void);

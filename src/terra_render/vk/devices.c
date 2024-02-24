@@ -13,7 +13,7 @@
 #include <terrar/vk/swapchain.h>
 
 terra_status_t terrar_vk_create_application_info(terrar_app_t *app,
-                                               VkApplicationInfo *out) {
+                                                 VkApplicationInfo *out) {
   out->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   out->apiVersion = VK_API_VERSION_1_3;
   out->applicationVersion = VK_MAKE_API_VERSION(
@@ -28,8 +28,8 @@ terra_status_t terrar_vk_create_application_info(terrar_app_t *app,
 }
 
 terra_status_t terrar_vk_create_instance_info(terrar_app_t *app,
-                                            VkApplicationInfo *app_info,
-                                            VkInstanceCreateInfo *out) {
+                                              VkApplicationInfo *app_info,
+                                              VkInstanceCreateInfo *out) {
   uint32_t extension_count = 0;
   const char **extensions = glfwGetRequiredInstanceExtensions(&extension_count);
   out->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -74,8 +74,8 @@ int terrar_vk_check_validation_layer_support(terrar_app_t *app) {
 }
 
 terra_status_t terrar_vk_find_queue_families(VkPhysicalDevice device,
-                                           VkSurfaceKHR surface,
-                                           terrar_queue_t *out) {
+                                             VkSurfaceKHR surface,
+                                             terrar_queue_t *out) {
   out->gfound = 0;
   out->pfound = 0;
   VkPhysicalDeviceProperties dev_props;
@@ -100,12 +100,12 @@ terra_status_t terrar_vk_find_queue_families(VkPhysicalDevice device,
     qflags_bin[4] = '\0';
     logi_debug("Queues %s %ix%s", dev_props.deviceName, qprops[i].queueCount,
                qflags_bin);
-    if (pfound) {
+    if (pfound && !out->pfound) {
       out->pfamily = i;
       out->pfound = 1;
       logi_debug("Setting %i as processing queue", i);
     }
-    if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+    if (qprops[i].queueFlags & VK_QUEUE_GRAPHICS_BIT && !out->gfound) {
       out->gfamily = i;
       out->gfound = 1;
       logi_debug("Setting %i as graphics queue", i);
@@ -145,8 +145,8 @@ int terrar_check_device_extensions(VkPhysicalDevice device, const char **target,
 }
 
 terra_status_t terrar_vk_rate_device(terrar_app_t *app, VkPhysicalDevice device,
-                                   VkSurfaceKHR surface, terrar_queue_t *queue,
-                                   uint32_t *out) {
+                                     VkSurfaceKHR surface,
+                                     terrar_queue_t *queue, uint32_t *out) {
   VkPhysicalDeviceProperties props;
   VkPhysicalDeviceFeatures feats;
   vkGetPhysicalDeviceProperties(device, &props);
@@ -184,7 +184,7 @@ terra_status_t terrar_vk_rate_device(terrar_app_t *app, VkPhysicalDevice device,
 }
 
 terra_status_t terrar_vk_get_physical_device(terrar_app_t *app,
-                                           terrar_result_t *out) {
+                                             terrar_result_t *out) {
   VkPhysicalDevice device = VK_NULL_HANDLE;
   terrar_queue_t device_queue;
   uint32_t device_count = 0;
@@ -237,8 +237,9 @@ terra_status_t terrar_vk_get_physical_device(terrar_app_t *app,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terrar_vk_create_device_queue_info(uint32_t index, float *prio,
-                                                VkDeviceQueueCreateInfo *out) {
+terra_status_t
+terrar_vk_create_device_queue_info(uint32_t index, float *prio,
+                                   VkDeviceQueueCreateInfo *out) {
   out->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
   out->queueCount = 1;
   out->queueFamilyIndex = index;

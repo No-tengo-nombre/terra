@@ -29,10 +29,10 @@ terrar_app_metadata_t terrar_app_metadata_default(void) {
 }
 
 terra_status_t terrar_app_config_new(const char **validation_layers,
-                                   const char **device_extensions,
-                                   uint32_t validation_layers_total,
-                                   uint32_t device_extensions_total,
-                                   terrar_app_config_t *out) {
+                                     const char **device_extensions,
+                                     uint32_t validation_layers_total,
+                                     uint32_t device_extensions_total,
+                                     terrar_app_config_t *out) {
   terrar_app_config_t conf = {
       .validation_layers_total = validation_layers_total,
       .device_extensions_total = device_extensions_total,
@@ -41,6 +41,7 @@ terra_status_t terrar_app_config_new(const char **validation_layers,
       .surface_format = VK_FORMAT_B8G8R8_SRGB,
       .color_space = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
       .present_mode = VK_PRESENT_MODE_MAILBOX_KHR,
+      .image_array_layers = 1,
   };
   *out = conf;
   return TERRA_STATUS_SUCCESS;
@@ -54,8 +55,8 @@ terrar_app_config_t terrar_app_config_default(void) {
 }
 
 terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
-                            terrar_app_metadata_t *meta, terrar_app_config_t *conf,
-                            terrar_app_t *out) {
+                              terrar_app_metadata_t *meta,
+                              terrar_app_config_t *conf, terrar_app_t *out) {
   terrar_app_t app = {
       .start = start,
       .loop = loop,
@@ -69,9 +70,10 @@ terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
 }
 
 terra_status_t terrar_app_new_wstate(terrar_app_state_t state, void *start,
-                                   void *loop, void *cleanup,
-                                   terrar_app_metadata_t *meta,
-                                   terrar_app_config_t *conf, terrar_app_t *out) {
+                                     void *loop, void *cleanup,
+                                     terrar_app_metadata_t *meta,
+                                     terrar_app_config_t *conf,
+                                     terrar_app_t *out) {
   terrar_app_new(start, loop, cleanup, meta, conf, out);
   out->state = state;
   return TERRA_STATUS_SUCCESS;

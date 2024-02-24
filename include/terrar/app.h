@@ -52,6 +52,7 @@ typedef struct terrar_app_config {
   VkFormat surface_format;
   VkColorSpaceKHR color_space;
   VkPresentModeKHR present_mode;
+  uint32_t image_array_layers;
 } terrar_app_config_t;
 
 typedef struct terrar_app {

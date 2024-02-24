@@ -83,4 +83,6 @@ _terrar_vk_choose_sc_sharing_mode(terrar_app_t *app,
     sc_info->queueFamilyIndexCount = 0;
     sc_info->pQueueFamilyIndices = NULL;
   }
+
+  return TERRA_STATUS_SUCCESS;
 }

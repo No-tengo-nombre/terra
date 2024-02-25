@@ -126,8 +126,8 @@ fi
 if [[ "${example}" != "" ]]; then
     echo -e "\n\nRunning example '\x1b[32;20m${example}\x1b[0m'"
     if [ $release_mode -eq 1 ]; then
-        ./bin/ex.${example}
+        ./bin/ex.${example}/ex.${example}
     else
-        ./bin/debug/ex.${example}
+        ./bin/debug/ex.${example}/ex.${example}
     fi
 fi

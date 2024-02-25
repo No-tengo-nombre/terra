@@ -17,10 +17,16 @@ find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
 # Compiles GLSL shaders into SPIR-V
 function(compile_shader target)
   cmake_parse_arguments(PARSE_ARGV 1 arg "" "ENV;FORMAT" "SOURCES")
+  if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    get_target_property(OUTDIR ${target} RUNTIME_OUTPUT_DIRECTORY_RELEASE)
+  else()
+    get_target_property(OUTDIR ${target} RUNTIME_OUTPUT_DIRECTORY_DEBUG)
+  endif()
+  message(${OUTDIR})
   foreach(source ${arg_SOURCES})
-  get_filename_component(filename ${source} NAME)
+    get_filename_component(filename ${source} NAME)
     add_custom_command(
-      OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/debug/${filename}.spv
+      OUTPUT ${OUTDIR}/${filename}.spv
       DEPENDS ${source}
       DEPFILE ${filename}.d
       COMMAND
@@ -28,10 +34,10 @@ function(compile_shader target)
         $<$<BOOL:${arg_ENV}>:--target-env=${arg_ENV}>
         $<$<BOOL:${arg_FORMAT}>:-mfmt=${arg_FORMAT}>
         -MD -MF ${filename}.d
-        -o ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/debug/${filename}.spv
+        -o ${OUTDIR}/${filename}.spv
         ${source}
     )
-    target_sources(${target} PRIVATE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/debug/${filename}.spv)
+    target_sources(${target} PRIVATE ${OUTDIR}/${filename}.spv)
   endforeach()
 endfunction()
 

@@ -93,24 +93,23 @@ typedef terra_status_t(terra_clean_ft)(terra_app_t *);
 terra_app_state_t terra_app_state_default(void);
 terra_app_metadata_t terra_app_metadata_default(void);
 terra_status_t terra_app_config_new(const char **validation_layers,
-                                     const char **device_extensions,
-                                     uint32_t validation_layers_total,
-                                     uint32_t device_extensions_total,
-                                     terra_app_config_t *out);
+                                    const char **device_extensions,
+                                    uint32_t validation_layers_total,
+                                    uint32_t device_extensions_total,
+                                    terra_app_config_t *out);
 terra_app_config_t terra_app_config_default(void);
 
 terra_status_t terra_app_new(terra_start_ft *start, terra_loop_ft *loop,
-                              terra_clean_ft *cleanup,
-                              terra_app_metadata_t *meta,
-                              terra_app_config_t *conf, terra_app_t *out);
-terra_status_t
-terra_app_new_wstate(terra_app_state_t state, terra_start_ft *start,
-                      terra_loop_ft *loop, terra_clean_ft *cleanup,
-                      terra_app_metadata_t *meta, terra_app_config_t *conf,
-                      terra_app_t *out);
+                             terra_clean_ft *cleanup,
+                             terra_app_metadata_t *meta,
+                             terra_app_config_t *conf, terra_app_t *out);
+terra_status_t terra_app_new_wstate(terra_app_state_t state,
+                                    terra_start_ft *start, terra_loop_ft *loop,
+                                    terra_clean_ft *cleanup,
+                                    terra_app_metadata_t *meta,
+                                    terra_app_config_t *conf, terra_app_t *out);
 terra_status_t terra_app_run(terra_app_t *app);
-terra_status_t terra_app_set_image_count(terra_app_t *app,
-                                          uint32_t new_count);
+terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
 
 terra_status_t terra_app_cleanup(terra_app_t *app);
 

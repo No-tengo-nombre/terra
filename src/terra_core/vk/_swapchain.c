@@ -1,14 +1,14 @@
-#include <terra/status.h>
-#include <terra_utils/vendor/log.h>
 #include <terra/app.h>
+#include <terra/status.h>
 #include <terra/vk/name_mappings.h>
 #include <terra/vk/swapchain.h>
 #include <terra/vulkan.h>
+#include <terra_utils/vendor/log.h>
 #include <terrau/math/clamp.h>
 
 terra_status_t _terra_vk_choose_sc_format(terra_app_t *app,
-                                           terra_vk_sc_details_t *sc_details,
-                                           VkSurfaceFormatKHR *out) {
+                                          terra_vk_sc_details_t *sc_details,
+                                          VkSurfaceFormatKHR *out) {
   logi_debug("Desired swapchain format is %u:'%s'", app->conf->surface_format,
              terra_vk_format_name(app->conf->surface_format));
   logi_debug("Desired swapchain colorspace is %u:'%s'", app->conf->color_space,
@@ -28,8 +28,8 @@ terra_status_t _terra_vk_choose_sc_format(terra_app_t *app,
 
 terra_status_t
 _terra_vk_choose_sc_present_mode(terra_app_t *app,
-                                  terra_vk_sc_details_t *sc_details,
-                                  VkPresentModeKHR *out) {
+                                 terra_vk_sc_details_t *sc_details,
+                                 VkPresentModeKHR *out) {
   for (int i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
     if (m == app->conf->present_mode) {
@@ -75,8 +75,8 @@ terra_status_t _terra_vk_choose_sc_image_count(
 
 terra_status_t
 _terra_vk_choose_sc_sharing_mode(terra_app_t *app,
-                                  terra_vk_sc_details_t *sc_details,
-                                  VkSwapchainCreateInfoKHR *sc_info) {
+                                 terra_vk_sc_details_t *sc_details,
+                                 VkSwapchainCreateInfoKHR *sc_info) {
   if (app->vk_qinfo.gfamily != app->vk_qinfo.pfamily) {
     // TODO: Implement ownership when using different graphics and present
     // queues

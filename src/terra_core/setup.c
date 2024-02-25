@@ -1,10 +1,10 @@
-#include <terra/status.h>
-#include <terra_utils/macros.h>
-#include <terra_utils/vendor/log.h>
 #include <terra/setup.h>
+#include <terra/status.h>
 #include <terra/vk/devices.h>
 #include <terra/vk/swapchain.h>
 #include <terra/vulkan.h>
+#include <terra_utils/macros.h>
+#include <terra_utils/vendor/log.h>
 
 terra_status_t terra_init_params_default(terra_init_params_t *out) {
   out->image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -107,12 +107,12 @@ terra_status_t terra_create_ldevice(terra_app_t *app) {
     logi_info(
         "Creating single device queue info for graphics and presentation");
     TERRA_CALL_I(terra_vk_create_device_queue_info(app->vk_qinfo.gfamily,
-                                                    &queue_prio, queue_infos),
+                                                   &queue_prio, queue_infos),
                  "Failed creating device queue info");
   } else {
     logi_info("Creating device queue info for graphics");
     TERRA_CALL_I(terra_vk_create_device_queue_info(app->vk_qinfo.gfamily,
-                                                    &queue_prio, queue_infos),
+                                                   &queue_prio, queue_infos),
                  "Failed creating device graphics queue info");
     logi_info("Creating device queue info for presentation");
     TERRA_CALL_I(terra_vk_create_device_queue_info(

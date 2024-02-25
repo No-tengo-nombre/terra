@@ -2,16 +2,16 @@
 #include <stdlib.h>
 
 #include "_swapchain.h"
-#include <terra/status.h>
-#include <terra_utils/macros.h>
-#include <terra_utils/vendor/log.h>
 #include <terra/app.h>
+#include <terra/status.h>
 #include <terra/vk/name_mappings.h>
 #include <terra/vk/swapchain.h>
+#include <terra_utils/macros.h>
+#include <terra_utils/vendor/log.h>
 
 terra_status_t terra_vk_check_sc_support(VkPhysicalDevice device,
-                                          VkSurfaceKHR surface,
-                                          terra_vk_sc_details_t *out) {
+                                         VkSurfaceKHR surface,
+                                         terra_vk_sc_details_t *out) {
   logi_debug("Querying surface capabilities");
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface,
                                             &out->capabilities);
@@ -42,7 +42,7 @@ terra_status_t terra_vk_check_sc_support(VkPhysicalDevice device,
 }
 
 terra_status_t terra_vk_create_sc(terra_app_t *app, VkImageUsageFlags usage,
-                                   VkSwapchainKHR base) {
+                                  VkSwapchainKHR base) {
   terra_vk_sc_details_t sc_details;
   VkSurfaceFormatKHR sf_format;
   VkPresentModeKHR present_mode;
@@ -124,7 +124,7 @@ terra_status_t terra_vk_create_sc(terra_app_t *app, VkImageUsageFlags usage,
 }
 
 terra_status_t terra_vk_create_image_views(terra_app_t *app,
-                                            VkImageViewType view_type) {
+                                           VkImageViewType view_type) {
   VkImage *p_image = app->vk_images;
   VkImageView *p_image_view = app->vk_image_views;
   for (int i = 0; i < app->vk_images_count; i++, p_image++, p_image_view++) {

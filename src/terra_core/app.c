@@ -1,10 +1,10 @@
 #include <stdlib.h>
 
+#include <terra/app.h>
 #include <terra/status.h>
+#include <terra/vulkan.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
-#include <terra/app.h>
-#include <terra/vulkan.h>
 
 const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
 const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -30,10 +30,10 @@ terra_app_metadata_t terra_app_metadata_default(void) {
 }
 
 terra_status_t terra_app_config_new(const char **validation_layers,
-                                     const char **device_extensions,
-                                     uint32_t validation_layers_total,
-                                     uint32_t device_extensions_total,
-                                     terra_app_config_t *out) {
+                                    const char **device_extensions,
+                                    uint32_t validation_layers_total,
+                                    uint32_t device_extensions_total,
+                                    terra_app_config_t *out) {
   terra_app_config_t conf = {
       .validation_layers_total = validation_layers_total,
       .device_extensions_total = device_extensions_total,
@@ -53,14 +53,14 @@ terra_status_t terra_app_config_new(const char **validation_layers,
 terra_app_config_t terra_app_config_default(void) {
   terra_app_config_t conf;
   terra_app_config_new(DEFAULT_VALIDATION_LAYERS, DEFAULT_DEVICE_EXTENSIONS, 1,
-                        1, &conf);
+                       1, &conf);
   return conf;
 }
 
 terra_status_t terra_app_new(terra_start_ft *start, terra_loop_ft *loop,
-                              terra_clean_ft *cleanup,
-                              terra_app_metadata_t *meta,
-                              terra_app_config_t *conf, terra_app_t *out) {
+                             terra_clean_ft *cleanup,
+                             terra_app_metadata_t *meta,
+                             terra_app_config_t *conf, terra_app_t *out) {
   terra_app_t app = {
       .start = start,
       .loop = loop,
@@ -73,11 +73,12 @@ terra_status_t terra_app_new(terra_start_ft *start, terra_loop_ft *loop,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t
-terra_app_new_wstate(terra_app_state_t state, terra_start_ft *start,
-                      terra_loop_ft *loop, terra_clean_ft *cleanup,
-                      terra_app_metadata_t *meta, terra_app_config_t *conf,
-                      terra_app_t *out) {
+terra_status_t terra_app_new_wstate(terra_app_state_t state,
+                                    terra_start_ft *start, terra_loop_ft *loop,
+                                    terra_clean_ft *cleanup,
+                                    terra_app_metadata_t *meta,
+                                    terra_app_config_t *conf,
+                                    terra_app_t *out) {
   terra_app_new(start, loop, cleanup, meta, conf, out);
   out->state = state;
   return TERRA_STATUS_SUCCESS;
@@ -121,8 +122,7 @@ terra_status_t terra_app_run(terra_app_t *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_app_set_image_count(terra_app_t *app,
-                                          uint32_t new_count) {
+terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   app->vk_images_count = new_count;
   void *images = realloc(app->vk_images, new_count * sizeof(VkImage));
   void *image_views =

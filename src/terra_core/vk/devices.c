@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <terra/app.h>
 #include <terra/status.h>
+#include <terra/vulkan.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
-#include <terra/app.h>
-#include <terra/vulkan.h>
 #include <terrau/math/clamp.h>
 
 #include <terra/vk/devices.h>
 #include <terra/vk/swapchain.h>
 
 terra_status_t terra_vk_create_application_info(terra_app_t *app,
-                                                 VkApplicationInfo *out) {
+                                                VkApplicationInfo *out) {
   out->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   out->apiVersion = VK_API_VERSION_1_3;
   out->applicationVersion = VK_MAKE_API_VERSION(
@@ -28,8 +28,8 @@ terra_status_t terra_vk_create_application_info(terra_app_t *app,
 }
 
 terra_status_t terra_vk_create_instance_info(terra_app_t *app,
-                                              VkApplicationInfo *app_info,
-                                              VkInstanceCreateInfo *out) {
+                                             VkApplicationInfo *app_info,
+                                             VkInstanceCreateInfo *out) {
   uint32_t extension_count = 0;
   const char **extensions = glfwGetRequiredInstanceExtensions(&extension_count);
   out->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -74,8 +74,8 @@ int terra_vk_check_validation_layer_support(terra_app_t *app) {
 }
 
 terra_status_t terra_vk_find_queue_families(VkPhysicalDevice device,
-                                             VkSurfaceKHR surface,
-                                             terra_queue_t *out) {
+                                            VkSurfaceKHR surface,
+                                            terra_queue_t *out) {
   out->gfound = 0;
   out->pfound = 0;
   VkPhysicalDeviceProperties dev_props;
@@ -116,7 +116,7 @@ terra_status_t terra_vk_find_queue_families(VkPhysicalDevice device,
 }
 
 int terra_check_device_extensions(VkPhysicalDevice device, const char **target,
-                                   size_t target_total) {
+                                  size_t target_total) {
   uint32_t ext_total;
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
   VkExtensionProperties *ext_props =
@@ -145,8 +145,8 @@ int terra_check_device_extensions(VkPhysicalDevice device, const char **target,
 }
 
 terra_status_t terra_vk_rate_device(terra_app_t *app, VkPhysicalDevice device,
-                                     VkSurfaceKHR surface,
-                                     terra_queue_t *queue, uint32_t *out) {
+                                    VkSurfaceKHR surface, terra_queue_t *queue,
+                                    uint32_t *out) {
   VkPhysicalDeviceProperties props;
   VkPhysicalDeviceFeatures feats;
   vkGetPhysicalDeviceProperties(device, &props);
@@ -186,7 +186,7 @@ terra_status_t terra_vk_rate_device(terra_app_t *app, VkPhysicalDevice device,
 }
 
 terra_status_t terra_vk_get_physical_device(terra_app_t *app,
-                                             terra_result_t *out) {
+                                            terra_result_t *out) {
   VkPhysicalDevice device = VK_NULL_HANDLE;
   terra_queue_t device_queue;
   uint32_t device_count = 0;
@@ -209,10 +209,10 @@ terra_status_t terra_vk_get_physical_device(terra_app_t *app,
     vkGetPhysicalDeviceProperties(devices[i], &props);
     logi_info("Evaluating device '%s'", props.deviceName);
     TERRA_CALL_I(terra_vk_find_queue_families(devices[i], app->vk_surface,
-                                               &device_queue),
+                                              &device_queue),
                  "Failed creating device queue");
     TERRA_CALL_I(terra_vk_rate_device(app, devices[i], app->vk_surface,
-                                       &device_queue, &new_score),
+                                      &device_queue, &new_score),
                  "Failed rating device");
     if (score == -2) {
       device = devices[i];
@@ -239,9 +239,8 @@ terra_status_t terra_vk_get_physical_device(terra_app_t *app,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t
-terra_vk_create_device_queue_info(uint32_t index, float *prio,
-                                   VkDeviceQueueCreateInfo *out) {
+terra_status_t terra_vk_create_device_queue_info(uint32_t index, float *prio,
+                                                 VkDeviceQueueCreateInfo *out) {
   out->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
   out->queueCount = 1;
   out->queueFamilyIndex = index;

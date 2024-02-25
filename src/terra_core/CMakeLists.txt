@@ -1,14 +1,14 @@
-file(GLOB RENDER_ROOT_SOURCE *.c)
-file(GLOB RENDER_ROOT_HEADER *.h)
-file(GLOB RENDER_VK_SOURCE vk/*.c)
-file(GLOB RENDER_VK_HEADER vk/*.h)
+file(GLOB CORE_ROOT_SOURCE *.c)
+file(GLOB CORE_ROOT_HEADER *.h)
+file(GLOB CORE_VK_SOURCE vk/*.c)
+file(GLOB CORE_VK_HEADER vk/*.h)
 
-add_library(${PROJECT_RENDER_NAME} ${RENDER_ROOT_HEADER} ${RENDER_ROOT_SOURCE} ${RENDER_VK_HEADER} ${RENDER_VK_SOURCE})
+add_library(${PROJECT_CORE_NAME} ${CORE_ROOT_HEADER} ${CORE_ROOT_SOURCE} ${CORE_VK_HEADER} ${CORE_VK_SOURCE})
 
-target_link_libraries(${PROJECT_RENDER_NAME} PUBLIC ${PROJECT_UTILS_NAME} glfw
+target_link_libraries(${PROJECT_CORE_NAME} PUBLIC ${PROJECT_UTILS_NAME} glfw
                                                     cglm ${Vulkan_LIBRARIES})
 target_include_directories(
-  ${PROJECT_RENDER_NAME}
+  ${PROJECT_CORE_NAME}
   PUBLIC ${PROJECT_BINARY_DIR}
          ${PROJECT_SOURCE_DIR}
          ${PROJECT_SOURCE_DIR_LOCATION}

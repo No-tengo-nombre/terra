@@ -6,7 +6,7 @@ set(EXAMPLE_NAME ex.window)
 add_executable(${EXAMPLE_NAME} ${EXAMPLE_ROOT_HEADER} ${EXAMPLE_ROOT_SOURCE})
 
 target_link_libraries(
-  ${EXAMPLE_NAME} PUBLIC ${PROJECT_RENDER_NAME} ${PROJECT_UTILS_NAME} glfw
+  ${EXAMPLE_NAME} PUBLIC ${PROJECT_CORE_NAME} ${PROJECT_UTILS_NAME} glfw
                          ${Vulkan_LIBRARIES})
 target_include_directories(
   ${EXAMPLE_NAME}

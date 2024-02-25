@@ -5,7 +5,7 @@ set(EXAMPLE_NAME ex.app_creation)
 
 add_executable(${EXAMPLE_NAME} ${EXAMPLE_ROOT_HEADER} ${EXAMPLE_ROOT_SOURCE})
 
-target_link_libraries(${EXAMPLE_NAME} PUBLIC ${PROJECT_RENDER_NAME})
+target_link_libraries(${EXAMPLE_NAME} PUBLIC ${PROJECT_CORE_NAME})
 target_include_directories(
   ${EXAMPLE_NAME} PUBLIC ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
                          ${PROJECT_HEADERS} ${CMAKE_SOURCE_DIR})

@@ -17,5 +17,7 @@ terra_status_t terrar_vk_check_sc_support(VkPhysicalDevice device,
                                           terrar_vk_sc_details_t *out);
 terra_status_t terrar_vk_create_sc(terrar_app_t *app, VkImageUsageFlags usage,
                                    VkSwapchainKHR base);
+terra_status_t terrar_vk_create_image_views(terrar_app_t *app,
+                                            VkImageViewType view_type);
 
 terra_status_t terrar_vk_sc_details_cleanup(terrar_vk_sc_details_t *dets);

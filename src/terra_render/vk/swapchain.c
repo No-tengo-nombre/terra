@@ -123,6 +123,34 @@ terra_status_t terrar_vk_create_sc(terrar_app_t *app, VkImageUsageFlags usage,
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t terrar_vk_create_image_views(terrar_app_t *app,
+                                            VkImageViewType view_type) {
+  VkImage *p_image = app->vk_images;
+  VkImageView *p_image_view = app->vk_image_views;
+  for (int i = 0; i < app->vk_images_count; i++, p_image++, p_image_view++) {
+    VkImageViewCreateInfo iv_info = {VK_FALSE};
+    iv_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    iv_info.image = *p_image;
+    iv_info.viewType = view_type;
+    iv_info.format = app->vk_format;
+    iv_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    iv_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    iv_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    iv_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+    iv_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    iv_info.subresourceRange.baseMipLevel = 0;
+    iv_info.subresourceRange.levelCount = 1;
+    iv_info.subresourceRange.baseArrayLayer = 0;
+    iv_info.subresourceRange.layerCount = 1;
+
+    TERRA_VK_CALL_I(
+        vkCreateImageView(app->vk_ldevice, &iv_info, NULL, p_image_view),
+        "Failed creating image view");
+  }
+
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terrar_vk_sc_details_cleanup(terrar_vk_sc_details_t *dets) {
   free(dets->formats);
   free(dets->modes);

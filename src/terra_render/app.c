@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include <terra/status.h>
+#include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/app.h>
 #include <terrar/vulkan.h>
@@ -135,6 +136,12 @@ terra_status_t terrar_app_set_image_count(terrar_app_t *app,
 }
 
 terra_status_t terrar_app_cleanup(terrar_app_t *app) {
+  logi_debug("Cleaning image views");
+  VkImageView *view = app->vk_image_views;
+  for (int i = 0; i < app->vk_images_count; i++, view++) {
+    vkDestroyImageView(app->vk_ldevice, *view, NULL);
+  }
+
   logi_debug("Releasing heap allocated arrays");
   free(app->vk_images);
   free(app->vk_image_views);

@@ -5,6 +5,7 @@
 
 typedef struct terrar_init_params {
   VkImageUsageFlags image_usage;
+  VkImageViewType view_type;
 } terrar_init_params_t;
 
 terra_status_t terrar_init_params_default(terrar_init_params_t *out);

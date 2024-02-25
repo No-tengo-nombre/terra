@@ -7,6 +7,7 @@
 
 terra_status_t terrar_init_params_default(terrar_init_params_t *out) {
   out->image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  out->view_type = VK_IMAGE_VIEW_TYPE_2D;
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -30,6 +31,8 @@ terra_status_t terrar_init(terrar_app_t *app, terrar_init_params_t *params) {
                "Failed retrieving device queue");
   TERRA_CALL_I(terrar_vk_create_sc(app, p.image_usage, NULL),
                "Failed creating swapchain");
+  TERRA_CALL_I(terrar_vk_create_image_views(app, p.view_type),
+               "Failed creating image views");
   return TERRA_STATUS_SUCCESS;
 }
 

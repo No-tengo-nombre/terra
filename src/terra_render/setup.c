@@ -2,8 +2,9 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrar/setup.h>
-#include <terrar/vk/devices.h>
 #include <terrar/vulkan.h>
+#include <terrar/vk/devices.h>
+#include <terrar/vk/swapchain.h>
 
 terra_status_t terrar_init_params_default(terrar_init_params_t *out) {
   out->image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;

@@ -9,7 +9,7 @@ terra_status_t start(terrar_app_t *app) {
 }
 
 terra_status_t loop(terrar_app_t *app) {
-  printf("Iteration %I64u\n", app->state.i);
+  printf("Iteration %llu\n", app->state.i);
   if (app->state.i >= 10) {
     return TERRA_STATUS_EXIT;
   }

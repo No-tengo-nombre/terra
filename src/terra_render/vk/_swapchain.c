@@ -4,6 +4,7 @@
 #include <terrar/vk/name_mappings.h>
 #include <terrar/vk/swapchain.h>
 #include <terrar/vulkan.h>
+#include <terrau/math/clamp.h>
 
 terra_status_t _terrar_vk_choose_sc_format(terrar_app_t *app,
                                            terrar_vk_sc_details_t *sc_details,

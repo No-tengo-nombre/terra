@@ -57,7 +57,8 @@ terrar_app_config_t terrar_app_config_default(void) {
   return conf;
 }
 
-terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
+terra_status_t terrar_app_new(terrar_start_ft *start, terrar_loop_ft *loop,
+                              terrar_clean_ft *cleanup,
                               terrar_app_metadata_t *meta,
                               terrar_app_config_t *conf, terrar_app_t *out) {
   terrar_app_t app = {
@@ -72,11 +73,11 @@ terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terrar_app_new_wstate(terrar_app_state_t state, void *start,
-                                     void *loop, void *cleanup,
-                                     terrar_app_metadata_t *meta,
-                                     terrar_app_config_t *conf,
-                                     terrar_app_t *out) {
+terra_status_t
+terrar_app_new_wstate(terrar_app_state_t state, terrar_start_ft *start,
+                      terrar_loop_ft *loop, terrar_clean_ft *cleanup,
+                      terrar_app_metadata_t *meta, terrar_app_config_t *conf,
+                      terrar_app_t *out) {
   terrar_app_new(start, loop, cleanup, meta, conf, out);
   out->state = state;
   return TERRA_STATUS_SUCCESS;
@@ -95,14 +96,14 @@ terra_status_t terrar_app_run(terrar_app_t *app) {
     return TERRA_STATUS_FAILURE;
   }
 
-  if ((void *)app->loop != NULL) {
+  if (app->loop != NULL) {
     logi_info("Application loop");
     while (loop_status == TERRA_STATUS_SUCCESS) {
       loop_status = app->loop(app);
       app->state.i++;
     }
   }
-  if ((void *)app->cleanup != NULL) {
+  if (app->cleanup != NULL) {
     logi_info("Application cleanup");
     cleanup_status = app->cleanup(app);
   }

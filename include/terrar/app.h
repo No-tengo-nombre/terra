@@ -29,8 +29,8 @@ typedef struct terrar_app_state {
 typedef struct terrar_queue {
   uint32_t gfamily;
   uint32_t pfamily;
-  int gfound;
-  int pfound;
+  uint32_t gfound;
+  uint32_t pfound;
 } terrar_queue_t;
 
 typedef struct terrar_app_metadata {
@@ -86,6 +86,10 @@ typedef struct terrar_app {
   uint32_t vk_images_count;
 } terrar_app_t;
 
+typedef terra_status_t(terrar_start_ft)(terrar_app_t *);
+typedef terra_status_t(terrar_loop_ft)(terrar_app_t *);
+typedef terra_status_t(terrar_clean_ft)(terrar_app_t *);
+
 terrar_app_state_t terrar_app_state_default(void);
 terrar_app_metadata_t terrar_app_metadata_default(void);
 terra_status_t terrar_app_config_new(const char **validation_layers,
@@ -95,14 +99,15 @@ terra_status_t terrar_app_config_new(const char **validation_layers,
                                      terrar_app_config_t *out);
 terrar_app_config_t terrar_app_config_default(void);
 
-terra_status_t terrar_app_new(void *start, void *loop, void *cleanup,
+terra_status_t terrar_app_new(terrar_start_ft *start, terrar_loop_ft *loop,
+                              terrar_clean_ft *cleanup,
                               terrar_app_metadata_t *meta,
                               terrar_app_config_t *conf, terrar_app_t *out);
-terra_status_t terrar_app_new_wstate(terrar_app_state_t state, void *start,
-                                     void *loop, void *cleanup,
-                                     terrar_app_metadata_t *meta,
-                                     terrar_app_config_t *conf,
-                                     terrar_app_t *out);
+terra_status_t
+terrar_app_new_wstate(terrar_app_state_t state, terrar_start_ft *start,
+                      terrar_loop_ft *loop, terrar_clean_ft *cleanup,
+                      terrar_app_metadata_t *meta, terrar_app_config_t *conf,
+                      terrar_app_t *out);
 terra_status_t terrar_app_run(terrar_app_t *app);
 terra_status_t terrar_app_set_image_count(terrar_app_t *app,
                                           uint32_t new_count);

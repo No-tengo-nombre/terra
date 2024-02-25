@@ -90,7 +90,7 @@ terra_status_t terrar_vk_find_queue_families(VkPhysicalDevice device,
   }
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
 
-  int pfound = 0;
+  VkBool32 pfound = 0;
   for (int i = 0; i < count; i++) {
     vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &pfound);
     unsigned char qflags_bin[5];
@@ -203,7 +203,7 @@ terra_status_t terrar_vk_get_physical_device(terrar_app_t *app,
   vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
 
   int32_t score = -2;
-  int32_t new_score = 0;
+  uint32_t new_score = 0;
   for (int i = 0; i < device_count; i++) {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(devices[i], &props);

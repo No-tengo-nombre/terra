@@ -22,7 +22,6 @@ function(compile_shader target)
   else()
     get_target_property(OUTDIR ${target} RUNTIME_OUTPUT_DIRECTORY_DEBUG)
   endif()
-  message(${OUTDIR})
   foreach(source ${arg_SOURCES})
     get_filename_component(filename ${source} NAME)
     add_custom_command(

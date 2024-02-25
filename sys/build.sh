@@ -8,13 +8,14 @@ example=""
 platform=""
 generator=""
 force_generator=""
+cores=""
 release_mode=0
 examples=0
 testing=0
 verbose=0
 python_install=0
 
-while getopts "hcxvisetrdwlpG:R:P:" arg
+while getopts "hcxvisetrdwlpG:R:P:j:" arg
 do
     case "$arg" in
         c)
@@ -65,6 +66,9 @@ do
         P)
             platform="${OPTARG}"
         ;;
+        j)
+            cores="${OPTARG}"
+        ;;
     esac
 done
 
@@ -103,10 +107,10 @@ else
 fi
 
 if [ $release_mode -eq 1 ]; then
-    cmake --build ./build/ --config Release
+    cmake --build ./build/ --config Release -j"${cores}"
     build_type="Release"
 else
-    cmake --build ./build/
+    cmake --build ./build/ -j"${cores}"
     build_type="Debug"
 fi
 

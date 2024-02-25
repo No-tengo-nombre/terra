@@ -1,5 +1,5 @@
-#include <terrar/vulkan.h>
 #include <terrar/vk/name_mappings.h>
+#include <terrar/vulkan.h>
 
 const char *terrar_vk_format_name(VkFormat format) {
   switch (format) {

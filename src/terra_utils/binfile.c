@@ -18,7 +18,7 @@ int64_t get_file_size(FILE *file) {
 terra_status_t terrau_read_binary_file(const char *filename, int64_t *out_size,
                                        char **out) {
   logi_debug("Reading file '%s'", filename);
-  FILE *file = fopen(filename, "r+");
+  FILE *file = fopen(filename, "rb");
   if (file == NULL) {
     logi_error("Could not open file '%s'", filename);
     fclose(file);

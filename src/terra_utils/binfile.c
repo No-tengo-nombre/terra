@@ -27,7 +27,7 @@ terra_status_t terrau_read_binary_file(const char *filename, int64_t *out_size,
   int64_t file_size = get_file_size(file);
   logi_debug("File size is %lli B, reading contents", file_size);
   fseek(file, 0, SEEK_SET);
-  char *contents = malloc(file_size * sizeof(char));
+  char *contents = malloc(file_size * sizeof(char)); // Dont forget to free
   if (contents == NULL) {
     logi_error("Could not allocate enough memory for file contents");
     fclose(file);

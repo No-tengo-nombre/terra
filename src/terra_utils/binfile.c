@@ -76,6 +76,6 @@ terra_status_t terrau_visualize_binary_file(const char *contents,
     _uint_to_hex_str((uint8_t)(*contents++), hex);
     printf("%s ", hex);
   }
-  printf("\n");
+  printf("\n\n");
   return TERRA_STATUS_SUCCESS;
 }

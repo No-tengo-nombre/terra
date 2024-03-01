@@ -106,7 +106,7 @@ terra_status_t terra_vk_pipeline_new(
 
   int dyn_viewport_found    = 0;
   int dyn_scissor_found     = 0;
-  VkDynamicState *dyn_state = p.dyn_state;
+  const VkDynamicState *dyn_state = p.dyn_state;
   for (int i = 0; i < p.dyn_state_count; i++, dyn_state++) {
     switch (*dyn_state) {
     case VK_DYNAMIC_STATE_VIEWPORT:
@@ -197,7 +197,7 @@ terra_status_t terra_vk_pipeline_new(
   layout_info.pPushConstantRanges    = NULL;
 
   TERRA_VK_CALL_I(
-      vkCreatePipelineLayout(app->vk_ldevice, &layout_info, NULL, out->layout),
+      vkCreatePipelineLayout(app->vk_ldevice, &layout_info, NULL, &out->layout),
       "Failed to create pipeline layout"
   );
 
@@ -215,7 +215,7 @@ terra_status_t terra_vk_pipeline_from_filenames(
   terra_vk_shader_t vert_shader;
   terra_vk_shader_t *vert_p = NULL;
   if (vertex != NULL) {
-    TERRA_CALL(
+    TERRA_CALL_I(
         terra_vk_shader_from_spv(app, vertex, &vert_shader),
         "Failed creating vertex shader"
     );
@@ -226,7 +226,7 @@ terra_status_t terra_vk_pipeline_from_filenames(
   terra_vk_shader_t frag_shader;
   terra_vk_shader_t *frag_p = NULL;
   if (frag != NULL) {
-    TERRA_CALL(
+    TERRA_CALL_I(
         terra_vk_shader_from_spv(app, frag, &frag_shader),
         "Failed creating fragment shader"
     );

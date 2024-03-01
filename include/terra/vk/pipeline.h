@@ -9,7 +9,7 @@
 typedef struct terra_vk_pipeline_params {
   const char *vert_entrypoint;
   const char *frag_entrypoint;
-  VkDynamicState *dyn_state;
+  const VkDynamicState *dyn_state;
   uint32_t dyn_state_count;
   VkPrimitiveTopology topology;
   VkBool32 primitive_restart;

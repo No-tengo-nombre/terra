@@ -74,6 +74,9 @@ terra_status_t terra_app_new(
       .state   = terra_app_state_default(),
       .meta    = meta,
       .conf    = conf,
+#ifndef NDEBUG // Internal debug information
+      ._idebug_malloced_total = 0,
+#endif
   };
   *out = app;
   return TERRA_STATUS_SUCCESS;

@@ -85,6 +85,12 @@ typedef struct terra_app {
   VkImage *vk_images;
   VkImageView *vk_image_views;
   uint32_t vk_images_count;
+
+#ifndef NDEBUG
+  /* Internal debug information */
+
+  size_t _idebug_malloced_total;
+#endif
 } terra_app_t;
 
 typedef terra_status_t(terra_start_ft)(terra_app_t *);

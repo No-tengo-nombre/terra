@@ -1,6 +1,7 @@
 #include "vendor/log.h"
 
 #include <stdlib.h>
+#include <terra/app.h>
 #include <terrau/mem.h>
 
 inline void *terrau_malloc(terra_app_t *app, size_t size) {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <terra/vk/shader.h>
-
 #include "material.h"
 #include "status.h"
+
+#include <terra/vk/shader.h>
 
 typedef struct terra_mesh {
   terra_material_t *material;

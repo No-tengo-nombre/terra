@@ -25,7 +25,8 @@
 
 int log_add_fp_internal(FILE *fp, int level);
 
-void log_log_internal(int level, const char *file, int line, const char *fmt,
-                      ...);
+void log_log_internal(
+    int level, const char *file, int line, const char *fmt, ...
+);
 
 #endif

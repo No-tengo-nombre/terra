@@ -1,4 +1,5 @@
 #include "vendor/log.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,8 +7,22 @@
 #include <terrau/binfile.h>
 
 const char _HEX_MAPPING[16] = {
-    '0', '1', '2', '3', '4', '5', '6', '7',
-    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
 };
 
 int64_t get_file_size(FILE *file) {
@@ -15,8 +30,9 @@ int64_t get_file_size(FILE *file) {
   return ftell(file);
 }
 
-terra_status_t terrau_read_binary_file(const char *filename, int64_t *out_size,
-                                       char **out) {
+terra_status_t terrau_read_binary_file(
+    const char *filename, int64_t *out_size, char **out
+) {
   logi_debug("Reading file '%s'", filename);
   FILE *file = fopen(filename, "rb");
   if (file == NULL) {
@@ -48,7 +64,7 @@ terra_status_t terrau_read_binary_file(const char *filename, int64_t *out_size,
 
   logi_debug("Storing contents in final buffer");
   *out_size = file_size;
-  *out = contents;
+  *out      = contents;
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -58,13 +74,14 @@ void _uint_to_hex_str(uint8_t num, char *out) {
   out[1] = _HEX_MAPPING[num % 16];
 }
 
-terra_status_t terrau_visualize_binary_file(const char *contents,
-                                            const int64_t size) {
+terra_status_t terrau_visualize_binary_file(
+    const char *contents, const int64_t size
+) {
   char hex[3];
-  printf(
-      "                | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |\n");
-  printf(
-      "                +-------------------------------------------------+\n");
+  printf("                | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |\n"
+  );
+  printf("                +-------------------------------------------------+\n"
+  );
   for (int i = 0; i < size; i++) {
     if (i % 16 == 0) {
       if (i != 0) {

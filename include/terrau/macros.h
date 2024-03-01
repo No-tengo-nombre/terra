@@ -1,4 +1,5 @@
 #include "log.h"
+
 #include <terra/status.h>
 
 #define TERRA_CALL(x, msg, ...)                                                \

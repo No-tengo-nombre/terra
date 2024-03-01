@@ -1,7 +1,6 @@
 #include <stdio.h>
-
-#include <terra/status.h>
 #include <terra/app.h>
+#include <terra/status.h>
 
 terra_status_t start(terra_app_t *app) {
   printf("Starting application\n");
@@ -18,7 +17,7 @@ terra_status_t loop(terra_app_t *app) {
 
 int main(void) {
   terra_app_metadata_t meta = terra_app_metadata_default();
-  meta.app_name = "Terra (example) - App creation";
+  meta.app_name             = "Terra (example) - App creation";
 
   terra_app_config_t conf = terra_app_config_default();
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "vendor/log.h"
+
 #include <string.h>
 
 #define TEST_FAIL 1

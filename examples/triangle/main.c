@@ -28,7 +28,7 @@ terra_status_t cleanup(terra_app_t *app) {
 
 int main(void) {
   terra_app_metadata_t meta = terra_app_metadata_default();
-  meta.app_name = "Terra (example) - Triangle";
+  meta.app_name             = "Terra (example) - Triangle";
 
   terra_app_config_t conf = terra_app_config_default();
 

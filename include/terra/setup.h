@@ -2,6 +2,7 @@
 
 #include "app.h"
 #include "vulkan.h"
+
 #include <terra/status.h>
 
 typedef struct terra_init_params {

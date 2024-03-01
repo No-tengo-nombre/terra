@@ -38,24 +38,38 @@ static struct {
   Callback callbacks[MAX_CALLBACKS];
 } L;
 
-static const char *level_strings[] = {"TRACE", "DEBUG", "INFO",
-                                      "WARN",  "ERROR", "FATAL"};
+static const char *level_strings[] = {
+    "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
+};
 
 #ifdef LOG_USE_COLOR
-static const char *level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m",
-                                     "\x1b[33m", "\x1b[31m", "\x1b[35m"};
+static const char *level_colors[] = {
+    "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"
+};
 #endif
 
 static void stdout_callback(log_Event *ev) {
   char buf[16];
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
-  fprintf(ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
-          level_colors[ev->level], level_strings[ev->level], ev->file,
-          ev->line);
+  fprintf(
+      ev->udata,
+      "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+      buf,
+      level_colors[ev->level],
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
 #else
-  fprintf(ev->udata, "%s %-5s %s:%d: ", buf, level_strings[ev->level], ev->file,
-          ev->line);
+  fprintf(
+      ev->udata,
+      "%s %-5s %s:%d: ",
+      buf,
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
@@ -65,8 +79,14 @@ static void stdout_callback(log_Event *ev) {
 static void file_callback(log_Event *ev) {
   char buf[64];
   buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-  fprintf(ev->udata, "%s %-5s %s:%d: ", buf, level_strings[ev->level], ev->file,
-          ev->line);
+  fprintf(
+      ev->udata,
+      "%s %-5s %s:%d: ",
+      buf,
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
@@ -76,12 +96,24 @@ static void stdout_callback_internal(log_Event *ev) {
   char buf[16];
   buf[strftime(buf, sizeof(buf), "%H:%M:%S", ev->time)] = '\0';
 #ifdef LOG_USE_COLOR
-  fprintf(ev->udata, "[I] %s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf,
-          level_colors[ev->level], level_strings[ev->level], ev->file,
-          ev->line);
+  fprintf(
+      ev->udata,
+      "[I] %s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+      buf,
+      level_colors[ev->level],
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
 #else
-  fprintf(ev->udata, "[I] %s %-5s %s:%d: ", buf, level_strings[ev->level],
-          ev->file, ev->line);
+  fprintf(
+      ev->udata,
+      "[I] %s %-5s %s:%d: ",
+      buf,
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
@@ -91,8 +123,14 @@ static void stdout_callback_internal(log_Event *ev) {
 static void file_callback_internal(log_Event *ev) {
   char buf[64];
   buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-  fprintf(ev->udata, "[I] %s %-5s %s:%d: ", buf, level_strings[ev->level],
-          ev->file, ev->line);
+  fprintf(
+      ev->udata,
+      "[I] %s %-5s %s:%d: ",
+      buf,
+      level_strings[ev->level],
+      ev->file,
+      ev->line
+  );
   vfprintf(ev->udata, ev->fmt, ev->ap);
   fprintf(ev->udata, "\n");
   fflush(ev->udata);
@@ -113,7 +151,7 @@ static void unlock(void) {
 const char *log_level_string(int level) { return level_strings[level]; }
 
 void log_set_lock(log_LockFn fn, void *udata) {
-  L.lock = fn;
+  L.lock  = fn;
   L.udata = udata;
 }
 
@@ -150,9 +188,9 @@ static void init_event(log_Event *ev, void *udata) {
 void log_log(int level, const char *file, int line, const char *fmt, ...) {
 #ifndef TERRA_DISABLE_LOGGING
   log_Event ev = {
-      .fmt = fmt,
-      .file = file,
-      .line = line,
+      .fmt   = fmt,
+      .file  = file,
+      .line  = line,
       .level = level,
   };
 
@@ -179,13 +217,14 @@ void log_log(int level, const char *file, int line, const char *fmt, ...) {
 #endif
 }
 
-void log_log_internal(int level, const char *file, int line, const char *fmt,
-                      ...) {
+void log_log_internal(
+    int level, const char *file, int line, const char *fmt, ...
+) {
 #ifndef TERRA_DISABLE_LOGGING
   log_Event ev = {
-      .fmt = fmt,
-      .file = file,
-      .line = line,
+      .fmt   = fmt,
+      .file  = file,
+      .line  = line,
       .level = level,
   };
 

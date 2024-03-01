@@ -25,6 +25,7 @@ terra_status_t terra_vk_check_sc_support(
   vkGetPhysicalDeviceSurfaceFormatsKHR(
       device, surface, &out->format_count, NULL
   );
+  logi_debug("Allocating pdevice surface formats");
   out->formats =
       terrau_malloc(app, out->format_count * sizeof(VkSurfaceFormatKHR));
   if (out->formats == NULL) {
@@ -39,6 +40,7 @@ terra_status_t terra_vk_check_sc_support(
   vkGetPhysicalDeviceSurfacePresentModesKHR(
       device, surface, &out->mode_count, NULL
   );
+  logi_debug("Allocating pdevice surface present modes");
   out->modes = terrau_malloc(app, out->mode_count * sizeof(VkPresentModeKHR));
   if (out->modes == NULL) {
     logi_error("Could not allocate memory for surface present modes");
@@ -135,7 +137,9 @@ terra_status_t terra_vk_create_sc(
       ),
       "Failed getting number of images"
   );
+  logi_debug("Allocating swapchain images");
   app->vk_images = terrau_malloc(app, app->vk_images_count * sizeof(VkImage));
+  logi_debug("Allocating swapchain image views");
   app->vk_image_views =
       terrau_malloc(app, app->vk_images_count * sizeof(VkImageView));
   if (app->vk_images == NULL) {

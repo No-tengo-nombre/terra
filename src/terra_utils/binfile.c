@@ -44,6 +44,7 @@ terra_status_t terrau_read_binary_file(
   int64_t file_size = get_file_size(file);
   logi_debug("File size is %lli B, reading contents", file_size);
   fseek(file, 0, SEEK_SET);
+  logi_debug("Allocating file");
   char *contents =
       terrau_malloc(app, file_size * sizeof(char)); // Dont forget to free
   if (contents == NULL) {

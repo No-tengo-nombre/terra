@@ -45,7 +45,8 @@ inline void *terrau_calloc(terra_app_t *app, size_t num, size_t size) {
 
 inline void terrau_free(terra_app_t *app, void *ptr) {
 #ifndef NDEBUG
-  logi_debug("Freeing memory in heap at address %#18x", ptr);
+  // logi_debug("Freeing memory in heap at address %#18x", ptr);
+  logi_debug("Freeing memory in heap at address %#10x", ptr);
   if (ptr != NULL) {
     app->_idebug_malloced_total--;
   }

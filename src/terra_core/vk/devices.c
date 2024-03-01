@@ -54,6 +54,7 @@ terra_status_t terra_vk_create_instance_info(
 int terra_vk_check_validation_layer_support(terra_app_t *app) {
   uint32_t layers;
   vkEnumerateInstanceLayerProperties(&layers, NULL);
+  logi_debug("Allocating layer properties");
   VkLayerProperties *properties =
       terrau_malloc(app, layers * sizeof(VkLayerProperties));
   if (properties == NULL) {
@@ -91,6 +92,7 @@ terra_status_t terra_vk_find_queue_families(
 
   uint32_t count = 0;
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
+  logi_debug("Allocating pdevice queue family properties");
   VkQueueFamilyProperties *qprops =
       terrau_malloc(app, count * sizeof(VkQueueFamilyProperties));
   if (qprops == NULL) {
@@ -135,6 +137,7 @@ int terra_check_device_extensions(
 ) {
   uint32_t ext_total;
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
+  logi_debug("Allocating extension properties");
   VkExtensionProperties *ext_props =
       terrau_malloc(app, ext_total * sizeof(VkExtensionProperties));
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
@@ -224,6 +227,7 @@ terra_status_t terra_vk_get_physical_device(
     logi_error("Failed to find GPUs that support Vulkan");
     return TERRA_STATUS_FAILURE;
   }
+  logi_debug("Allocating pdevices");
   VkPhysicalDevice *devices =
       terrau_malloc(app, device_count * sizeof(VkPhysicalDevice));
   if (devices == NULL) {

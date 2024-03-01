@@ -173,6 +173,15 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Terminating GLFW");
   glfwTerminate();
 
+#ifndef NDEBUG
+  if (app->_idebug_malloced_total != 0) {
+    logi_warn(
+        "MEMORY LEAK: Found %i elements in heap after cleanup",
+        app->_idebug_malloced_total
+    );
+  }
+#endif
+
   return TERRA_STATUS_SUCCESS;
 }
 

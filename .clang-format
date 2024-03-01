@@ -1,0 +1,37 @@
+BasedOnStyle: LLVM
+
+### Code size ###
+UseTab: Never
+IndentWidth: 2
+TabWidth: 2
+ColumnLimit: 80
+BreakBeforeBraces: Attach
+
+### Placement ###
+DerivePointerAlignment: false
+PointerAlignment: Right
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+
+### Alignments ###
+AlignAfterOpenBracket: BlockIndent
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+AlignOperands: Align
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1

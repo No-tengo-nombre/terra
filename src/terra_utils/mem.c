@@ -51,5 +51,5 @@ inline void terrau_free(terra_app_t *app, void *ptr) {
     app->_idebug_malloced_total--;
   }
 #endif
-  return free(ptr);
+  free(ptr);
 }

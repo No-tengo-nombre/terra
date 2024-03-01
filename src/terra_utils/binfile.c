@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <terra/status.h>
 #include <terrau/binfile.h>
+#include <terrau/mem.h>
 
 const char _HEX_MAPPING[16] = {
     '0',
@@ -31,7 +32,7 @@ int64_t get_file_size(FILE *file) {
 }
 
 terra_status_t terrau_read_binary_file(
-    const char *filename, int64_t *out_size, char **out
+    terra_app_t *app, const char *filename, int64_t *out_size, char **out
 ) {
   logi_debug("Reading file '%s'", filename);
   FILE *file = fopen(filename, "rb");
@@ -43,7 +44,8 @@ terra_status_t terrau_read_binary_file(
   int64_t file_size = get_file_size(file);
   logi_debug("File size is %lli B, reading contents", file_size);
   fseek(file, 0, SEEK_SET);
-  char *contents = malloc(file_size * sizeof(char)); // Dont forget to free
+  char *contents =
+      terrau_malloc(app, file_size * sizeof(char)); // Dont forget to free
   if (contents == NULL) {
     logi_error("Could not allocate enough memory for file contents");
     fclose(file);
@@ -75,7 +77,7 @@ void _uint_to_hex_str(uint8_t num, char *out) {
 }
 
 terra_status_t terrau_visualize_binary_file(
-    const char *contents, const int64_t size
+    terra_app_t *app, const char *contents, const int64_t size
 ) {
   char hex[3];
   printf("                | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |\n"

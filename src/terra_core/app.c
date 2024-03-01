@@ -4,6 +4,7 @@
 #include <terra/vulkan.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
+#include <terrau/mem.h>
 
 const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
 const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -136,9 +137,10 @@ terra_status_t terra_app_run(terra_app_t *app) {
 
 terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   app->vk_images_count = new_count;
-  void *images         = realloc(app->vk_images, new_count * sizeof(VkImage));
+  void *images =
+      terrau_realloc(app, app->vk_images, new_count * sizeof(VkImage));
   void *image_views =
-      realloc(app->vk_image_views, new_count * sizeof(VkImageView));
+      terrau_realloc(app, app->vk_image_views, new_count * sizeof(VkImageView));
   if (images == NULL || image_views == NULL) {
     logi_error("Could not reallocate memory for images or image views");
     return TERRA_STATUS_FAILURE;
@@ -156,8 +158,8 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   }
 
   logi_debug("Releasing heap allocated arrays");
-  free(app->vk_images);
-  free(app->vk_image_views);
+  terrau_free(app, app->vk_images);
+  terrau_free(app, app->vk_image_views);
 
   logi_debug("Cleaning Vulkan objects");
   vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);

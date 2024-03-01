@@ -8,9 +8,13 @@
 #include <terra/vk/swapchain.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
+#include <terrau/mem.h>
 
 terra_status_t terra_vk_check_sc_support(
-    VkPhysicalDevice device, VkSurfaceKHR surface, terra_vk_sc_details_t *out
+    terra_app_t *app,
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
+    terra_vk_sc_details_t *out
 ) {
   logi_debug("Querying surface capabilities");
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
@@ -21,7 +25,8 @@ terra_status_t terra_vk_check_sc_support(
   vkGetPhysicalDeviceSurfaceFormatsKHR(
       device, surface, &out->format_count, NULL
   );
-  out->formats = malloc(out->format_count * sizeof(VkSurfaceFormatKHR));
+  out->formats =
+      terrau_malloc(app, out->format_count * sizeof(VkSurfaceFormatKHR));
   if (out->formats == NULL) {
     logi_error("Could not allocate memory for surface formats");
     return TERRA_STATUS_FAILURE;
@@ -34,7 +39,7 @@ terra_status_t terra_vk_check_sc_support(
   vkGetPhysicalDeviceSurfacePresentModesKHR(
       device, surface, &out->mode_count, NULL
   );
-  out->modes = malloc(out->mode_count * sizeof(VkPresentModeKHR));
+  out->modes = terrau_malloc(app, out->mode_count * sizeof(VkPresentModeKHR));
   if (out->modes == NULL) {
     logi_error("Could not allocate memory for surface present modes");
     return TERRA_STATUS_FAILURE;
@@ -56,7 +61,9 @@ terra_status_t terra_vk_create_sc(
   uint32_t image_count;
 
   TERRA_CALL_I(
-      terra_vk_check_sc_support(app->vk_pdevice, app->vk_surface, &sc_details),
+      terra_vk_check_sc_support(
+          app, app->vk_pdevice, app->vk_surface, &sc_details
+      ),
       "Failed evaluating swapchain support"
   );
   TERRA_CALL_I(
@@ -117,7 +124,7 @@ terra_status_t terra_vk_create_sc(
 
   logi_debug("Cleaning swapchain details");
   TERRA_CALL_I(
-      terra_vk_sc_details_cleanup(&sc_details),
+      terra_vk_sc_details_cleanup(app, &sc_details),
       "Failed cleaning up the swapchain details"
   );
 
@@ -128,8 +135,9 @@ terra_status_t terra_vk_create_sc(
       ),
       "Failed getting number of images"
   );
-  app->vk_images      = malloc(app->vk_images_count * sizeof(VkImage));
-  app->vk_image_views = malloc(app->vk_images_count * sizeof(VkImageView));
+  app->vk_images = terrau_malloc(app, app->vk_images_count * sizeof(VkImage));
+  app->vk_image_views =
+      terrau_malloc(app, app->vk_images_count * sizeof(VkImageView));
   if (app->vk_images == NULL) {
     logi_error(
         "Could not allocate memory for %i vulkan images in the swapchain",
@@ -187,8 +195,10 @@ terra_status_t terra_vk_create_image_views(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_vk_sc_details_cleanup(terra_vk_sc_details_t *dets) {
-  free(dets->formats);
-  free(dets->modes);
+terra_status_t terra_vk_sc_details_cleanup(
+    terra_app_t *app, terra_vk_sc_details_t *dets
+) {
+  terrau_free(app, dets->formats);
+  terrau_free(app, dets->modes);
   return TERRA_STATUS_SUCCESS;
 }

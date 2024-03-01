@@ -18,7 +18,10 @@ terra_status_t terra_vk_create_instance_info(
 );
 int terra_vk_check_validation_layer_support(terra_app_t *app);
 terra_status_t terra_vk_find_queue_families(
-    VkPhysicalDevice device, VkSurfaceKHR surface, terra_queue_t *out
+    terra_app_t *app,
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
+    terra_queue_t *out
 );
 terra_status_t terra_vk_rate_device(
     terra_app_t *app,

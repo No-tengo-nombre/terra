@@ -9,6 +9,7 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/math/clamp.h>
+#include <terrau/mem.h>
 
 terra_status_t terra_vk_create_application_info(
     terra_app_t *app, VkApplicationInfo *out
@@ -53,7 +54,8 @@ terra_status_t terra_vk_create_instance_info(
 int terra_vk_check_validation_layer_support(terra_app_t *app) {
   uint32_t layers;
   vkEnumerateInstanceLayerProperties(&layers, NULL);
-  VkLayerProperties *properties = malloc(layers * sizeof(VkLayerProperties));
+  VkLayerProperties *properties =
+      terrau_malloc(app, layers * sizeof(VkLayerProperties));
   if (properties == NULL) {
     return 0;
   }
@@ -72,12 +74,15 @@ int terra_vk_check_validation_layer_support(terra_app_t *app) {
       return 0;
     }
   }
-  free(properties);
+  terrau_free(app, properties);
   return 1;
 }
 
 terra_status_t terra_vk_find_queue_families(
-    VkPhysicalDevice device, VkSurfaceKHR surface, terra_queue_t *out
+    terra_app_t *app,
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
+    terra_queue_t *out
 ) {
   out->gfound = 0;
   out->pfound = 0;
@@ -87,7 +92,7 @@ terra_status_t terra_vk_find_queue_families(
   uint32_t count = 0;
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
   VkQueueFamilyProperties *qprops =
-      malloc(count * sizeof(VkQueueFamilyProperties));
+      terrau_malloc(app, count * sizeof(VkQueueFamilyProperties));
   if (qprops == NULL) {
     return TERRA_STATUS_FAILURE;
   }
@@ -118,17 +123,20 @@ terra_status_t terra_vk_find_queue_families(
       logi_debug("Setting %i as graphics queue", i);
     }
   }
-  free(qprops);
+  terrau_free(app, qprops);
   return TERRA_STATUS_SUCCESS;
 }
 
 int terra_check_device_extensions(
-    VkPhysicalDevice device, const char **target, size_t target_total
+    terra_app_t *app,
+    VkPhysicalDevice device,
+    const char **target,
+    size_t target_total
 ) {
   uint32_t ext_total;
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, NULL);
   VkExtensionProperties *ext_props =
-      malloc(ext_total * sizeof(VkExtensionProperties));
+      terrau_malloc(app, ext_total * sizeof(VkExtensionProperties));
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
 
   int all_found = 1;
@@ -148,7 +156,7 @@ int terra_check_device_extensions(
     logi_debug("Extension %s was found", target[i]);
   }
 
-  free(ext_props);
+  terrau_free(app, ext_props);
   return all_found;
 }
 
@@ -165,18 +173,21 @@ terra_status_t terra_vk_rate_device(
   vkGetPhysicalDeviceFeatures(device, &feats);
 
   int extensions_supported = terra_check_device_extensions(
-      device, app->conf->device_extensions, app->conf->device_extensions_total
+      app,
+      device,
+      app->conf->device_extensions,
+      app->conf->device_extensions_total
   );
   int adequate_sc = 0;
   if (extensions_supported) {
     logi_debug("Device '%s' supports all extensions", props.deviceName);
     terra_vk_sc_details_t sc_details;
     TERRA_CALL_I(
-        terra_vk_check_sc_support(device, surface, &sc_details),
+        terra_vk_check_sc_support(app, device, surface, &sc_details),
         "Failed checking for swapchain support"
     );
     TERRA_CALL_I(
-        terra_vk_sc_details_cleanup(&sc_details),
+        terra_vk_sc_details_cleanup(app, &sc_details),
         "Failed cleaning up the swapchain details"
     );
     adequate_sc =
@@ -213,7 +224,8 @@ terra_status_t terra_vk_get_physical_device(
     logi_error("Failed to find GPUs that support Vulkan");
     return TERRA_STATUS_FAILURE;
   }
-  VkPhysicalDevice *devices = malloc(device_count * sizeof(VkPhysicalDevice));
+  VkPhysicalDevice *devices =
+      terrau_malloc(app, device_count * sizeof(VkPhysicalDevice));
   if (devices == NULL) {
     logi_error("Could not allocate enough memory for the devices");
     return TERRA_STATUS_FAILURE;
@@ -228,7 +240,7 @@ terra_status_t terra_vk_get_physical_device(
     logi_info("Evaluating device '%s'", props.deviceName);
     TERRA_CALL_I(
         terra_vk_find_queue_families(
-            devices[i], app->vk_surface, &device_queue
+            app, devices[i], app->vk_surface, &device_queue
         ),
         "Failed creating device queue"
     );
@@ -259,7 +271,7 @@ terra_status_t terra_vk_get_physical_device(
     vkGetPhysicalDeviceProperties(device, &props);
     logi_info("Using device %s", props.deviceName);
   }
-  free(devices);
+  terrau_free(app, devices);
   return TERRA_STATUS_SUCCESS;
 }
 

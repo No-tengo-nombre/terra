@@ -5,22 +5,23 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/binfile.h>
+#include <terrau/mem.h>
 
 terra_status_t terra_vk_shader_from_spv(
-    const terra_app_t *app, const char *filename, terra_vk_shader_t *out
+    terra_app_t *app, const char *filename, terra_vk_shader_t *out
 ) {
   char *contents;
   int64_t size;
 
   logi_debug("Reading binary file");
   TERRA_CALL_I(
-      terrau_read_binary_file(filename, &size, &contents),
+      terrau_read_binary_file(app, filename, &size, &contents),
       "Failed reading shader '%s' from SPIR-V formatted binary file",
       filename
   );
 #ifndef NDEBUG
   logi_debug("Visualizing binary file");
-  terrau_visualize_binary_file(contents, size);
+  terrau_visualize_binary_file(app, contents, size);
 #endif
 
   VkShaderModuleCreateInfo info = {VK_FALSE};
@@ -34,7 +35,7 @@ terra_status_t terra_vk_shader_from_spv(
       vkCreateShaderModule(app->vk_ldevice, &info, NULL, &mod),
       "Failed creating shader module"
   );
-  free(contents);
+  terrau_free(app, contents);
 
   logi_debug("Writing to out parameters");
   out->mod = mod;
@@ -43,7 +44,7 @@ terra_status_t terra_vk_shader_from_spv(
 }
 
 terra_status_t terra_vk_shader_cleanup(
-    const terra_app_t *app, terra_vk_shader_t *shader
+    terra_app_t *app, terra_vk_shader_t *shader
 ) {
   vkDestroyShaderModule(app->vk_ldevice, shader->mod, NULL);
   return TERRA_STATUS_SUCCESS;

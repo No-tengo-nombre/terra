@@ -1,3 +1,4 @@
+DisableFormat: false
 BasedOnStyle: LLVM
 
 ### Code size ###
@@ -12,6 +13,20 @@ DerivePointerAlignment: false
 PointerAlignment: Right
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
+BreakAfterReturnType: Automatic
+PenaltyReturnTypeOnItsOwnLine: 1000
+BreakBeforeConceptDeclarations: Always
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: true
+BreakTemplateDeclarations: Yes
+CompactNamespaces: false
+IncludeBlocks: Regroup
+IndentCaseLabels: false
+IndentExternBlock: NoIndent
+IndentPPDirectives: BeforeHash
+NamespaceIndentation: None
+SpaceBeforeCaseColon: false
 
 ### Alignments ###
 AlignAfterOpenBracket: BlockIndent
@@ -30,8 +45,17 @@ AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: false
   AcrossComments: true
-  AlignCompound: true
 AlignOperands: Align
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 1
+AlignEscapedNewlines: Right
+
+### Insertions ###
+InsertNewlineAtEOF: true
+BinPackArguments: false
+BinPackParameters: false
+InsertTrailingCommas: Wrapped
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: true

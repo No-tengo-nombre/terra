@@ -75,6 +75,11 @@ terra_status_t terra_app_new(
       .state   = terra_app_state_default(),
       .meta    = meta,
       .conf    = conf,
+
+      // These have to be NULL to avoid UB
+      .vk_images       = NULL,
+      .vk_image_views  = NULL,
+      .vk_framebuffers = NULL,
 #ifndef NDEBUG // Internal debug information
       ._idebug_malloced_total = 0,
 #endif
@@ -141,8 +146,19 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
       terrau_realloc(app, app->vk_images, new_count * sizeof(VkImage));
   void *image_views =
       terrau_realloc(app, app->vk_image_views, new_count * sizeof(VkImageView));
-  if (images == NULL || image_views == NULL) {
-    logi_error("Could not reallocate memory for images or image views");
+  void *framebuffers = terrau_realloc(
+      app, app->vk_framebuffers, new_count * sizeof(VkFramebuffer)
+  );
+  if (images == NULL) {
+    logi_error("Could not reallocate memory for %i images", new_count);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (image_views == NULL) {
+    logi_error("Could not reallocate memory for %i image views", new_count);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (framebuffers == NULL) {
+    logi_error("Could not reallocate memory for %i framebuffers", new_count);
     return TERRA_STATUS_FAILURE;
   }
   app->vk_images      = images;

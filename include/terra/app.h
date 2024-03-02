@@ -91,6 +91,7 @@ typedef struct terra_app {
 
   VkImage *vk_images;
   VkImageView *vk_image_views;
+  VkFramebuffer *vk_framebuffers;
   uint32_t vk_images_count;
 
 #ifndef NDEBUG

@@ -138,24 +138,10 @@ terra_status_t terra_vk_create_sc(
       "Failed getting number of images"
   );
   logi_debug("Allocating swapchain images");
-  app->vk_images = terrau_malloc(app, app->vk_images_count * sizeof(VkImage));
-  logi_debug("Allocating swapchain image views");
-  app->vk_image_views =
-      terrau_malloc(app, app->vk_images_count * sizeof(VkImageView));
-  if (app->vk_images == NULL) {
-    logi_error(
-        "Could not allocate memory for %i vulkan images in the swapchain",
-        app->vk_images_count
-    );
-    return TERRA_STATUS_FAILURE;
-  }
-  if (app->vk_image_views == NULL) {
-    logi_error(
-        "Could not allocate memory for %i vulkan image views in the swapchain",
-        app->vk_images_count
-    );
-    return TERRA_STATUS_FAILURE;
-  }
+  TERRA_CALL_I(
+      terra_app_set_image_count(app, app->vk_images_count),
+      "Failed setting the image counts"
+  );
   TERRA_VK_CALL_I(
       vkGetSwapchainImagesKHR(
           app->vk_ldevice,

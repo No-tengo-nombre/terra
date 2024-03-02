@@ -211,5 +211,19 @@ terra_status_t terra_create_render_pass(
   subpass.pColorAttachments    = &color_att_ref;
   // TODO: Implement more types of attachments
 
+  // TODO: Implement the option to specify more than one attachment and more
+  // than one subpass
+  VkRenderPassCreateInfo info;
+  info.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  info.attachmentCount = 1;
+  info.pAttachments    = &color_att;
+  info.subpassCount    = 1;
+  info.pSubpasses      = &subpass;
+
+  TERRA_VK_CALL_I(
+      vkCreateRenderPass(app->vk_ldevice, &info, NULL, &app->vk_render_pass),
+      "Failed to create the render pass"
+  );
+
   return TERRA_STATUS_SUCCESS;
 }

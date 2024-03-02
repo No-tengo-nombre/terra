@@ -1,11 +1,23 @@
 #include <terra/app.h>
 #include <terra/setup.h>
+#include <terra/vk/pipeline.h>
 #include <terra/vk/swapchain.h>
 #include <terrau/log.h>
 #include <terrau/macros.h>
 
 terra_status_t start(terra_app_t *app) {
   TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
+  terra_vk_pipeline_t pipeline;
+  TERRA_CALL(
+      terra_vk_pipeline_from_filenames(
+          app,
+          NULL,
+          "bin/debug/ex.triangle/triangle.vert.spv",
+          "bin/debug/ex.triangle/triangle.frag.spv",
+          &pipeline
+      ),
+      "Failed creating pipeline"
+  );
 
   return TERRA_STATUS_SUCCESS;
 }

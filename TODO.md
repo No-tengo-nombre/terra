@@ -1,5 +1,6 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
+- **(`./include/terra/material.h`)** Figure out how to do materials
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for vertex shaders
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for fragment shaders
 - **(`./src/terra_core/vk/_pipeline.c`)** Add the option for the user to specify the binding and

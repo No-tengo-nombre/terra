@@ -81,6 +81,7 @@ typedef struct terra_app {
   VkSwapchainKHR vk_swapchain;
   VkExtent2D vk_extent;
   VkFormat vk_format;
+  VkPipelineLayout vk_layout;
 
   VkImage *vk_images;
   VkImageView *vk_image_views;

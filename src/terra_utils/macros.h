@@ -1,3 +1,5 @@
+#pragma once
+
 #include "vendor/log.h"
 
 #include <terra/status.h>

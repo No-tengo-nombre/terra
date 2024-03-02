@@ -60,6 +60,7 @@ typedef struct terra_app_config {
   uint32_t image_array_layers;
   VkCompositeAlphaFlagBitsKHR composite_alpha;
   uint8_t clipped;
+  VkCommandPoolCreateFlags command_pool_flags;
 } terra_app_config_t;
 
 typedef struct terra_app {
@@ -88,6 +89,8 @@ typedef struct terra_app {
   VkPipelineLayout vk_layout;
   VkRenderPass vk_render_pass;
   VkPipeline vk_pipeline;
+  VkCommandPool vk_commands;
+  VkCommandBuffer vk_command_buffer;
 
   VkImage *vk_images;
   VkImageView *vk_image_views;

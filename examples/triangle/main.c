@@ -1,5 +1,6 @@
 #include <terra/app.h>
 #include <terra/setup.h>
+#include <terra/vk/command_pool.h>
 #include <terra/vk/framebuffer.h>
 #include <terra/vk/pipeline.h>
 #include <terra/vk/swapchain.h>
@@ -20,6 +21,7 @@ terra_status_t start(terra_app_t *app) {
       "Failed creating pipeline"
   );
   TERRA_CALL(terra_vk_framebuffer_new(app), "Failed creating framebuffers");
+  TERRA_CALL(terra_vk_command_pool_new(app), "Failed creating command pool");
 
   return TERRA_STATUS_SUCCESS;
 }

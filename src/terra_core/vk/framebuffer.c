@@ -1,4 +1,5 @@
 #include <terra/vk/framebuffer.h>
+#include <terra/vulkan.h>
 #include <terra_utils/macros.h>
 
 terra_status_t terra_vk_framebuffer_new(terra_app_t *app) {

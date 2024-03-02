@@ -47,6 +47,7 @@ terra_status_t terra_app_config_new(
       .image_array_layers      = 1,
       .composite_alpha         = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
       .clipped                 = VK_TRUE,
+      .command_pool_flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
   };
   *out = conf;
   return TERRA_STATUS_SUCCESS;
@@ -168,6 +169,9 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
 }
 
 terra_status_t terra_app_cleanup(terra_app_t *app) {
+  logi_debug("Cleaning up command pool");
+  vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
+
   logi_debug("Cleaning image views and framebuffers");
   VkFramebuffer *fb = app->vk_framebuffers;
   VkImageView *view = app->vk_image_views;

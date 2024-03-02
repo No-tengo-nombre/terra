@@ -5,6 +5,14 @@
 
 #include <terra/vk/shader.h>
 
-typedef struct terra_mesh {
-  terra_material_t *material;
-} terra_mesh_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// typedef struct terra_mesh {
+//   terra_material_t *material;
+// } terra_mesh_t;
+
+#ifdef __cplusplus
+}
+#endif

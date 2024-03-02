@@ -22,6 +22,10 @@ For devices
 (l) Logical device
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_app_state {
   uint64_t i;
   int should_close;
@@ -134,3 +138,7 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
 terra_status_t terra_app_cleanup(terra_app_t *app);
 
 int terra_app_should_close(terra_app_t *app);
+
+#ifdef __cplusplus
+}
+#endif

@@ -6,6 +6,10 @@
 #include <terra/status.h>
 #include <terra/vulkan.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_vk_pipeline_params {
   const char *vert_entrypoint;
   const char *frag_entrypoint;
@@ -37,3 +41,7 @@ terra_status_t terra_vk_pipeline_from_filenames(
     const char *vertex,
     const char *frag
 );
+
+#ifdef __cplusplus
+}
+#endif

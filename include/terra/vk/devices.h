@@ -5,6 +5,10 @@
 #include <terra/status.h>
 #include <terra/vulkan.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_result {
   void *value;
   terra_queue_t queue;
@@ -45,3 +49,7 @@ terra_status_t terra_vk_create_device_info(
     uint32_t device_extension_count,
     VkDeviceCreateInfo *out
 );
+
+#ifdef __cplusplus
+}
+#endif

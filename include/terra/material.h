@@ -2,6 +2,13 @@
 
 #include <terra/vk/pipeline.h>
 
-typedef struct terra_material {
-  terra_vk_pipeline_t *pipeline;
-} terra_material_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// TODO: Figure out how to do materials
+// typedef struct terra_material terra_material_t;
+
+#ifdef __cplusplus
+}
+#endif

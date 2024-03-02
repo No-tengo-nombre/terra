@@ -4,6 +4,10 @@
 #include <terra/status.h>
 #include <terra/vulkan.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_vk_sc_details {
   VkSurfaceCapabilitiesKHR capabilities;
   VkSurfaceFormatKHR *formats;
@@ -28,3 +32,7 @@ terra_status_t terra_vk_create_image_views(
 terra_status_t terra_vk_sc_details_cleanup(
     terra_app_t *app, terra_vk_sc_details_t *dets
 );
+
+#ifdef __cplusplus
+}
+#endif

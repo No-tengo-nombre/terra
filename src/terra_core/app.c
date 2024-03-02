@@ -179,6 +179,7 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Releasing heap allocated arrays");
   terrau_free(app, app->vk_images);
   terrau_free(app, app->vk_image_views);
+  terrau_free(app, app->vk_framebuffers);
 
   logi_debug("Cleaning Vulkan objects");
   vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);

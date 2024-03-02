@@ -7,9 +7,15 @@
 #include <terra_utils/vendor/log.h>
 
 terra_status_t terra_init_params_default(terra_init_params_t *out) {
-  out->image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  out->view_type   = VK_IMAGE_VIEW_TYPE_2D;
-
+  out->image_usage      = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  out->view_type        = VK_IMAGE_VIEW_TYPE_2D;
+  out->samples          = VK_SAMPLE_COUNT_1_BIT;
+  out->load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  out->store_op         = VK_ATTACHMENT_STORE_OP_STORE;
+  out->stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  out->stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  out->initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED;
+  out->final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -179,5 +185,31 @@ terra_status_t terra_retrieve_device_queue(terra_app_t *app) {
   );
   vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.gfamily, 0, &app->vk_gqueue);
   vkGetDeviceQueue(app->vk_ldevice, app->vk_qinfo.pfamily, 0, &app->vk_pqueue);
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_create_render_pass(
+    terra_app_t *app, terra_init_params_t *params
+) {
+  VkAttachmentDescription color_att = {VK_FALSE};
+  color_att.format                  = app->vk_format;
+  color_att.samples                 = params->samples;
+  color_att.loadOp                  = params->load_op;
+  color_att.storeOp                 = params->store_op;
+  color_att.stencilLoadOp           = params->stencil_load_op;
+  color_att.stencilStoreOp          = params->stencil_store_op;
+  color_att.initialLayout           = params->initial_layout;
+  color_att.finalLayout             = params->final_layout;
+
+  VkAttachmentReference color_att_ref = {VK_FALSE};
+  color_att_ref.attachment            = 0;
+  color_att_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+  VkSubpassDescription subpass = {VK_FALSE};
+  subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
+  subpass.colorAttachmentCount = 1;
+  subpass.pColorAttachments    = &color_att_ref;
+  // TODO: Implement more types of attachments
+
   return TERRA_STATUS_SUCCESS;
 }

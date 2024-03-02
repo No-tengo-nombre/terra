@@ -161,15 +161,18 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
     logi_error("Could not reallocate memory for %i framebuffers", new_count);
     return TERRA_STATUS_FAILURE;
   }
-  app->vk_images      = images;
-  app->vk_image_views = image_views;
+  app->vk_images       = images;
+  app->vk_image_views  = image_views;
+  app->vk_framebuffers = framebuffers;
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_status_t terra_app_cleanup(terra_app_t *app) {
-  logi_debug("Cleaning image views");
+  logi_debug("Cleaning image views and framebuffers");
+  VkFramebuffer *fb = app->vk_framebuffers;
   VkImageView *view = app->vk_image_views;
-  for (int i = 0; i < app->vk_images_count; i++, view++) {
+  for (int i = 0; i < app->vk_images_count; i++, view++, fb++) {
+    vkDestroyFramebuffer(app->vk_ldevice, *fb, NULL);
     vkDestroyImageView(app->vk_ldevice, *view, NULL);
   }
 

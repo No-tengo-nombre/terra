@@ -20,6 +20,7 @@ typedef struct terra_vk_pipeline_params {
   float depth_bias_factor;
   float depth_bias_clamp;
   float depth_bias_slope;
+  VkOffset2D scissor_offset;
 } terra_vk_pipeline_params_t;
 
 terra_vk_pipeline_params_t terra_vk_pipeline_params_default(void);
@@ -28,7 +29,7 @@ typedef struct terra_vk_pipeline {
   // terra_vk_shader_t *vertex;
   // terra_vk_shader_t *frag;
 
-  VkPipelineLayout layout;
+  int _empty; // Placeholder to remove the warning
 } terra_vk_pipeline_t;
 
 terra_status_t terra_vk_pipeline_new(

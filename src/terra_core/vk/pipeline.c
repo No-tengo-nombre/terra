@@ -19,7 +19,7 @@ terra_vk_pipeline_params_t terra_vk_pipeline_params_default(void) {
       .dyn_state         = _DYN_STATE_DEFAULT,
       .dyn_state_count   = _DYN_STATE_DEFAULT_COUNT,
       .topology          = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-      .primitive_restart = VK_TRUE,
+      .primitive_restart = VK_FALSE,
       .depth_clamp       = VK_FALSE,
       .polygon_mode      = VK_POLYGON_MODE_FILL,
       .cull_mode         = VK_CULL_MODE_BACK_BIT,
@@ -36,8 +36,7 @@ terra_status_t terra_vk_pipeline_new(
     terra_app_t *app,
     terra_vk_pipeline_params_t *params,
     terra_vk_shader_t *vert,
-    terra_vk_shader_t *frag,
-    terra_vk_pipeline_t *out
+    terra_vk_shader_t *frag
 ) {
   terra_vk_pipeline_params_t p;
   if (params == NULL) {
@@ -147,6 +146,47 @@ terra_status_t terra_vk_pipeline_new(
       "Failed creating pipeline layout"
   );
 
+  VkGraphicsPipelineCreateInfo pipeline_info = {VK_FALSE};
+  pipeline_info.sType      = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  pipeline_info.stageCount = 2;
+  pipeline_info.pStages    = shader_stages;
+  pipeline_info.pVertexInputState   = &vert_state_info;
+  pipeline_info.pInputAssemblyState = &input_info;
+  pipeline_info.pViewportState      = &viewport_info;
+  pipeline_info.pRasterizationState = &rast_info;
+  pipeline_info.pMultisampleState   = &ms_info;
+  pipeline_info.pDepthStencilState  = NULL;
+  pipeline_info.pColorBlendState    = &cb_info;
+  pipeline_info.pDynamicState       = &dyn_info;
+  pipeline_info.layout              = app->vk_layout;
+  pipeline_info.renderPass          = app->vk_render_pass;
+  pipeline_info.subpass             = 0;
+  pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
+  pipeline_info.basePipelineIndex   = -1;
+
+  TERRA_VK_CALL_I(
+      vkCreateGraphicsPipelines(
+          app->vk_ldevice,
+          VK_NULL_HANDLE,
+          1,
+          &pipeline_info,
+          NULL,
+          &app->vk_pipeline
+      ),
+      "Failed to create the pipeline"
+  );
+
+  if (vert != NULL) {
+    TERRA_CALL_I(
+        terra_vk_shader_cleanup(app, vert), "Failed cleaning up vertex shader"
+    );
+  }
+  if (frag != NULL) {
+    TERRA_CALL_I(
+        terra_vk_shader_cleanup(app, frag), "Failed cleaning up fragment shader"
+    );
+  }
+
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -154,8 +194,7 @@ terra_status_t terra_vk_pipeline_from_filenames(
     terra_app_t *app,
     terra_vk_pipeline_params_t *params,
     const char *vertex,
-    const char *frag,
-    terra_vk_pipeline_t *out
+    const char *frag
 ) {
   logi_debug("Creating pipeline from files");
 
@@ -183,12 +222,5 @@ terra_status_t terra_vk_pipeline_from_filenames(
     frag_p = &frag_shader;
   }
 
-  return terra_vk_pipeline_new(app, params, vert_p, frag_p, out);
-}
-
-terra_status_t terra_vk_pipeline_cleanup(
-    terra_app_t *app, terra_vk_pipeline_t *pipe
-) {
-  // vkDestroyPipelineLayout(app->vk_ldevice, pipe->layout, NULL);
-  return TERRA_STATUS_SUCCESS;
+  return terra_vk_pipeline_new(app, params, vert_p, frag_p);
 }

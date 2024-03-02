@@ -46,6 +46,9 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       terra_vk_create_image_views(app, p.view_type),
       "Failed creating image views"
   );
+  TERRA_CALL_I(
+      terra_create_render_pass(app, &p), "Failed creating render pass"
+  );
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -191,6 +194,7 @@ terra_status_t terra_retrieve_device_queue(terra_app_t *app) {
 terra_status_t terra_create_render_pass(
     terra_app_t *app, terra_init_params_t *params
 ) {
+  logi_debug("Creating render passes");
   VkAttachmentDescription color_att = {VK_FALSE};
   color_att.format                  = app->vk_format;
   color_att.samples                 = params->samples;
@@ -213,17 +217,19 @@ terra_status_t terra_create_render_pass(
 
   // TODO: Implement the option to specify more than one attachment and more
   // than one subpass
-  VkRenderPassCreateInfo info;
-  info.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-  info.attachmentCount = 1;
-  info.pAttachments    = &color_att;
-  info.subpassCount    = 1;
-  info.pSubpasses      = &subpass;
+  VkRenderPassCreateInfo info = {VK_FALSE};
+  info.sType                  = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  info.attachmentCount        = 1;
+  info.pAttachments           = &color_att;
+  info.subpassCount           = 1;
+  info.pSubpasses             = &subpass;
 
+  logi_debug("Vulkan call to create render pass");
   TERRA_VK_CALL_I(
       vkCreateRenderPass(app->vk_ldevice, &info, NULL, &app->vk_render_pass),
       "Failed to create the render pass"
   );
+  logi_debug("ASDGASDFGDSFG");
 
   return TERRA_STATUS_SUCCESS;
 }

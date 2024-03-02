@@ -162,6 +162,7 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   terrau_free(app, app->vk_image_views);
 
   logi_debug("Cleaning Vulkan objects");
+  vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);
   vkDestroyPipelineLayout(app->vk_ldevice, app->vk_layout, NULL);
   vkDestroyRenderPass(app->vk_ldevice, app->vk_render_pass, NULL);
   vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);

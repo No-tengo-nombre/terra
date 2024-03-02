@@ -7,14 +7,14 @@
 
 terra_status_t start(terra_app_t *app) {
   TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
-  terra_vk_pipeline_t pipeline;
+
+  log_info("Initialized app, creating pipeline");
   TERRA_CALL(
       terra_vk_pipeline_from_filenames(
           app,
           NULL,
           "bin/debug/ex.triangle/triangle.vert.spv",
-          "bin/debug/ex.triangle/triangle.frag.spv",
-          &pipeline
+          "bin/debug/ex.triangle/triangle.frag.spv"
       ),
       "Failed creating pipeline"
   );

@@ -83,6 +83,7 @@ typedef struct terra_app {
   VkFormat vk_format;
   VkPipelineLayout vk_layout;
   VkRenderPass vk_render_pass;
+  VkPipeline vk_pipeline;
 
   VkImage *vk_images;
   VkImageView *vk_image_views;

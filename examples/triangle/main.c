@@ -4,12 +4,15 @@
 #include <terra/vk/framebuffer.h>
 #include <terra/vk/pipeline.h>
 #include <terra/vk/swapchain.h>
+#include <terra/vk/sync.h>
+#include <terra/vulkan.h>
 #include <terrau/log.h>
 #include <terrau/macros.h>
 
 terra_status_t start(terra_app_t *app) {
   TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
 
+  // TODO: Move the rest of the initializations into the terra_init function
   log_info("Initialized app, creating pipeline");
   TERRA_CALL(
       terra_vk_pipeline_from_filenames(
@@ -22,6 +25,7 @@ terra_status_t start(terra_app_t *app) {
   );
   TERRA_CALL(terra_vk_framebuffer_new(app), "Failed creating framebuffers");
   TERRA_CALL(terra_vk_command_pool_new(app), "Failed creating command pool");
+  TERRA_CALL(terra_vk_create_sync_objects(app), "Failed creating sync objects");
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -31,6 +35,8 @@ terra_status_t loop(terra_app_t *app) {
     log_info("Terminating program loop");
     return TERRA_STATUS_EXIT;
   }
+  TERRA_CALL(terra_vk_await_sync_objects(app), "Failed awaiting sync objects");
+  TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   glfwPollEvents();
 

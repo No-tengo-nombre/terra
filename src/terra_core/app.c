@@ -48,6 +48,7 @@ terra_status_t terra_app_config_new(
       .composite_alpha         = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
       .clipped                 = VK_TRUE,
       .command_pool_flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+      .in_flight_fence_timeout = UINT64_MAX,
   };
   *out = conf;
   return TERRA_STATUS_SUCCESS;

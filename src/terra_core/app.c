@@ -354,3 +354,13 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
 int terra_app_should_close(terra_app_t *app) {
   return glfwWindowShouldClose(app->glfw_window) || app->state.should_close;
 }
+
+VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity,
+    VkDebugUtilsMessageTypeFlagsEXT msg_type,
+    const VkDebugUtilsMessengerCallbackDataEXT *cb_data,
+    void *user_data
+) {
+  logi_error("validation layer: %s", cb_data->pMessage);
+  return VK_FALSE;
+}

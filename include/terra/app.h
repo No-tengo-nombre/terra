@@ -111,6 +111,7 @@ typedef struct terra_app {
 #ifndef NDEBUG
   /* Internal debug information */
 
+  VkDebugUtilsMessengerEXT _idebug_messenger;
   size_t _idebug_malloced_total;
 #endif
 } terra_app_t;
@@ -150,14 +151,18 @@ terra_status_t terra_app_new_wstate(
 terra_status_t terra_app_run(terra_app_t *app);
 terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
 
-terra_status_t terra_app_record_cmd_buffer(
-    terra_app_t *app, uint32_t idx
-);
+terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx);
 terra_status_t terra_app_draw(terra_app_t *app);
+int terra_app_should_close(terra_app_t *app);
 
 terra_status_t terra_app_cleanup(terra_app_t *app);
 
-int terra_app_should_close(terra_app_t *app);
+VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity,
+    VkDebugUtilsMessageTypeFlagsEXT msg_type,
+    const VkDebugUtilsMessengerCallbackDataEXT *cb_data,
+    void *user_data
+);
 
 #ifdef __cplusplus
 }

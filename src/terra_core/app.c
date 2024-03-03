@@ -283,14 +283,12 @@ terra_status_t terra_app_draw(terra_app_t *app) {
 
   /* Present the result of the draw call */
 
-  VkSwapchainKHR swapchains[] = {app->vk_swapchain};
-
   VkPresentInfoKHR pres_info   = {VK_FALSE};
   pres_info.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
   pres_info.waitSemaphoreCount = 1;
   pres_info.pWaitSemaphores    = signal_semaphores;
   pres_info.swapchainCount     = 1;
-  pres_info.pSwapchains        = swapchains;
+  pres_info.pSwapchains        = &app->vk_swapchain;
   pres_info.pImageIndices      = &img_idx;
   pres_info.pResults           = NULL;
 

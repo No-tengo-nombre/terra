@@ -128,6 +128,8 @@ terra_status_t terra_app_run(terra_app_t *app) {
       loop_status = app->loop(app);
       app->state.i++;
     }
+    logi_info("Finished loop");
+    logi_info("Waiting for remaining draw calls");
     TERRA_VK_CALL_I(
         vkDeviceWaitIdle(app->vk_ldevice), "Waiting for draw call to end"
     );

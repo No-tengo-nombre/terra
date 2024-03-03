@@ -97,6 +97,12 @@ typedef struct terra_app {
   VkFramebuffer *vk_framebuffers;
   uint32_t vk_images_count;
 
+  /* Synchronization variables */
+
+  VkSemaphore vk_img_available_S;
+  VkSemaphore vk_render_finished_S;
+  VkFence vk_in_flight_F;
+
 #ifndef NDEBUG
   /* Internal debug information */
 

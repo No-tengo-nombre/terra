@@ -169,6 +169,11 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
 }
 
 terra_status_t terra_app_cleanup(terra_app_t *app) {
+  logi_debug("Cleaning up sync objects");
+  TERRA_CALL_I(
+      terra_vk_detroy_sync_objects(app), "Failed destroying sync objects"
+  );
+
   logi_debug("Cleaning up command pool");
   vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
 

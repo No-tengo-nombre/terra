@@ -215,6 +215,14 @@ terra_status_t terra_create_render_pass(
   subpass.pColorAttachments    = &color_att_ref;
   // TODO: Implement more types of attachments
 
+  VkSubpassDependency dependency = {VK_FALSE};
+  dependency.srcSubpass          = VK_SUBPASS_EXTERNAL;
+  dependency.dstSubpass          = 0;
+  dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  dependency.srcAccessMask = 0;
+  dependency.dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
   // TODO: Implement the option to specify more than one attachment and more
   // than one subpass
   VkRenderPassCreateInfo info = {VK_FALSE};
@@ -223,13 +231,14 @@ terra_status_t terra_create_render_pass(
   info.pAttachments           = &color_att;
   info.subpassCount           = 1;
   info.pSubpasses             = &subpass;
+  info.dependencyCount        = 1;
+  info.pDependencies          = &dependency;
 
   logi_debug("Vulkan call to create render pass");
   TERRA_VK_CALL_I(
       vkCreateRenderPass(app->vk_ldevice, &info, NULL, &app->vk_render_pass),
       "Failed to create the render pass"
   );
-  logi_debug("ASDGASDFGDSFG");
 
   return TERRA_STATUS_SUCCESS;
 }

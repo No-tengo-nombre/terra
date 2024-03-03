@@ -41,12 +41,13 @@ terra_status_t terra_vk_create_instance_info(
   out->enabledExtensionCount   = extension_count;
   out->ppEnabledExtensionNames = extensions;
   out->flags                   = 0;
-  out->pNext                   = NULL;
 #ifndef NDEBUG
   out->enabledLayerCount   = app->conf->validation_layers_total;
   out->ppEnabledLayerNames = app->conf->validation_layers;
+  out->pNext               = NULL; // TODO: Link to the debug callback
 #else
   out->enabledLayerCount = 0;
+  out->pNext             = NULL;
 #endif
   return TERRA_STATUS_SUCCESS;
 }

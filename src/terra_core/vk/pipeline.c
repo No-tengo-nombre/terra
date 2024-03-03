@@ -96,6 +96,13 @@ terra_status_t terra_vk_pipeline_new(
       break;
     }
   }
+  if (dyn_viewport_found) {
+    logi_debug("Using dynamic viewport");
+  }
+  if (dyn_scissor_found) {
+    logi_debug("Using dynamic scissor");
+  }
+
   VkPipelineViewportStateCreateInfo viewport_info = {VK_FALSE};
   viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
   viewport_info.viewportCount = 1;

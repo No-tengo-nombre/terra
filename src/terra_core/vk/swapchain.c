@@ -95,9 +95,6 @@ terra_status_t terra_vk_create_sc(
       "Failed choosing swapchain image count"
   );
 
-  app->vk_extent = extent;
-  app->vk_format = sf_format.format;
-
   logi_debug("Creating swapchain creation info struct");
   VkSwapchainCreateInfoKHR sc_info = {VK_FALSE};
   sc_info.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -151,6 +148,9 @@ terra_status_t terra_vk_create_sc(
       ),
       "Failed getting images"
   );
+
+  app->vk_extent = extent;
+  app->vk_format = sf_format.format;
 
   return TERRA_STATUS_SUCCESS;
 }

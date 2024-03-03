@@ -40,7 +40,8 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       terra_retrieve_device_queue(app), "Failed retrieving device queue"
   );
   TERRA_CALL_I(
-      terra_vk_create_sc(app, p.image_usage, NULL), "Failed creating swapchain"
+      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE),
+      "Failed creating swapchain"
   );
   TERRA_CALL_I(
       terra_vk_create_image_views(app, p.view_type),

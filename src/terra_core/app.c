@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <terra/app.h>
 #include <terra/status.h>
+#include <terra/vk/sync.h>
 #include <terra/vulkan.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
@@ -127,6 +128,9 @@ terra_status_t terra_app_run(terra_app_t *app) {
       loop_status = app->loop(app);
       app->state.i++;
     }
+    TERRA_VK_CALL_I(
+        vkDeviceWaitIdle(app->vk_ldevice), "Waiting for draw call to end"
+    );
   }
   if (app->cleanup != NULL) {
     logi_info("Application cleanup");
@@ -173,6 +177,64 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
+  VkCommandBufferBeginInfo info = {VK_FALSE};
+  info.sType                    = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  info.flags                    = 0;
+  info.pInheritanceInfo         = NULL;
+
+  TERRA_VK_CALL_I(
+      vkBeginCommandBuffer(app->vk_command_buffer, &info),
+      "Failed to begin command buffer"
+  );
+
+  // TODO: Move the clear color to the configurations of the app
+  VkOffset2D offset        = {0, 0};
+  VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+
+  VkRenderPassBeginInfo rp_info = {VK_FALSE};
+  rp_info.sType                 = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+  rp_info.renderPass            = app->vk_render_pass;
+  rp_info.framebuffer           = app->vk_framebuffers[idx];
+  rp_info.renderArea.offset     = offset; // TODO: Take the offset from the app
+  rp_info.renderArea.extent     = app->vk_extent;
+  rp_info.clearValueCount       = 1;
+  rp_info.pClearValues          = &clear_color;
+
+  vkCmdBeginRenderPass(
+      app->vk_command_buffer, &rp_info, VK_SUBPASS_CONTENTS_INLINE
+  );
+  vkCmdBindPipeline(
+      app->vk_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, app->vk_pipeline
+  );
+
+  // TODO: Add check at runtime if they are dynamic
+  // Viewport and scissor are dynamic by default
+  VkViewport viewport = {VK_FALSE};
+  viewport.x          = 0.0f;
+  viewport.y          = 0.0f;
+  viewport.width      = (float)app->vk_extent.width;
+  viewport.height     = (float)app->vk_extent.height;
+  viewport.minDepth   = 0.0f;
+  viewport.maxDepth   = 1.0f;
+  vkCmdSetViewport(app->vk_command_buffer, 0, 1, &viewport);
+
+  VkRect2D scissor = {VK_FALSE};
+  scissor.offset   = offset;
+  scissor.extent   = app->vk_extent;
+  vkCmdSetScissor(app->vk_command_buffer, 0, 1, &scissor);
+
+  vkCmdDraw(app->vk_command_buffer, 3, 1, 0, 0);
+  vkCmdEndRenderPass(app->vk_command_buffer);
+
+  TERRA_VK_CALL_I(
+      vkEndCommandBuffer(app->vk_command_buffer),
+      "Failed recording command buffer"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terra_app_draw(terra_app_t *app) {
   uint32_t img_idx;
   TERRA_VK_CALL_I(
@@ -185,6 +247,54 @@ terra_status_t terra_app_draw(terra_app_t *app) {
           &img_idx
       ),
       "Failed acquiring next image"
+  );
+
+  TERRA_VK_CALL_I(
+      vkResetCommandBuffer(app->vk_command_buffer, 0),
+      "Failed resetting command buffer"
+  );
+  TERRA_CALL_I(
+      terra_app_record_cmd_buffer(app, img_idx),
+      "Failed recording command buffer"
+  );
+
+  VkSubmitInfo submit_info = {VK_FALSE};
+  submit_info.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+  VkSemaphore wait_semaphores[]   = {app->vk_img_available_S};
+  VkSemaphore signal_semaphores[] = {app->vk_render_finished_S};
+  VkPipelineStageFlags stages[]   = {
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+  };
+
+  submit_info.waitSemaphoreCount   = 1;
+  submit_info.pWaitSemaphores      = wait_semaphores;
+  submit_info.pWaitDstStageMask    = stages;
+  submit_info.commandBufferCount   = 1;
+  submit_info.pCommandBuffers      = &app->vk_command_buffer;
+  submit_info.signalSemaphoreCount = 1;
+  submit_info.pSignalSemaphores    = signal_semaphores;
+  TERRA_VK_CALL_I(
+      vkQueueSubmit(app->vk_gqueue, 1, &submit_info, app->vk_in_flight_F),
+      "Failed submitting draw command to queue"
+  );
+
+  /* Present the result of the draw call */
+
+  VkSwapchainKHR swapchains[] = {app->vk_swapchain};
+
+  VkPresentInfoKHR pres_info   = {VK_FALSE};
+  pres_info.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  pres_info.waitSemaphoreCount = 1;
+  pres_info.pWaitSemaphores    = signal_semaphores;
+  pres_info.swapchainCount     = 1;
+  pres_info.pSwapchains        = swapchains;
+  pres_info.pImageIndices      = &img_idx;
+  pres_info.pResults           = NULL;
+
+  TERRA_VK_CALL_I(
+      vkQueuePresentKHR(app->vk_pqueue, &pres_info),
+      "Failed to present to screen"
   );
 
   return TERRA_STATUS_SUCCESS;

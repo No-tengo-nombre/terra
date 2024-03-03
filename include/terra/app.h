@@ -150,6 +150,9 @@ terra_status_t terra_app_new_wstate(
 terra_status_t terra_app_run(terra_app_t *app);
 terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
 
+terra_status_t terra_app_record_cmd_buffer(
+    terra_app_t *app, uint32_t idx
+);
 terra_status_t terra_app_draw(terra_app_t *app);
 
 terra_status_t terra_app_cleanup(terra_app_t *app);

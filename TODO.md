@@ -1,5 +1,7 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
+- **(`./examples/triangle/main.c`)** Move the rest of the initializations into the terra_init function
+- **(`./examples/triangle/main.c`)** Fix shit
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/terra/material.h`)** Figure out how to do materials
 - **(`./src/terra_core/vk/command_pool.c`)** Evaluate need to extract command buffer creation outside for multiple
@@ -11,6 +13,9 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement global configuration of color blending
 - **(`./src/terra_core/vk/_swapchain.c`)** Implement ownership when using different graphics and present
 - **(`./src/terra_core/app.c`)** Check if this method harms performance
+- **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
+- **(`./src/terra_core/app.c`)** Take the offset from the app
+- **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
 - **(`./src/terra_core/setup.c`)** Figure out a better way to store the queue info
 - **(`./src/terra_core/setup.c`)** Implement more types of attachments
 - **(`./src/terra_core/setup.c`)** Implement the option to specify more than one attachment and more

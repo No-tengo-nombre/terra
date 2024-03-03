@@ -37,6 +37,7 @@ terra_status_t loop(terra_app_t *app) {
   }
   TERRA_CALL(terra_vk_await_sync_objects(app), "Failed awaiting sync objects");
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
+  // TODO: Fix shit
 
   glfwPollEvents();
 

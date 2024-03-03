@@ -90,10 +90,10 @@ terra_status_t terra_init_instance(terra_app_t *app) {
       "Failed creating instance info"
   );
   logi_debug("Creating instance");
-  if (vkCreateInstance(&instance_info, NULL, &app->vk_instance) != VK_SUCCESS) {
-    logi_error("Could not create Vulkan instance");
-    return TERRA_STATUS_FAILURE;
-  }
+  TERRA_VK_CALL_I(
+      vkCreateInstance(&instance_info, NULL, &app->vk_instance),
+      "Failed to create Vulkan instance"
+  );
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -128,12 +128,12 @@ terra_status_t terra_init_debug_callback(terra_app_t *app) {
 
 terra_status_t terra_create_render_surface(terra_app_t *app) {
   logi_debug("Creating render surface");
-  if (glfwCreateWindowSurface(
+  TERRA_VK_CALL_I(
+      glfwCreateWindowSurface(
           app->vk_instance, app->glfw_window, NULL, &app->vk_surface
-      ) != VK_SUCCESS) {
-    logi_error("Failed to create render surface");
-    return TERRA_STATUS_FAILURE;
-  }
+      ),
+      "Failed to create render surface"
+  );
   return TERRA_STATUS_SUCCESS;
 }
 

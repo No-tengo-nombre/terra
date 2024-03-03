@@ -49,6 +49,7 @@ terra_status_t terra_app_config_new(
       .clipped                 = VK_TRUE,
       .command_pool_flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .in_flight_fence_timeout = UINT64_MAX,
+      .img_acq_timeout         = UINT64_MAX,
   };
   *out = conf;
   return TERRA_STATUS_SUCCESS;
@@ -109,6 +110,9 @@ terra_status_t terra_app_run(terra_app_t *app) {
   terra_status_t start_status   = app->start(app);
   terra_status_t loop_status    = TERRA_STATUS_SUCCESS;
   terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;
+
+  // The way this is handled might harm performance
+  // TODO: Check if this method harms performance
   if (start_status == TERRA_STATUS_EXIT) {
     return TERRA_STATUS_SUCCESS;
   }
@@ -166,6 +170,23 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   app->vk_images       = images;
   app->vk_image_views  = image_views;
   app->vk_framebuffers = framebuffers;
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_app_draw(terra_app_t *app) {
+  uint32_t img_idx;
+  TERRA_VK_CALL_I(
+      vkAcquireNextImageKHR(
+          app->vk_ldevice,
+          app->vk_swapchain,
+          app->conf->img_acq_timeout,
+          app->vk_img_available_S,
+          VK_NULL_HANDLE,
+          &img_idx
+      ),
+      "Failed acquiring next image"
+  );
+
   return TERRA_STATUS_SUCCESS;
 }
 

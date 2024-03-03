@@ -61,7 +61,11 @@ typedef struct terra_app_config {
   VkCompositeAlphaFlagBitsKHR composite_alpha;
   uint8_t clipped;
   VkCommandPoolCreateFlags command_pool_flags;
+
+  /* Timeouts */
+
   uint64_t in_flight_fence_timeout;
+  uint64_t img_acq_timeout;
 } terra_app_config_t;
 
 typedef struct terra_app {
@@ -145,6 +149,8 @@ terra_status_t terra_app_new_wstate(
 );
 terra_status_t terra_app_run(terra_app_t *app);
 terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
+
+terra_status_t terra_app_draw(terra_app_t *app);
 
 terra_status_t terra_app_cleanup(terra_app_t *app);
 

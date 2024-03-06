@@ -20,6 +20,7 @@ terra_app_state_t terra_app_state_default(void) {
       .i            = 0,
       .should_close = 0,
       .vk_frame     = 0,
+      .fb_resized   = 0,
   };
   return s;
 }
@@ -302,14 +303,14 @@ terra_status_t determine_swapchain_recreation(terra_app_t *app, VkResult ret) {
     return TERRA_STATUS_SUCCESS;
 
   case VK_ERROR_OUT_OF_DATE_KHR:
-    logi_info("Found out of date swapchain, recreating");
+    logi_info("Found out of date swapchain, recreating swapchain");
     TERRA_CALL_I(
         terra_recreate_swapchain(app, NULL), "Failed recreating swapchain"
     );
     return TERRA_STATUS_SUCCESS;
 
   case VK_SUBOPTIMAL_KHR:
-    logi_info("Found suboptimal swapchain, recreating");
+    logi_info("Found suboptimal swapchain, recreating swapchain");
     TERRA_CALL_I(
         terra_recreate_swapchain(app, NULL), "Failed recreating swapchain"
     );

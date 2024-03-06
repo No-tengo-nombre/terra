@@ -42,6 +42,7 @@ typedef struct terra_app_state {
   uint64_t i;
   int should_close;
   uint32_t vk_frame;
+  int fb_resized;
 } terra_app_state_t;
 
 typedef struct terra_queue {

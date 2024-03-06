@@ -26,6 +26,18 @@ For devices
 extern "C" {
 #endif
 
+typedef struct terra_init_params {
+  VkImageUsageFlags image_usage;
+  VkImageViewType view_type;
+  VkSampleCountFlagBits samples;
+  VkAttachmentLoadOp load_op;
+  VkAttachmentStoreOp store_op;
+  VkAttachmentLoadOp stencil_load_op;
+  VkAttachmentStoreOp stencil_store_op;
+  VkImageLayout initial_layout;
+  VkImageLayout final_layout;
+} terra_init_params_t;
+
 typedef struct terra_app_state {
   uint64_t i;
   int should_close;
@@ -80,6 +92,7 @@ typedef struct terra_app {
 
   terra_app_state_t state;
   void *glfw_window;
+  terra_init_params_t init_params;
 
   /* Vulkan attributes */
 
@@ -160,6 +173,9 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx);
 terra_status_t terra_app_draw(terra_app_t *app);
 int terra_app_should_close(terra_app_t *app);
 
+terra_status_t terra_app_cleanup_swapchain(
+    terra_app_t *app, VkSwapchainKHR *sc
+);
 terra_status_t terra_app_cleanup(terra_app_t *app);
 
 VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(

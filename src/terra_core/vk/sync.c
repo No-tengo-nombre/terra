@@ -58,6 +58,11 @@ terra_status_t terra_vk_await_sync_objects(terra_app_t *app) {
       ),
       "Failed waiting for fence (check timeout)"
   );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_vk_reset_sync_objects(terra_app_t *app) {
   TERRA_VK_CALL_I(
       vkResetFences(
           app->vk_ldevice, 1, app->vk_in_flight_F + app->state.vk_frame

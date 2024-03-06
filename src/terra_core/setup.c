@@ -1,3 +1,4 @@
+#include <terra/app.h>
 #include <terra/setup.h>
 #include <terra/status.h>
 #include <terra/vk/devices.h>
@@ -32,6 +33,7 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       terra_app_set_frames_in_flight(app, app->conf->max_frames_in_flight),
       "Could not set desired frames in flight"
   );
+  app->init_params = p;
 
   TERRA_CALL_I(terra_init_window(app), "Failed initializing window");
   TERRA_CALL_I(terra_init_instance(app), "Failed initializing instance");
@@ -44,7 +46,7 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       terra_retrieve_device_queue(app), "Failed retrieving device queue"
   );
   TERRA_CALL_I(
-      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE),
+      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE, 0),
       "Failed creating swapchain"
   );
   TERRA_CALL_I(
@@ -272,6 +274,35 @@ terra_status_t terra_create_render_pass(
   TERRA_VK_CALL_I(
       vkCreateRenderPass(app->vk_ldevice, &info, NULL, &app->vk_render_pass),
       "Failed to create the render pass"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_recreate_swapchain(
+    terra_app_t *app, terra_init_params_t *params
+) {
+  terra_init_params_t p;
+  if (params == NULL) {
+    p = app->init_params;
+  } else {
+    p = *params;
+  }
+
+  TERRA_VK_CALL_I(
+      vkDeviceWaitIdle(app->vk_ldevice), "Failed waiting for draw call to end"
+  );
+
+  TERRA_CALL_I(
+      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE, 1),
+      "Failed creating swapchain"
+  );
+  TERRA_CALL_I(
+      terra_vk_create_image_views(app, p.view_type),
+      "Failed creating image views"
+  );
+  TERRA_CALL_I(
+      terra_create_render_pass(app, &p), "Failed creating render pass"
   );
 
   return TERRA_STATUS_SUCCESS;

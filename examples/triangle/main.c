@@ -35,7 +35,6 @@ terra_status_t loop(terra_app_t *app) {
     log_info("Terminating program loop");
     return TERRA_STATUS_EXIT;
   }
-  TERRA_CALL(terra_vk_await_sync_objects(app), "Failed awaiting sync objects");
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   glfwPollEvents();

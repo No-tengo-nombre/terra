@@ -23,7 +23,10 @@ terra_status_t terra_vk_check_sc_support(
     terra_vk_sc_details_t *out
 );
 terra_status_t terra_vk_create_sc(
-    terra_app_t *app, VkImageUsageFlags usage, VkSwapchainKHR base
+    terra_app_t *app,
+    VkImageUsageFlags usage,
+    VkSwapchainKHR base,
+    int clean_previous
 );
 terra_status_t terra_vk_create_image_views(
     terra_app_t *app, VkImageViewType view_type

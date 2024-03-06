@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <terra/app.h>
+#include <terra/setup.h>
 #include <terra/status.h>
 #include <terra/vk/sync.h>
 #include <terra/vulkan.h>
@@ -295,7 +296,36 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t determine_swapchain_recreation(terra_app_t *app, VkResult ret) {
+  switch (ret) {
+  case VK_SUCCESS:
+    return TERRA_STATUS_SUCCESS;
+
+  case VK_ERROR_OUT_OF_DATE_KHR:
+    logi_info("Found out of date swapchain, recreating");
+    TERRA_CALL_I(
+        terra_recreate_swapchain(app, NULL), "Failed recreating swapchain"
+    );
+    return TERRA_STATUS_SUCCESS;
+
+  case VK_SUBOPTIMAL_KHR:
+    logi_info("Found suboptimal swapchain, recreating");
+    TERRA_CALL_I(
+        terra_recreate_swapchain(app, NULL), "Failed recreating swapchain"
+    );
+    return TERRA_STATUS_SUCCESS;
+
+  default:
+    logi_warn("Failed acquiring next image");
+    return TERRA_STATUS_FAILURE;
+  }
+}
+
 terra_status_t terra_app_draw(terra_app_t *app) {
+  TERRA_CALL_I(
+      terra_vk_await_sync_objects(app), "Failed awaiting sync objects"
+  );
+
   uint32_t frame_idx = app->state.vk_frame;
   uint32_t img_idx;
 
@@ -304,16 +334,21 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   VkSemaphore *render_finished_pS = app->vk_render_finished_S + frame_idx;
   VkFence *in_flight_pF           = app->vk_in_flight_F + frame_idx;
 
-  TERRA_VK_CALL_I(
-      vkAcquireNextImageKHR(
-          app->vk_ldevice,
-          app->vk_swapchain,
-          app->conf->img_acq_timeout,
-          *img_available_pS,
-          VK_NULL_HANDLE,
-          &img_idx
-      ),
-      "Failed acquiring next image"
+  VkResult ret = vkAcquireNextImageKHR(
+      app->vk_ldevice,
+      app->vk_swapchain,
+      app->conf->img_acq_timeout,
+      *img_available_pS,
+      VK_NULL_HANDLE,
+      &img_idx
+  );
+
+  TERRA_CALL_I(
+      determine_swapchain_recreation(app, ret),
+      "Encountered error at image acquisition"
+  );
+  TERRA_CALL_I(
+      terra_vk_reset_sync_objects(app), "Failed resetting sync objects"
   );
 
   TERRA_VK_CALL_I(
@@ -357,10 +392,30 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   pres_info.pImageIndices      = &img_idx;
   pres_info.pResults           = NULL;
 
-  TERRA_VK_CALL_I(
-      vkQueuePresentKHR(app->vk_pqueue, &pres_info),
-      "Failed to present to screen"
+  ret = vkQueuePresentKHR(app->vk_pqueue, &pres_info);
+  TERRA_CALL_I(
+      determine_swapchain_recreation(app, ret),
+      "Encountered error at queue presentation"
   );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_app_cleanup_swapchain(
+    terra_app_t *app, VkSwapchainKHR *sc
+) {
+  logi_debug("Cleaning swapchain");
+  VkFramebuffer *fb = app->vk_framebuffers;
+  VkImageView *view = app->vk_image_views;
+  for (int i = 0; i < app->vk_images_count; i++, view++, fb++) {
+    vkDestroyFramebuffer(app->vk_ldevice, *fb, NULL);
+    vkDestroyImageView(app->vk_ldevice, *view, NULL);
+  }
+  if (sc == NULL) {
+    vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);
+  } else {
+    vkDestroySwapchainKHR(app->vk_ldevice, *sc, NULL);
+  }
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -374,13 +429,9 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Cleaning up command pool");
   vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
 
-  logi_debug("Cleaning image views and framebuffers");
-  VkFramebuffer *fb = app->vk_framebuffers;
-  VkImageView *view = app->vk_image_views;
-  for (int i = 0; i < app->vk_images_count; i++, view++, fb++) {
-    vkDestroyFramebuffer(app->vk_ldevice, *fb, NULL);
-    vkDestroyImageView(app->vk_ldevice, *view, NULL);
-  }
+  TERRA_CALL_I(
+      terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
+  );
 
   logi_debug("Releasing heap allocated arrays");
   terrau_free(app, app->vk_img_available_S);
@@ -395,7 +446,6 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);
   vkDestroyPipelineLayout(app->vk_ldevice, app->vk_layout, NULL);
   vkDestroyRenderPass(app->vk_ldevice, app->vk_render_pass, NULL);
-  vkDestroySwapchainKHR(app->vk_ldevice, app->vk_swapchain, NULL);
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
   vkDestroyDevice(app->vk_ldevice, NULL);
 

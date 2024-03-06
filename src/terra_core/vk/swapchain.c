@@ -54,7 +54,10 @@ terra_status_t terra_vk_check_sc_support(
 }
 
 terra_status_t terra_vk_create_sc(
-    terra_app_t *app, VkImageUsageFlags usage, VkSwapchainKHR base
+    terra_app_t *app,
+    VkImageUsageFlags usage,
+    VkSwapchainKHR base,
+    int clean_previous
 ) {
   terra_vk_sc_details_t sc_details;
   VkSurfaceFormatKHR sf_format;
@@ -126,6 +129,11 @@ terra_status_t terra_vk_create_sc(
       terra_vk_sc_details_cleanup(app, &sc_details),
       "Failed cleaning up the swapchain details"
   );
+  if (base != VK_NULL_HANDLE && clean_previous) {
+    TERRA_CALL_I(
+        terra_app_cleanup_swapchain(app, &base), "Cleaning previous swapchain"
+    )
+  }
 
   logi_debug("Getting the images in the swapchain");
   TERRA_VK_CALL_I(

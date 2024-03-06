@@ -6,6 +6,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/setup.c`)** Figure out a better way to store the queue info
 - **(`./src/terra_core/setup.c`)** Implement more types of attachments
 - **(`./src/terra_core/setup.c`)** Implement the option to specify more than one attachment and more
+- **(`./src/terra_core/setup.c`)** Add user customization to how minimization should be handled
 - **(`./src/terra_core/app.c`)** Check if this method harms performance
 - **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
 - **(`./src/terra_core/app.c`)** Take the offset from the app

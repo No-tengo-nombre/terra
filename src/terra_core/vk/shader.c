@@ -27,7 +27,7 @@ terra_status_t terra_vk_shader_from_spv(
   VkShaderModuleCreateInfo info = {VK_FALSE};
   info.sType                    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
   info.codeSize                 = size;
-  info.pCode                    = (uint32_t *)contents;
+  info.pCode                    = (const uint32_t *)contents;
 
   logi_debug("Creating shader module");
   VkShaderModule mod;

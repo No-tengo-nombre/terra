@@ -26,7 +26,8 @@ terra_status_t terra_vk_create_sc(
     terra_app_t *app,
     VkImageUsageFlags usage,
     VkSwapchainKHR base,
-    int clean_previous
+    int clean_previous,
+    int reset_image_count
 );
 terra_status_t terra_vk_create_image_views(
     terra_app_t *app, VkImageViewType view_type

@@ -57,7 +57,8 @@ terra_status_t terra_vk_create_sc(
     terra_app_t *app,
     VkImageUsageFlags usage,
     VkSwapchainKHR base,
-    int clean_previous
+    int clean_previous,
+    int reset_image_count
 ) {
   terra_vk_sc_details_t sc_details;
   VkSurfaceFormatKHR sf_format;
@@ -142,11 +143,13 @@ terra_status_t terra_vk_create_sc(
       ),
       "Failed getting number of images"
   );
-  logi_debug("Allocating swapchain images");
-  TERRA_CALL_I(
-      terra_app_set_image_count(app, app->vk_images_count),
-      "Failed setting the image counts"
-  );
+  if (reset_image_count) {
+    logi_debug("Allocating swapchain images");
+    TERRA_CALL_I(
+        terra_app_set_image_count(app, app->vk_images_count),
+        "Failed setting the image counts"
+    );
+  }
   TERRA_VK_CALL_I(
       vkGetSwapchainImagesKHR(
           app->vk_ldevice,

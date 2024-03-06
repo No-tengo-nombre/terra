@@ -2,6 +2,7 @@
 #include <terra/setup.h>
 #include <terra/status.h>
 #include <terra/vk/devices.h>
+#include <terra/vk/framebuffer.h>
 #include <terra/vk/swapchain.h>
 #include <terra/vulkan.h>
 #include <terra_utils/macros.h>
@@ -46,7 +47,7 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       terra_retrieve_device_queue(app), "Failed retrieving device queue"
   );
   TERRA_CALL_I(
-      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE, 0),
+      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE, 0, 1),
       "Failed creating swapchain"
   );
   TERRA_CALL_I(
@@ -63,7 +64,7 @@ terra_status_t terra_init_window(terra_app_t *app) {
   logi_debug("Initializing GLFW and window");
   glfwInit();
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE, app->conf->resizable);
   const char *title = app->meta->app_name;
   if (app->meta->window_title != NULL) {
     title = app->meta->window_title;
@@ -72,6 +73,11 @@ terra_status_t terra_init_window(terra_app_t *app) {
       app->meta->window_width, app->meta->window_height, title, NULL, NULL
   );
   app->glfw_window = window;
+  glfwSetWindowUserPointer(window, app);
+
+  // Callbacks
+  glfwSetFramebufferSizeCallback(window, terra_app_fb_resize_callback);
+
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -294,16 +300,17 @@ terra_status_t terra_recreate_swapchain(
   );
 
   TERRA_CALL_I(
-      terra_vk_create_sc(app, p.image_usage, VK_NULL_HANDLE, 1),
-      "Failed creating swapchain"
+      terra_vk_create_sc(app, p.image_usage, app->vk_swapchain, 1, 0),
+      "Failed recreating swapchain"
   );
   TERRA_CALL_I(
       terra_vk_create_image_views(app, p.view_type),
-      "Failed creating image views"
+      "Failed recreating image views"
   );
   TERRA_CALL_I(
-      terra_create_render_pass(app, &p), "Failed creating render pass"
+      terra_create_render_pass(app, &p), "Failed recreating render pass"
   );
+  TERRA_CALL_I(terra_vk_framebuffer_new(app), "Failed recreating framebuffers");
 
   return TERRA_STATUS_SUCCESS;
 }

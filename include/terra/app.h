@@ -77,6 +77,10 @@ typedef struct terra_app_config {
   VkCommandPoolCreateFlags command_pool_flags;
   uint32_t max_frames_in_flight;
 
+  /* GLFW configurations */
+
+  int resizable;
+
   /* Timeouts */
 
   uint64_t in_flight_fence_timeout;
@@ -185,6 +189,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
     const VkDebugUtilsMessengerCallbackDataEXT *cb_data,
     void *user_data
 );
+void terra_app_fb_resize_callback(GLFWwindow *window, int width, int height);
 
 #ifdef __cplusplus
 }

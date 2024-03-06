@@ -60,6 +60,8 @@ terra_status_t terra_app_config_new(
       .command_pool_flags   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .max_frames_in_flight = DEFAULT_MAX_FRAMES_IN_FLIGHT,
 
+      .resizable = 1,
+
       .in_flight_fence_timeout = UINT64_MAX,
       .img_acq_timeout         = UINT64_MAX,
   };
@@ -394,10 +396,17 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   pres_info.pResults           = NULL;
 
   ret = vkQueuePresentKHR(app->vk_pqueue, &pres_info);
-  TERRA_CALL_I(
-      determine_swapchain_recreation(app, ret),
-      "Encountered error at queue presentation"
-  );
+  if (app->state.fb_resized || ret == VK_ERROR_OUT_OF_DATE_KHR ||
+      ret == VK_SUBOPTIMAL_KHR) {
+    app->state.fb_resized = 0;
+    logi_info("Framebuffer resized, recreating swapchain");
+    TERRA_CALL_I(
+        terra_recreate_swapchain(app, NULL), "Failed recreating swapchain"
+    );
+  } else if (ret != VK_SUCCESS) {
+    logi_error("Found an error presenting to queue");
+    return TERRA_STATUS_FAILURE;
+  }
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -417,6 +426,7 @@ terra_status_t terra_app_cleanup_swapchain(
   } else {
     vkDestroySwapchainKHR(app->vk_ldevice, *sc, NULL);
   }
+  vkDestroyRenderPass(app->vk_ldevice, app->vk_render_pass, NULL);
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -446,7 +456,6 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Cleaning Vulkan objects");
   vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);
   vkDestroyPipelineLayout(app->vk_ldevice, app->vk_layout, NULL);
-  vkDestroyRenderPass(app->vk_ldevice, app->vk_render_pass, NULL);
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
   vkDestroyDevice(app->vk_ldevice, NULL);
 
@@ -481,4 +490,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
 ) {
   logi_error("validation layer: %s", cb_data->pMessage);
   return VK_FALSE;
+}
+
+void terra_app_fb_resize_callback(GLFWwindow *window, int width, int height) {
+  terra_app_t *app      = (terra_app_t *)glfwGetWindowUserPointer(window);
+  app->state.fb_resized = 1;
 }

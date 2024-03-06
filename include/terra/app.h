@@ -29,6 +29,7 @@ extern "C" {
 typedef struct terra_app_state {
   uint64_t i;
   int should_close;
+  uint32_t vk_frame;
 } terra_app_state_t;
 
 typedef struct terra_queue {
@@ -61,6 +62,7 @@ typedef struct terra_app_config {
   VkCompositeAlphaFlagBitsKHR composite_alpha;
   uint8_t clipped;
   VkCommandPoolCreateFlags command_pool_flags;
+  uint32_t max_frames_in_flight;
 
   /* Timeouts */
 
@@ -95,7 +97,7 @@ typedef struct terra_app {
   VkRenderPass vk_render_pass;
   VkPipeline vk_pipeline;
   VkCommandPool vk_commands;
-  VkCommandBuffer vk_command_buffer;
+  VkCommandBuffer *vk_command_buffers;
 
   VkImage *vk_images;
   VkImageView *vk_image_views;
@@ -104,9 +106,9 @@ typedef struct terra_app {
 
   /* Synchronization variables */
 
-  VkSemaphore vk_img_available_S;
-  VkSemaphore vk_render_finished_S;
-  VkFence vk_in_flight_F;
+  VkSemaphore *vk_img_available_S;
+  VkSemaphore *vk_render_finished_S;
+  VkFence *vk_in_flight_F;
 
 #ifndef NDEBUG
   /* Internal debug information */
@@ -150,6 +152,9 @@ terra_status_t terra_app_new_wstate(
 );
 terra_status_t terra_app_run(terra_app_t *app);
 terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count);
+terra_status_t terra_app_set_frames_in_flight(
+    terra_app_t *app, uint32_t new_size
+);
 
 terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx);
 terra_status_t terra_app_draw(terra_app_t *app);

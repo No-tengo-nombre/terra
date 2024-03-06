@@ -28,6 +28,10 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
   } else {
     p = *params;
   }
+  TERRA_CALL_I(
+      terra_app_set_frames_in_flight(app, app->conf->max_frames_in_flight),
+      "Could not set desired frames in flight"
+  );
 
   TERRA_CALL_I(terra_init_window(app), "Failed initializing window");
   TERRA_CALL_I(terra_init_instance(app), "Failed initializing instance");

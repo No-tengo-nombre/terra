@@ -7,13 +7,19 @@
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>
 
-const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
-const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+static const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"
+};
+static const char *DEFAULT_DEVICE_EXTENSIONS[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+static const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT = 2;
 
 terra_app_state_t terra_app_state_default(void) {
-  terra_app_state_t s;
-  s.i            = 0;
-  s.should_close = 0;
+  terra_app_state_t s = {
+      .i            = 0,
+      .should_close = 0,
+      .vk_frame     = 0,
+  };
   return s;
 }
 
@@ -22,7 +28,7 @@ terra_app_metadata_t terra_app_metadata_default(void) {
       .vmajor        = 1,
       .vminor        = 0,
       .vpatch        = 0,
-      .app_name      = "Terrar - Default application",
+      .app_name      = "Terra - Default application",
       .window_title  = NULL,
       .window_width  = 800,
       .window_height = 600,
@@ -42,13 +48,16 @@ terra_status_t terra_app_config_new(
       .device_extensions_total = device_extensions_total,
       .validation_layers       = validation_layers,
       .device_extensions       = device_extensions,
-      .surface_format          = VK_FORMAT_B8G8R8A8_SRGB,
-      .color_space             = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
-      .present_mode            = VK_PRESENT_MODE_MAILBOX_KHR,
-      .image_array_layers      = 1,
-      .composite_alpha         = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .clipped                 = VK_TRUE,
-      .command_pool_flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+
+      .surface_format       = VK_FORMAT_B8G8R8A8_SRGB,
+      .color_space          = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+      .present_mode         = VK_PRESENT_MODE_MAILBOX_KHR,
+      .image_array_layers   = 1,
+      .composite_alpha      = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .clipped              = VK_TRUE,
+      .command_pool_flags   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+      .max_frames_in_flight = DEFAULT_MAX_FRAMES_IN_FLIGHT,
+
       .in_flight_fence_timeout = UINT64_MAX,
       .img_acq_timeout         = UINT64_MAX,
   };
@@ -81,9 +90,13 @@ terra_status_t terra_app_new(
       .conf    = conf,
 
       // These have to be NULL to avoid UB
-      .vk_images       = NULL,
-      .vk_image_views  = NULL,
-      .vk_framebuffers = NULL,
+      .vk_images            = NULL,
+      .vk_image_views       = NULL,
+      .vk_framebuffers      = NULL,
+      .vk_img_available_S   = NULL,
+      .vk_render_finished_S = NULL,
+      .vk_in_flight_F       = NULL,
+
 #ifndef NDEBUG // Internal debug information
       ._idebug_malloced_total = 0,
 #endif
@@ -126,7 +139,11 @@ terra_status_t terra_app_run(terra_app_t *app) {
     logi_info("Application loop");
     while (loop_status == TERRA_STATUS_SUCCESS) {
       loop_status = app->loop(app);
+
+      // Update internal state
       app->state.i++;
+      app->state.vk_frame =
+          (app->state.vk_frame + 1) % app->conf->max_frames_in_flight;
     }
     logi_info("Finished loop");
     logi_info("Waiting for remaining draw calls");
@@ -179,15 +196,58 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t terra_app_set_frames_in_flight(
+    terra_app_t *app, uint32_t new_size
+) {
+  app->conf->max_frames_in_flight = new_size;
+  void *command_buffers           = terrau_realloc(
+      app, app->vk_command_buffers, new_size * sizeof(VkCommandBuffer)
+  );
+  void *img_available_smph = terrau_realloc(
+      app, app->vk_img_available_S, new_size * sizeof(VkSemaphore)
+  );
+  void *render_finished_smph = terrau_realloc(
+      app, app->vk_render_finished_S, new_size * sizeof(VkSemaphore)
+  );
+  void *in_flight_fences =
+      terrau_realloc(app, app->vk_in_flight_F, new_size * sizeof(VkFence));
+
+  if (command_buffers == NULL) {
+    logi_error("Could not allocate %i command buffers", new_size);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (img_available_smph == NULL) {
+    logi_error("Could not allocate %i semaphores", new_size);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (render_finished_smph == NULL) {
+    logi_error("Could not allocate %i semaphores", new_size);
+    return TERRA_STATUS_FAILURE;
+  }
+  if (in_flight_fences == NULL) {
+    logi_error("Could not allocate %i fences", new_size);
+    return TERRA_STATUS_FAILURE;
+  }
+
+  app->vk_command_buffers   = command_buffers;
+  app->vk_img_available_S   = img_available_smph;
+  app->vk_render_finished_S = render_finished_smph;
+  app->vk_in_flight_F       = in_flight_fences;
+
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
+  uint32_t frame_idx         = app->state.vk_frame;
+  VkCommandBuffer cmd_buffer = app->vk_command_buffers[frame_idx];
+
   VkCommandBufferBeginInfo info = {VK_FALSE};
   info.sType                    = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   info.flags                    = 0;
   info.pInheritanceInfo         = NULL;
 
   TERRA_VK_CALL_I(
-      vkBeginCommandBuffer(app->vk_command_buffer, &info),
-      "Failed to begin command buffer"
+      vkBeginCommandBuffer(cmd_buffer, &info), "Failed to begin command buffer"
   );
 
   // TODO: Move the clear color to the configurations of the app
@@ -203,11 +263,9 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
   rp_info.clearValueCount       = 1;
   rp_info.pClearValues          = &clear_color;
 
-  vkCmdBeginRenderPass(
-      app->vk_command_buffer, &rp_info, VK_SUBPASS_CONTENTS_INLINE
-  );
+  vkCmdBeginRenderPass(cmd_buffer, &rp_info, VK_SUBPASS_CONTENTS_INLINE);
   vkCmdBindPipeline(
-      app->vk_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, app->vk_pipeline
+      cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, app->vk_pipeline
   );
 
   // TODO: Add check at runtime if they are dynamic
@@ -219,32 +277,38 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
   viewport.height     = (float)app->vk_extent.height;
   viewport.minDepth   = 0.0f;
   viewport.maxDepth   = 1.0f;
-  vkCmdSetViewport(app->vk_command_buffer, 0, 1, &viewport);
+  vkCmdSetViewport(cmd_buffer, 0, 1, &viewport);
 
   VkRect2D scissor = {VK_FALSE};
   scissor.offset   = offset;
   scissor.extent   = app->vk_extent;
-  vkCmdSetScissor(app->vk_command_buffer, 0, 1, &scissor);
+  vkCmdSetScissor(cmd_buffer, 0, 1, &scissor);
 
-  vkCmdDraw(app->vk_command_buffer, 3, 1, 0, 0);
-  vkCmdEndRenderPass(app->vk_command_buffer);
+  vkCmdDraw(cmd_buffer, 3, 1, 0, 0);
+  vkCmdEndRenderPass(cmd_buffer);
 
   TERRA_VK_CALL_I(
-      vkEndCommandBuffer(app->vk_command_buffer),
-      "Failed recording command buffer"
+      vkEndCommandBuffer(cmd_buffer), "Failed recording command buffer"
   );
 
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_status_t terra_app_draw(terra_app_t *app) {
+  uint32_t frame_idx = app->state.vk_frame;
   uint32_t img_idx;
+
+  VkCommandBuffer *cmd_buffer_p   = app->vk_command_buffers + frame_idx;
+  VkSemaphore *img_available_pS   = app->vk_img_available_S + frame_idx;
+  VkSemaphore *render_finished_pS = app->vk_render_finished_S + frame_idx;
+  VkFence *in_flight_pF           = app->vk_in_flight_F + frame_idx;
+
   TERRA_VK_CALL_I(
       vkAcquireNextImageKHR(
           app->vk_ldevice,
           app->vk_swapchain,
           app->conf->img_acq_timeout,
-          app->vk_img_available_S,
+          *img_available_pS,
           VK_NULL_HANDLE,
           &img_idx
       ),
@@ -252,8 +316,7 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   );
 
   TERRA_VK_CALL_I(
-      vkResetCommandBuffer(app->vk_command_buffer, 0),
-      "Failed resetting command buffer"
+      vkResetCommandBuffer(*cmd_buffer_p, 0), "Failed resetting command buffer"
   );
   TERRA_CALL_I(
       terra_app_record_cmd_buffer(app, img_idx),
@@ -263,9 +326,10 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   VkSubmitInfo submit_info = {VK_FALSE};
   submit_info.sType        = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-  VkSemaphore wait_semaphores[]   = {app->vk_img_available_S};
-  VkSemaphore signal_semaphores[] = {app->vk_render_finished_S};
-  VkPipelineStageFlags stages[]   = {
+  // These might need to be changed when the purpose of the application changes
+  VkSemaphore *wait_semaphores   = img_available_pS;
+  VkSemaphore *signal_semaphores = render_finished_pS;
+  VkPipelineStageFlags stages[]  = {
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
   };
 
@@ -273,11 +337,11 @@ terra_status_t terra_app_draw(terra_app_t *app) {
   submit_info.pWaitSemaphores      = wait_semaphores;
   submit_info.pWaitDstStageMask    = stages;
   submit_info.commandBufferCount   = 1;
-  submit_info.pCommandBuffers      = &app->vk_command_buffer;
+  submit_info.pCommandBuffers      = cmd_buffer_p;
   submit_info.signalSemaphoreCount = 1;
   submit_info.pSignalSemaphores    = signal_semaphores;
   TERRA_VK_CALL_I(
-      vkQueueSubmit(app->vk_gqueue, 1, &submit_info, app->vk_in_flight_F),
+      vkQueueSubmit(app->vk_gqueue, 1, &submit_info, *in_flight_pF),
       "Failed submitting draw command to queue"
   );
 
@@ -318,6 +382,10 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   }
 
   logi_debug("Releasing heap allocated arrays");
+  terrau_free(app, app->vk_img_available_S);
+  terrau_free(app, app->vk_render_finished_S);
+  terrau_free(app, app->vk_in_flight_F);
+  terrau_free(app, app->vk_command_buffers);
   terrau_free(app, app->vk_images);
   terrau_free(app, app->vk_image_views);
   terrau_free(app, app->vk_framebuffers);

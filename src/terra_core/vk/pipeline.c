@@ -23,6 +23,7 @@ terra_vk_pipeline_params_t terra_vk_pipeline_params_default(void) {
       .depth_clamp       = VK_FALSE,
       .polygon_mode      = VK_POLYGON_MODE_FILL,
       .cull_mode         = VK_CULL_MODE_BACK_BIT,
+      .front_face        = VK_FRONT_FACE_COUNTER_CLOCKWISE,
       .depth_bias        = VK_FALSE,
       .depth_bias_factor = 0.0f,
       .depth_bias_clamp  = 0.0f,

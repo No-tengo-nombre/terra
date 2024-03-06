@@ -113,7 +113,7 @@ terra_status_t _terra_vk_pipeline_rasterizer_info(
   out->polygonMode             = params->polygon_mode;
   out->lineWidth               = 1.0f;
   out->cullMode                = params->cull_mode;
-  out->frontFace               = VK_FRONT_FACE_CLOCKWISE;
+  out->frontFace               = params->front_face;
   out->depthBiasEnable         = params->depth_bias;
   out->depthBiasConstantFactor = params->depth_bias_factor;
   out->depthBiasClamp          = params->depth_bias_clamp;

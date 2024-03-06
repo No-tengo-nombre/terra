@@ -20,6 +20,7 @@ typedef struct terra_vk_pipeline_params {
   VkBool32 depth_clamp;
   VkPolygonMode polygon_mode;
   VkCullModeFlags cull_mode;
+  VkFrontFace front_face;
   VkBool32 depth_bias;
   float depth_bias_factor;
   float depth_bias_clamp;

@@ -295,6 +295,15 @@ terra_status_t terra_recreate_swapchain(
     p = *params;
   }
 
+  // TODO: Add user customization to how minimization should be handled
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(app->glfw_window, &width, &height);
+  while (width == 0 || height == 0) {
+    logi_debug("Waiting while minimized");
+    glfwGetFramebufferSize(app->glfw_window, &width, &height);
+    glfwWaitEvents();
+  }
+
   TERRA_VK_CALL_I(
       vkDeviceWaitIdle(app->vk_ldevice), "Failed waiting for draw call to end"
   );

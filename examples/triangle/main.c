@@ -44,7 +44,10 @@ terra_status_t loop(terra_app_t *app) {
 }
 
 terra_status_t cleanup(terra_app_t *app) {
-  TERRA_CALL(terra_app_cleanup(app), "Failed cleanup");
+  // This function could be removed and the associated argument in the
+  // `terra_app_new` call be passed as NULL, but it is left to show how
+  // it can be specified
+  log_info("Nothing to clean up!");
   return TERRA_STATUS_SUCCESS;
 }
 

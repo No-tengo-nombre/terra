@@ -155,6 +155,7 @@ terra_status_t terra_app_run(terra_app_t *app) {
     logi_info("Application cleanup");
     cleanup_status = app->cleanup(app);
   }
+  cleanup_status |= terra_app_cleanup(app);
   if (loop_status == TERRA_STATUS_FAILURE) {
     logi_fatal("Application failed in loop");
     if (cleanup_status == TERRA_STATUS_FAILURE) {

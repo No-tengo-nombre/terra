@@ -2,6 +2,7 @@
 #include <terra/app.h>
 #include <terra/setup.h>
 #include <terra/status.h>
+#include <terra/vk/name_mappings.h>
 #include <terra/vk/sync.h>
 #include <terra/vulkan.h>
 #include <terra_utils/macros.h>
@@ -59,6 +60,7 @@ terra_status_t terra_app_config_new(
       .clipped              = VK_TRUE,
       .command_pool_flags   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
       .max_frames_in_flight = DEFAULT_MAX_FRAMES_IN_FLIGHT,
+      .dims                 = TERRA_3D,
 
       .resizable = 1,
 
@@ -123,8 +125,38 @@ terra_status_t terra_app_new_wstate(
   return TERRA_STATUS_SUCCESS;
 }
 
+static void terra_app_log_startup_info(terra_app_t *app) {
+  logi_info("~~~~~~~~ STARTUP INFORMATION ~~~~~~~~");
+#ifndef NDEBUG
+  logi_warn("RUNNING IN DEBUG MODE");
+#endif
+  logi_info("Renderer                  : %iD", app->conf->dims);
+  logi_info("Image array layers        : %u", app->conf->image_array_layers);
+  logi_info("Max frames in flight      : %u", app->conf->max_frames_in_flight);
+  logi_info("Resizable                 : %i", app->conf->resizable);
+  logi_info(
+      "Target surface format     : %s",
+      terra_vk_format_name(app->conf->surface_format)
+  );
+  logi_info(
+      "Target color space        : %s",
+      terra_vk_colorspace_name(app->conf->color_space)
+  );
+  logi_info(
+      "Target present mode       : %s",
+      terra_vk_present_mode_name(app->conf->present_mode)
+  );
+  logi_info(
+      "In flight fence timeout   : %llu", app->conf->in_flight_fence_timeout
+  );
+  logi_info("Image acquisition timeout : %llu", app->conf->img_acq_timeout);
+  logi_info("~~~~~~~~ END OF INFORMATION ~~~~~~~~");
+}
+
 terra_status_t terra_app_run(terra_app_t *app) {
   logi_info("Application start");
+  terra_app_log_startup_info(app);
+
   terra_status_t start_status   = app->start(app);
   terra_status_t loop_status    = TERRA_STATUS_SUCCESS;
   terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;

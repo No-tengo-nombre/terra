@@ -26,6 +26,11 @@ For devices
 extern "C" {
 #endif
 
+typedef enum terra_dims {
+  TERRA_2D = 2,
+  TERRA_3D = 3,
+} terra_dims_t;
+
 typedef struct terra_init_params {
   VkImageUsageFlags image_usage;
   VkImageViewType view_type;
@@ -76,6 +81,7 @@ typedef struct terra_app_config {
   uint8_t clipped;
   VkCommandPoolCreateFlags command_pool_flags;
   uint32_t max_frames_in_flight;
+  terra_dims_t dims;
 
   /* GLFW configurations */
 

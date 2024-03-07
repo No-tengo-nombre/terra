@@ -1,11 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <terra/app.h>
-#include <terra/status.h>
-#include <terra/vk/devices.h>
-#include <terra/vk/swapchain.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/math/clamp.h>

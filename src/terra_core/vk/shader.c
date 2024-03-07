@@ -1,7 +1,5 @@
 #include <stdlib.h>
-#include <terra/app.h>
-#include <terra/vk/shader.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/binfile.h>

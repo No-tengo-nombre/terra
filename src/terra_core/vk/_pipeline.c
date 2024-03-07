@@ -1,9 +1,7 @@
 #include "_pipeline.h"
 
 #include <stdint.h>
-#include <terra/status.h>
-#include <terra/vertex3.h>
-#include <terra/vk/shader.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 
 terra_status_t _terra_vk_pipeline_vert(

@@ -2,10 +2,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <terra/app.h>
-#include <terra/status.h>
-#include <terra/vk/name_mappings.h>
-#include <terra/vk/swapchain.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>

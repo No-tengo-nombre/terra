@@ -1,8 +1,6 @@
 #include "_pipeline.h"
 
-#include <terra/status.h>
-#include <terra/vk/pipeline.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 
 const VkDynamicState _DYN_STATE_DEFAULT[] = {

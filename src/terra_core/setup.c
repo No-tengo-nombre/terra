@@ -1,10 +1,4 @@
-#include <terra/app.h>
-#include <terra/setup.h>
-#include <terra/status.h>
-#include <terra/vk/devices.h>
-#include <terra/vk/framebuffer.h>
-#include <terra/vk/swapchain.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 

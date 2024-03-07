@@ -1,10 +1,5 @@
 #include <stdlib.h>
-#include <terra/app.h>
-#include <terra/setup.h>
-#include <terra/status.h>
-#include <terra/vk/name_mappings.h>
-#include <terra/vk/sync.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>

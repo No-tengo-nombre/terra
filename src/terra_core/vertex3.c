@@ -1,9 +1,6 @@
 #include <stddef.h>
 #include <string.h>
-#include <terra/app.h>
-#include <terra/status.h>
-#include <terra/vertex3.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 
 // TODO: Add option for the user to specify a custom descriptor
 

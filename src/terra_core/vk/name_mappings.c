@@ -1,5 +1,4 @@
-#include <terra/vk/name_mappings.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 
 const char *terra_vk_format_name(VkFormat format) {
   switch (format) {

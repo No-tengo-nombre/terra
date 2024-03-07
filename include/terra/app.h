@@ -105,6 +105,10 @@ typedef struct terra_app {
   void *glfw_window;
   terra_init_params_t init_params;
 
+  /* Data containers */
+
+  VkBuffer vert_buffer;
+
   /* Vulkan attributes */
 
   terra_queue_t vk_qinfo;

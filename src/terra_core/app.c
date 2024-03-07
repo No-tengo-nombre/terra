@@ -471,6 +471,8 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
   );
 
+  vkDestroyBuffer(app->vk_ldevice, app->vert_buffer, NULL);
+
   logi_debug("Releasing heap allocated arrays");
   terrau_free(app, app->vk_img_available_S);
   terrau_free(app, app->vk_render_finished_S);

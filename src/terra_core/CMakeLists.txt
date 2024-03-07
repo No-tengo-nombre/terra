@@ -5,7 +5,7 @@ file(GLOB CORE_VK_HEADER vk/*.h)
 
 add_library(${PROJECT_CORE_NAME} ${CORE_ROOT_HEADER} ${CORE_ROOT_SOURCE} ${CORE_VK_HEADER} ${CORE_VK_SOURCE})
 
-target_link_libraries(${PROJECT_CORE_NAME} PUBLIC ${PROJECT_UTILS_NAME} glfw
+target_link_libraries(${PROJECT_CORE_NAME} PUBLIC ${PROJECT_UTILS_NAME} ${PROJECT_VMA_NAME} glfw
                                                     cglm ${Vulkan_LIBRARIES})
 target_include_directories(
   ${PROJECT_CORE_NAME}
@@ -16,4 +16,5 @@ target_include_directories(
          ${CMAKE_SOURCE_DIR}
          ${CMAKE_DEPENDENCIES_DIR}/GLFW/include
          ${CMAKE_DEPENDENCIES_DIR}/GLM/include
+         ${CMAKE_DEPENDENCIES_DIR}/VulkanMemoryAllocator/include
          ${Vulkan_INCLUDE_DIRS})

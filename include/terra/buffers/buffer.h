@@ -10,5 +10,6 @@ terra_status_t terra_buffer_new(
     uint64_t size,
     VkBufferUsageFlags usage,
     VkSharingMode mode,
-    VkBuffer *out
+    VmaAllocation *out_alloc,
+    VkBuffer *out_buffer
 );

@@ -47,6 +47,8 @@ terra_status_t terra_app_config_new(
       .validation_layers       = validation_layers,
       .device_extensions       = device_extensions,
 
+      .vk_version = VK_API_VERSION_1_0,
+
       .surface_format       = VK_FORMAT_B8G8R8A8_SRGB,
       .color_space          = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
       .present_mode         = VK_PRESENT_MODE_MAILBOX_KHR,
@@ -491,6 +493,9 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Destroying contexts");
   vkDestroyInstance(app->vk_instance, NULL);
   glfwDestroyWindow(app->glfw_window);
+
+  logi_debug("Terminating VMA");
+  vmaDestroyAllocator(app->vma_alloc);
 
   logi_debug("Terminating GLFW");
   glfwTerminate();

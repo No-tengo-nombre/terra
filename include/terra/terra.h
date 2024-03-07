@@ -8,4 +8,5 @@
 #include "status.h"
 #include "vertex3.h"
 #include "vk/vk.h"
+#include "vma.h"
 #include "vulkan.h"

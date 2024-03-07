@@ -37,6 +37,7 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
   );
   TERRA_CALL_I(terra_choose_pdevice(app), "Failed choosing physical device");
   TERRA_CALL_I(terra_create_ldevice(app), "Failed creating logical device");
+  TERRA_CALL_I(terra_init_vma(app), "Failed initializing VMA");
   TERRA_CALL_I(
       terra_retrieve_device_queue(app), "Failed retrieving device queue"
   );
@@ -101,6 +102,35 @@ terra_status_t terra_init_instance(terra_app_t *app) {
       vkCreateInstance(&instance_info, NULL, &app->vk_instance),
       "Failed to create Vulkan instance"
   );
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_init_vma(terra_app_t *app) {
+  logi_info("Initializing VMA allocator");
+  logi_debug("Fetching Vulkan functions");
+  VmaVulkanFunctions vk_functions    = {VK_FALSE};
+  vk_functions.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
+  vk_functions.vkGetDeviceProcAddr   = &vkGetDeviceProcAddr;
+  vk_functions.vkGetPhysicalDeviceMemoryProperties2KHR =
+      &vkGetPhysicalDeviceMemoryProperties2;
+
+  logi_debug("Creating allocator create info");
+  VmaAllocatorCreateInfo alloc_info = {VK_FALSE};
+  alloc_info.flags            = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
+  alloc_info.vulkanApiVersion = app->conf->vk_version;
+  alloc_info.physicalDevice   = app->vk_pdevice;
+  alloc_info.device           = app->vk_ldevice;
+  alloc_info.instance         = app->vk_instance;
+  alloc_info.pVulkanFunctions = &vk_functions;
+  // alloc_info.pVulkanFunctions = NULL;
+
+  logi_debug("Creating allocator");
+  TERRA_VK_CALL_I(
+      vmaCreateAllocator(&alloc_info, &app->vma_alloc),
+      "Failed to create VMA allocator"
+  );
+
+  logi_debug("Successfuly initialized VMA allocator");
   return TERRA_STATUS_SUCCESS;
 }
 

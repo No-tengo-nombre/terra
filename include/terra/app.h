@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <terra/status.h>
+#include <terra/vma.h>
 
 #define TERRA_ENGINE_VERSION_MAJOR 1
 #define TERRA_ENGINE_VERSION_MINOR 0
@@ -73,6 +74,8 @@ typedef struct terra_app_config {
   const char **validation_layers;
   const char **device_extensions;
 
+  uint32_t vk_version;
+
   VkFormat surface_format;
   VkColorSpaceKHR color_space;
   VkPresentModeKHR present_mode;
@@ -100,13 +103,15 @@ typedef struct terra_app {
 
   terra_app_metadata_t *meta;
   terra_app_config_t *conf;
-
   terra_app_state_t state;
+
   void *glfw_window;
+  VmaAllocator vma_alloc;
   terra_init_params_t init_params;
 
   /* Data containers */
 
+  VmaAllocation vert_alloc;
   VkBuffer vert_buffer;
 
   /* Vulkan attributes */

@@ -15,6 +15,7 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params);
 
 terra_status_t terra_init_window(terra_app_t *app);
 terra_status_t terra_init_instance(terra_app_t *app);
+terra_status_t terra_init_vma(terra_app_t *app);
 terra_status_t terra_init_debug_callback(terra_app_t *app);
 terra_status_t terra_create_render_surface(terra_app_t *app);
 terra_status_t terra_choose_pdevice(terra_app_t *app);

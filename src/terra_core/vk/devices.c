@@ -11,7 +11,7 @@ terra_status_t terra_vk_create_application_info(
     terra_app_t *app, VkApplicationInfo *out
 ) {
   out->sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  out->apiVersion         = VK_API_VERSION_1_3;
+  out->apiVersion         = app->conf->vk_version;
   out->applicationVersion = VK_MAKE_API_VERSION(
       1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch
   );

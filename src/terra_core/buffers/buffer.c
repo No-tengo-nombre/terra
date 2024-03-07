@@ -1,13 +1,12 @@
-#include <terra/buffers/buffer.h>
-
-// TODO: Let VMA take care of memory handling
+#include <terra/terra.h>
 
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,
     VkBufferUsageFlags usage,
     VkSharingMode mode,
-    VkBuffer *out
+    VmaAllocation *out_alloc,
+    VkBuffer *out_buffer
 ) {
   VkBufferCreateInfo info = {VK_FALSE};
   info.sType              = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -15,8 +14,13 @@ terra_status_t terra_buffer_new(
   info.usage              = usage;
   info.sharingMode        = mode;
 
+  VmaAllocationCreateInfo alloc_info = {VK_FALSE};
+  alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+
   TERRA_VK_CALL_I(
-      vkCreateBuffer(app->vk_ldevice, &info, NULL, out),
+      vmaCreateBuffer(
+          app->vma_alloc, &info, &alloc_info, out_buffer, out_alloc, NULL
+      ),
       "Failed to create buffer"
   );
 

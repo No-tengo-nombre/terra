@@ -1,6 +1,7 @@
 #pragma once
 
 #include "app.h"
+#include "buffers/buffers.h"
 #include "material.h"
 #include "mesh.h"
 #include "setup.h"

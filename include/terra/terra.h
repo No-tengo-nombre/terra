@@ -5,3 +5,5 @@
 #include "mesh.h"
 #include "setup.h"
 #include "status.h"
+#include "vertex3.h"
+#include "vk/vk.h"

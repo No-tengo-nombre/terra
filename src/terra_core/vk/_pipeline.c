@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <terra/status.h>
+#include <terra/vertex3.h>
 #include <terra/vk/shader.h>
 #include <terra_utils/macros.h>
 
@@ -61,13 +62,23 @@ terra_status_t _terra_vk_pipeline_vertex_input_state_info(
     terra_vk_pipeline_params_t *params,
     VkPipelineVertexInputStateCreateInfo *out
 ) {
-  // TODO: Add the option for the user to specify the binding and
-  // attribute descriptions
-  out->sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  out->vertexBindingDescriptionCount   = 0;
-  out->pVertexBindingDescriptions      = NULL;
-  out->vertexAttributeDescriptionCount = 0;
-  out->pVertexAttributeDescriptions    = NULL;
+  VkPipelineVertexInputStateCreateInfo info = {VK_FALSE};
+  info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+  switch (app->conf->dims) {
+  case TERRA_2D:
+    // TODO: Implement 2D rendering
+    logi_fatal("2D rendering not yet supported");
+    return TERRA_STATUS_FAILURE;
+
+  case TERRA_3D:
+    info.vertexBindingDescriptionCount   = TERRA_VERTEX3_BIND_DESC_SIZE;
+    info.vertexAttributeDescriptionCount = TERRA_VERTEX3_ATTR_DESC_SIZE;
+    info.pVertexBindingDescriptions      = TERRA_VERTEX3_BIND_DESC;
+    info.pVertexAttributeDescriptions    = TERRA_VERTEX3_ATTR_DESC;
+  }
+
+  *out = info;
   return TERRA_STATUS_SUCCESS;
 }
 

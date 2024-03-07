@@ -1,5 +1,7 @@
 #include <terra/buffers/buffer.h>
 
+// TODO: Let VMA take care of memory handling
+
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,

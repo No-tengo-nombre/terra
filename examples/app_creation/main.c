@@ -1,14 +1,13 @@
-#include <stdio.h>
-#include <terra/app.h>
-#include <terra/status.h>
+#include <terra/terra.h>
+#include <terrau/log.h>
 
 terra_status_t start(terra_app_t *app) {
-  printf("Starting application\n");
+  log_info("Starting application\n");
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_status_t loop(terra_app_t *app) {
-  printf("Iteration %llu\n", app->state.i);
+  log_debug("Iteration %llu\n", app->state.i);
   if (app->state.i >= 10) {
     return TERRA_STATUS_EXIT;
   }

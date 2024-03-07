@@ -1,11 +1,4 @@
-#include <terra/app.h>
-#include <terra/setup.h>
-#include <terra/vk/command_pool.h>
-#include <terra/vk/framebuffer.h>
-#include <terra/vk/pipeline.h>
-#include <terra/vk/swapchain.h>
-#include <terra/vk/sync.h>
-#include <terra/vulkan.h>
+#include <terra/terra.h>
 #include <terrau/log.h>
 #include <terrau/macros.h>
 

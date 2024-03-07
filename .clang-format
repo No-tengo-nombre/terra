@@ -13,13 +13,13 @@ DerivePointerAlignment: false
 PointerAlignment: Right
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
-BreakAfterReturnType: Automatic
+# BreakAfterReturnType: Automatic
 PenaltyReturnTypeOnItsOwnLine: 1000
 BreakBeforeConceptDeclarations: Always
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
-BreakTemplateDeclarations: Yes
+# BreakTemplateDeclarations: Yes
 CompactNamespaces: false
 IncludeBlocks: Regroup
 IndentCaseLabels: false

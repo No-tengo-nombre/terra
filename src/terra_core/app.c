@@ -468,12 +468,12 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
 
   logi_debug("Cleaning up command pool");
   vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
-
   TERRA_CALL_I(
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
   );
 
-  vkDestroyBuffer(app->vk_ldevice, app->vert_buffer, NULL);
+  logi_debug("Cleaning up buffers");
+  TERRA_CALL_I(terra_vb_cleanup(app), "Failed cleaning up vertex buffer");
 
   logi_debug("Releasing heap allocated arrays");
   terrau_free(app, app->vk_img_available_S);

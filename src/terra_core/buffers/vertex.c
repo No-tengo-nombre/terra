@@ -1,30 +1,40 @@
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
+#include <terra_utils/vendor/log.h>
 
-// static terra_vb_find_memory_type(
-//     terra_app_t *app, uint32_t type_filter, VkMemoryPropertyFlags props
-// ) {
-//   VkPhysicalDeviceMemoryProperties mem_props;
-//   vkGetPhysicalDeviceMemoryProperties(app->vk_ldevice, &mem_props);
-
-//   for (uint32_t i = 0; i < mem_props.memoryTypeCount; i++) {}
-// }
-
-terra_status_t terra_vb_new(terra_app_t *app, uint64_t size) {
+terra_status_t terra_vb_new(
+    terra_app_t *app, uint64_t size, terra_buffer_t *out
+) {
   TERRA_CALL_I(
       terra_buffer_new(
           app,
           size,
           VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
           VK_SHARING_MODE_EXCLUSIVE,
-          &app->vert_alloc,
-          &app->vert_buffer
+          &out->alloc,
+          &out->buffer
       ),
       "Failed to create vertex buffer"
   );
 
-  // VkMemoryRequirements mem_reqs;
-  // vkGetBufferMemoryRequirements(app->vk_ldevice, app->vert_buffer, &mem_reqs);
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_vb_bind(terra_app_t *app, terra_buffer_t *vb) {
+  logi_debug("Binding vertex buffer");
+  TERRA_VK_CALL_I(
+      vmaBindBufferMemory(app->vma_alloc, vb->alloc, vb->buffer),
+      "Failed binding vertex buffer"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_vb_cleanup(terra_app_t *app) {
+  logi_debug("Cleaning vertex buffer");
+  vmaDestroyBuffer(
+      app->vma_alloc, app->vert_buffer.buffer, app->vert_buffer.alloc
+  );
 
   return TERRA_STATUS_SUCCESS;
 }

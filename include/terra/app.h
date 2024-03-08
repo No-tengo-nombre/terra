@@ -32,6 +32,11 @@ typedef enum terra_dims {
   TERRA_3D = 3,
 } terra_dims_t;
 
+typedef struct terra_buffer {
+  VkBuffer buffer;
+  VmaAllocation alloc;
+} terra_buffer_t;
+
 typedef struct terra_init_params {
   VkImageUsageFlags image_usage;
   VkImageViewType view_type;
@@ -111,8 +116,7 @@ typedef struct terra_app {
 
   /* Data containers */
 
-  VmaAllocation vert_alloc;
-  VkBuffer vert_buffer;
+  terra_buffer_t vert_buffer;
 
   /* Vulkan attributes */
 

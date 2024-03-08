@@ -4,7 +4,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 string(REGEX REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-string(REGEX REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+string(REGEX REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG
+                     "${CMAKE_CXX_FLAGS_DEBUG}")
 
 project(terra VERSION 0.1)
 set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
@@ -12,7 +13,10 @@ set(CMAKE_DEPENDENCIES_DIR ${CMAKE_SOURCE_DIR}/dependencies)
 # Necessary libraries
 find_package(Vulkan REQUIRED)
 find_package(Vulkan COMPONENTS glslc)
-find_program(glslc_executable NAMES glslc HINTS Vulkan::glslc)
+find_program(
+  glslc_executable
+  NAMES glslc
+  HINTS Vulkan::glslc)
 
 # Compiles GLSL shaders into SPIR-V
 function(compile_shader target)
@@ -29,17 +33,12 @@ function(compile_shader target)
       DEPENDS ${source}
       DEPFILE ${filename}.d
       COMMAND
-        ${glslc_executable}
-        $<$<BOOL:${arg_ENV}>:--target-env=${arg_ENV}>
-        $<$<BOOL:${arg_FORMAT}>:-mfmt=${arg_FORMAT}>
-        -MD -MF ${filename}.d
-        -o ${OUTDIR}/${filename}.spv
-        ${source}
-    )
+        ${glslc_executable} $<$<BOOL:${arg_ENV}>:--target-env=${arg_ENV}>
+        $<$<BOOL:${arg_FORMAT}>:-mfmt=${arg_FORMAT}> -MD -MF ${filename}.d -o
+        ${OUTDIR}/${filename}.spv ${source})
     target_sources(${target} PRIVATE ${OUTDIR}/${filename}.spv)
   endforeach()
 endfunction()
-
 
 # Output for files
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)

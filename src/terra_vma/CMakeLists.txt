@@ -2,7 +2,10 @@ file(GLOB VMA_ROOT_SOURCE *.cpp)
 
 add_library(${PROJECT_VMA_NAME} ${VMA_ROOT_HEADER} ${VMA_ROOT_SOURCE})
 
-target_link_libraries(${PROJECT_VMA_NAME} PUBLIC ${Vulkan_LIBRARIES})
+target_link_libraries(
+  ${PROJECT_VMA_NAME}
+  PUBLIC ${Vulkan_LIBRARIES}
+  PRIVATE GPUOpen::VulkanMemoryAllocator)
 target_include_directories(
   ${PROJECT_VMA_NAME}
   PUBLIC ${PROJECT_BINARY_DIR}

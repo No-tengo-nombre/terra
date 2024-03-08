@@ -23,10 +23,12 @@ set_target_properties(
              RUNTIME_OUTPUT_DIRECTORY_RELEASE
              ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/${EXAMPLE_NAME})
 
-compile_shader(${EXAMPLE_NAME}
-  ENV vulkan1.3
-  FORMAT bin
+compile_shader(
+  ${EXAMPLE_NAME}
+  ENV
+  vulkan1.3
+  FORMAT
+  bin
   SOURCES
-    ${EXAMPLE_GLSL_VERT}
-    ${EXAMPLE_GLSL_FRAG}
-)
+  ${EXAMPLE_GLSL_VERT}
+  ${EXAMPLE_GLSL_FRAG})

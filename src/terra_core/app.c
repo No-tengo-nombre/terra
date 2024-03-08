@@ -482,6 +482,7 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
 
   logi_debug("Cleaning up command pool");
   vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
+  vkDestroyCommandPool(app->vk_ldevice, app->vk_mem_commands, NULL);
   TERRA_CALL_I(
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
   );

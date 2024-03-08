@@ -135,6 +135,7 @@ typedef struct terra_app {
   VkRenderPass vk_render_pass;
   VkPipeline vk_pipeline;
   VkCommandPool vk_commands;
+  VkCommandPool vk_mem_commands;
   VkCommandBuffer *vk_command_buffers;
 
   VkImage *vk_images;

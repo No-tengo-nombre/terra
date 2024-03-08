@@ -10,10 +10,11 @@ terra_status_t terra_buffer_new(
     uint64_t size,
     VkBufferUsageFlags usage,
     VkSharingMode mode,
-    VmaAllocation *out_alloc,
-    VkBuffer *out_buffer
+    VkMemoryPropertyFlags req_flags,
+    terra_buffer_t *out
 );
-
-// terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf);
-
 terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf);
+
+terra_status_t terra_buffer_copy(
+    terra_app_t *app, terra_buffer_t *src, terra_buffer_t *dst, size_t size
+);

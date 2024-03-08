@@ -11,7 +11,8 @@ extern "C" {
 
 typedef struct terra_mesh {
   terra_vector_t *verts;
-  terra_buffer_t buf;
+  terra_buffer_t vert_buf;
+  terra_buffer_t stag_buf;
 } terra_mesh_t;
 
 terra_status_t terra_mesh_new(

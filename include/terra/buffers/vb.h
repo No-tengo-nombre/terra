@@ -2,11 +2,15 @@
 
 #include <stdint.h>
 #include <terra/app.h>
+#include <terra/data/vector.h>
 #include <terra/status.h>
 #include <terra/vulkan.h>
 
 terra_status_t terra_vb_new(
-    terra_app_t *app, uint64_t size, terra_buffer_t *out
+    terra_app_t *app,
+    terra_vector_t *data,
+    terra_buffer_t *out_stag,
+    terra_buffer_t *out_vert
 );
 
 terra_status_t terra_vb_bind(

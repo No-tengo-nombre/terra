@@ -11,8 +11,8 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
 - **(`./src/terra_core/app.c`)** Take the offset from the app
 - **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
-- **(`./src/terra_core/vertex3.c`)** Add option for the user to specify a custom descriptor
-- **(`./src/terra_core/vertex3.c`)** Add option to use instanced rendering
+- **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
+- **(`./src/terra_core/data/vertex3.c`)** Add option to use instanced rendering
 - **(`./src/terra_core/vk/command_pool.c`)** Evaluate need to extract command buffer creation outside for multiple
 - **(`./src/terra_core/vk/_swapchain.c`)** Implement ownership when using different graphics and present
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for vertex shaders

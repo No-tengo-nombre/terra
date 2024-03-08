@@ -1,5 +1,6 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
+- **(`./examples/shapes/main.c`)** Move the rest of the initializations into the terra_init function
 - **(`./examples/triangle/main.c`)** Move the rest of the initializations into the terra_init function
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/terra/material.h`)** Figure out how to do materials

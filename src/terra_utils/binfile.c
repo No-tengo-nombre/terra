@@ -35,9 +35,10 @@ terra_status_t terrau_read_binary_file(
     terra_app_t *app, const char *filename, size_t *out_size, char **out
 ) {
   logi_debug("Reading file '%s'", filename);
-  FILE *file = fopen(filename, "rb");
-  if (file == NULL) {
-    logi_error("Could not open file '%s'", filename);
+  FILE *file;
+  errno_t err = fopen_s(&file, filename, "rb");
+  if (err || file == NULL) {
+    logi_error("Could not open file '%s' (err=%d)", filename, err);
     fclose(file);
     return TERRA_STATUS_FAILURE;
   }

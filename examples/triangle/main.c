@@ -56,7 +56,7 @@ terra_status_t loop(terra_app_t *app) {
   glfwPollEvents();
 
   // In reality you would probably not update the mesh on every frame
-  TERRA_CALL(terra_mesh_update(app, &triangle_m), "Failed updating mesh");
+  TERRA_CALL(terra_mesh_update(app, &triangle_m, NULL), "Failed updating mesh");
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   return TERRA_STATUS_SUCCESS;

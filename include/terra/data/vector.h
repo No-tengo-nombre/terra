@@ -6,6 +6,10 @@
 
 typedef struct terra_app terra_app_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_vector {
   void *data;
   size_t data_size;
@@ -64,3 +68,7 @@ terra_status_t terra_vector_extend_array(
 
 size_t terra_vector_total_size(terra_app_t *app, const terra_vector_t *vec);
 size_t terra_vector_alloc_size(terra_app_t *app, const terra_vector_t *vec);
+
+#ifdef __cplusplus
+}
+#endif

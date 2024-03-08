@@ -9,6 +9,10 @@
 #define TERRA_VERTEX3_BIND_DESC_SIZE 1
 #define TERRA_VERTEX3_ATTR_DESC_SIZE 2
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern const VkVertexInputBindingDescription
     TERRA_VERTEX3_BIND_DESC[TERRA_VERTEX3_BIND_DESC_SIZE];
 
@@ -20,9 +24,6 @@ typedef struct terra_vertex3 {
   vec4 color;
 } terra_vertex3_t;
 
-// terra_status_t terra_vertex3_get_binding_description(
-//     terra_app_t *app, VkVertexInputBindingDescription *out
-// );
-// terra_status_t terra_vertex3_get_attribute_descriptions(
-//     terra_app_t *app, VkVertexInputAttributeDescription *out
-// );
+#ifdef __cplusplus
+}
+#endif

@@ -5,6 +5,10 @@
 #include <terra/status.h>
 #include <terra/vulkan.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,
@@ -18,3 +22,7 @@ terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf);
 terra_status_t terra_buffer_copy(
     terra_app_t *app, terra_buffer_t *src, terra_buffer_t *dst, size_t size
 );
+
+#ifdef __cplusplus
+}
+#endif

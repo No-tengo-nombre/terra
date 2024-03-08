@@ -20,7 +20,7 @@ terra_status_t terra_vk_shader_from_spv(
   );
 #ifndef NDEBUG
   logi_debug("Visualizing binary file");
-  terrau_visualize_binary_file(app, contents, size);
+  terrau_visualize_binary_file(app, contents, (int64_t)size);
 #endif
 
   VkShaderModuleCreateInfo info = {VK_FALSE};

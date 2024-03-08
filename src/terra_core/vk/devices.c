@@ -203,11 +203,11 @@ terra_status_t terra_vk_rate_device(
     return TERRA_STATUS_FAILURE;
   }
 
-  uint32_t score = 0;
+  int32_t score = 0;
   if (props.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
     score += 1000;
   }
-  score += props.limits.maxImageDimension2D;
+  score += (int32_t)props.limits.maxImageDimension2D;
   logi_debug("Device '%s' score: %I32u", props.deviceName, score);
   *out = score;
   return TERRA_STATUS_SUCCESS;

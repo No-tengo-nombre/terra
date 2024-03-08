@@ -63,8 +63,15 @@ set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/pdb)
 set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
 
 # Constants for the project
-set(PROJECT_COMPILE_OPTIONS -Wall -Wextra -Werror -Wno-unused-parameter
-                            -pedantic -pedantic-errors)
+set(PROJECT_COMPILE_OPTIONS
+    -Wall
+    -Wextra
+    -Werror
+    -Wno-unused-parameter
+    -Wconversion
+    -Wsign-conversion
+    -pedantic
+    -pedantic-errors)
 
 # Names for the different libraries in the project
 set(PROJECT_UTILS_NAME ${PROJECT_NAME}_utils)

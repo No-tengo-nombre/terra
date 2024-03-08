@@ -65,7 +65,11 @@ terra_status_t terra_init_window(terra_app_t *app) {
     title = app->meta->window_title;
   }
   GLFWwindow *window = glfwCreateWindow(
-      app->meta->window_width, app->meta->window_height, title, NULL, NULL
+      (int)app->meta->window_width,
+      (int)app->meta->window_height,
+      title,
+      NULL,
+      NULL
   );
   app->glfw_window = window;
   glfwSetWindowUserPointer(window, app);

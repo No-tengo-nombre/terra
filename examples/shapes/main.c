@@ -6,11 +6,24 @@ terra_vertex3_t quad_vertices[] = {
     {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
     { {-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
     {  {0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}},
-    { {0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0, 1.0f}}
+ // { {0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0, 1.0f}}
 };
-uint32_t quad_indices[] = {0, 1, 2, 1, 2, 3};
+terra_vertex3_t triangle_vertices[] = {
+    {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{0.75f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}},
+    {{0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0, 1.0f}}
+};
+terra_vertex3_t triangle2_vertices[] = {
+    {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    {{0.15f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}},
+    {{0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0, 1.0f}}
+};
+// uint32_t quad_indices[] = {0, 1, 2, 1, 2, 3};
 terra_vector_t quad_v;
 terra_mesh_t quad_m;
+terra_vector_t triangle_v;
+terra_vector_t triangle2_v;
+terra_mesh_t triangle_m;
 
 terra_status_t start(terra_app_t *app) {
   TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
@@ -21,8 +34,8 @@ terra_status_t start(terra_app_t *app) {
       terra_vk_pipeline_from_filenames(
           app,
           NULL,
-          "bin/debug/ex.quad/quad.vert.spv",
-          "bin/debug/ex.quad/quad.frag.spv"
+          "bin/debug/ex.shapes/shapes.vert.spv",
+          "bin/debug/ex.shapes/shapes.frag.spv"
       ),
       "Failed creating pipeline"
   );
@@ -36,14 +49,38 @@ terra_status_t start(terra_app_t *app) {
       terra_vector_from_array(
           app,
           quad_vertices,
-          sizeof(quad_vertices),
+          sizeof(quad_vertices) / sizeof(quad_vertices[0]),
           sizeof(quad_vertices[0]),
           &quad_v
       ),
       "Failed reading quad"
   );
+  TERRA_CALL(
+      terra_vector_from_array(
+          app,
+          triangle_vertices,
+          sizeof(triangle_vertices) / sizeof(triangle_vertices[0]),
+          sizeof(triangle_vertices[0]),
+          &triangle_v
+      ),
+      "Failed reading triangle"
+  );
+  TERRA_CALL(
+      terra_vector_from_array(
+          app,
+          triangle2_vertices,
+          sizeof(triangle2_vertices) / sizeof(triangle2_vertices[0]),
+          sizeof(triangle2_vertices[0]),
+          &triangle2_v
+      ),
+      "Failed reading triangle2"
+  );
   TERRA_CALL(terra_mesh_new(app, &quad_v, &quad_m), "Failed to create mesh");
+  TERRA_CALL(
+      terra_mesh_new(app, &triangle_v, &triangle_m), "Failed to create mesh"
+  );
   TERRA_CALL(terra_mesh_push(app, &quad_m), "Failed to push quad");
+  TERRA_CALL(terra_mesh_push(app, &triangle_m), "Failed to push triangle");
 
   return TERRA_STATUS_SUCCESS;
 }
@@ -55,8 +92,13 @@ terra_status_t loop(terra_app_t *app) {
   }
   glfwPollEvents();
 
-  // In reality you would probably not update the mesh on every frame
-  TERRA_CALL(terra_mesh_update(app, &quad_m), "Failed updating mesh");
+  if (app->state.i == 10000) {
+    log_info("Updating triangle mesh");
+    TERRA_CALL(
+        terra_mesh_update(app, &triangle_m, &triangle2_v),
+        "Failed updating triangle mesh"
+    );
+  }
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   return TERRA_STATUS_SUCCESS;
@@ -67,7 +109,19 @@ terra_status_t cleanup(terra_app_t *app) {
   TERRA_CALL(
       terra_vector_cleanup(app, &quad_v), "Failed to clean up quad vertices"
   );
+  TERRA_CALL(
+      terra_vector_cleanup(app, &triangle_v),
+      "Failed to clean up triangle vertices"
+  );
+  TERRA_CALL(
+      terra_vector_cleanup(app, &triangle2_v),
+      "Failed to clean up triangle2 vertices"
+  );
+
   TERRA_CALL(terra_mesh_cleanup(app, &quad_m), "Failed to clean up quad mesh");
+  TERRA_CALL(
+      terra_mesh_cleanup(app, &triangle_m), "Failed to clean up triangle mesh"
+  );
   return TERRA_STATUS_SUCCESS;
 }
 

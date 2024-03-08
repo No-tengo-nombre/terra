@@ -160,7 +160,7 @@ terra_status_t terra_vector_extend_array(
     return TERRA_STATUS_FAILURE;
   }
 
-  uint32_t delta = len - (vec->capacity - vec->len);
+  size_t delta = len - (vec->capacity - vec->len);
   if (delta > 0) {
     // The vector does not have enough space so we have to allocate more
     // memory

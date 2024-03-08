@@ -1,11 +1,10 @@
 #pragma once
 
-#include "app.h"
-#include "status.h"
-#include "vulkan.h"
-
 #include <cglm/cglm.h>
 #include <stdint.h>
+#include <terra/app.h>
+#include <terra/status.h>
+#include <terra/vulkan.h>
 
 #define TERRA_VERTEX3_BIND_DESC_SIZE 1
 #define TERRA_VERTEX3_ATTR_DESC_SIZE 2

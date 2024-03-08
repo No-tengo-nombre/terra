@@ -472,6 +472,9 @@ terra_status_t terra_app_cleanup_swapchain(
 }
 
 terra_status_t terra_app_cleanup(terra_app_t *app) {
+  logi_debug("Terminating VMA");
+  vmaDestroyAllocator(app->vma_alloc);
+
   logi_debug("Cleaning up sync objects");
   TERRA_CALL_I(
       terra_vk_detroy_sync_objects(app), "Failed destroying sync objects"
@@ -504,9 +507,6 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   logi_debug("Destroying contexts");
   vkDestroyInstance(app->vk_instance, NULL);
   glfwDestroyWindow(app->glfw_window);
-
-  logi_debug("Terminating VMA");
-  vmaDestroyAllocator(app->vma_alloc);
 
   logi_debug("Terminating GLFW");
   glfwTerminate();

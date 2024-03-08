@@ -3,11 +3,15 @@
 #include <terra_utils/macros.h>
 
 terra_status_t terra_mesh_new(
-    terra_app_t *app, terra_vector_t *verts, terra_mesh_t *out
+    terra_app_t *app,
+    terra_vector_t *verts,
+    // terra_vector_t *indices,
+    terra_mesh_t *out
 ) {
   logi_debug("Creating new mesh from data");
   terra_mesh_t mesh;
   mesh.verts = verts;
+  // mesh.indices = indices;
   TERRA_CALL_I(
       terra_vb_new(app, verts, &mesh.stag_buf, &mesh.vert_buf),
       "Failed allocating vertex buffer for the mesh"
@@ -30,17 +34,33 @@ terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_mesh_update(terra_app_t *app, terra_mesh_t *mesh) {
+terra_status_t terra_mesh_update(
+    terra_app_t *app, terra_mesh_t *mesh, terra_vector_t *new_verts
+) {
   logi_debug("Updating mesh");
+
+  terra_vector_t *verts_p;
+  size_t size;
+  if (new_verts != NULL) {
+    verts_p = new_verts;
+  } else {
+    verts_p = mesh->verts;
+  }
+  size = terra_vector_total_size(app, verts_p);
+
   void *temp_data;
   TERRA_VK_CALL_I(
       vmaMapMemory(app->vma_alloc, mesh->stag_buf.alloc, &temp_data),
       "Failed mapping memory"
   );
-  memcpy(
-      temp_data, mesh->verts->data, terra_vector_total_size(app, mesh->verts)
-  );
+  memcpy(temp_data, verts_p->data, size);
   vmaUnmapMemory(app->vma_alloc, mesh->stag_buf.alloc);
+
+  logi_debug("Transfering memory from staging buffer to vertex buffer");
+  TERRA_CALL_I(
+      terra_buffer_copy(app, &mesh->stag_buf, &mesh->vert_buf, size),
+      "Failed memory transfer from staging to vertex buffer"
+  );
 
   return TERRA_STATUS_SUCCESS;
 }

@@ -2,39 +2,50 @@
 #include "vendor/log.h"
 
 #include <string.h>
+#include <terra/status.h>
 
 #define TEST_FAIL 1
 #define TEST_PASS 0
 
-#define terra_assert(cond)                                                     \
+/* Assert macros */
+
+#define TERRA_ASSERT(cond)                                                     \
   if (!(cond))                                                                 \
-  return TEST_FAIL
-#define terra_assert_false(cond)                                               \
+  return TERRA_STATUS_FAILURE
+#define TERRA_ASSERT_FALSE(cond)                                               \
   if (cond)                                                                    \
-  return TEST_FAIL
-#define terra_assert_eqi(v1, v2)                                               \
+  return TERRA_STATUS_FAILURE
+#define TERRA_ASSERT_EQI(v1, v2)                                               \
   if ((v1) != (v2)) {                                                          \
-    logi_debug("TEST_FAIL: Expected %i, found %i", v2, v1);                    \
-    return TEST_FAIL;                                                          \
+    log_debug("TEST_FAIL: Expected %i, found %i", v2, v1);                     \
+    return TERRA_STATUS_FAILURE;                                               \
   }
-#define terra_assert_nei(v1, v2)                                               \
+#define TERRA_ASSERT_NEI(v1, v2)                                               \
   if ((v1) == (v2)) {                                                          \
-    logi_debug("TEST_FAIL: Expected different than %i, found %i", v2, v1);     \
-    return TEST_FAIL;                                                          \
+    log_debug("TEST_FAIL: Expected different than %i, found %i", v2, v1);      \
+    return TERRA_STATUS_FAILURE;                                               \
   }
-#define terra_assert_streq(v1, v2)                                             \
+#define TERRA_ASSERT_STREQ(v1, v2)                                             \
   if (strcmp((v1), (v2))) {                                                    \
-    logi_debug("TEST_FAIL: Expected %s, found %s", v2, v1);                    \
-    return TEST_FAIL;                                                          \
+    log_debug("TEST_FAIL: Expected %s, found %s", v2, v1);                     \
+    return TERRA_STATUS_FAILURE;                                               \
   }
-#define terra_assert_strne(v1, v2)                                             \
+#define TERRA_ASSERT_STRNE(v1, v2)                                             \
   if (!strcmp((v1), (v2))) {                                                   \
-    logi_debug("TEST_FAIL: Expected different than %s, found %s", v2, v1);     \
+    log_debug("TEST_FAIL: Expected different than %s, found %s", v2, v1);      \
+    return TERRA_STATUS_FAILURE;                                               \
+  }
+#define TERRA_ASSERT_FAILS(x)                                                  \
+  if (x != TERRA_STATUS_FAILURE) {                                             \
+    log_debug("TEST_FAIL: Expected failure, got success");                     \
+    return TERRA_STATUS_FAILURE;                                               \
+  }
+
+/* Test utilities */
+
+#define TERRA_CALL_TEST(app, test)                                             \
+  log_info("TEST: *" #test "*");                                               \
+  if (test(app) == TEST_FAIL) {                                                \
+    log_error("Found failing test");                                           \
     return TEST_FAIL;                                                          \
   }
-#define terra_assert_chromeq(v1, v2)                                           \
-  if (!terra_ch_equal(&(v1), &(v2)))                                           \
-  return TEST_FAIL
-#define terra_assert_chromne(v1, v2)                                           \
-  if (terra_ch_equal(&(v1), &(v2)))                                            \
-  return TEST_FAIL

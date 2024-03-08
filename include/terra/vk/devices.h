@@ -32,7 +32,7 @@ terra_status_t terra_vk_rate_device(
     VkPhysicalDevice device,
     VkSurfaceKHR surface,
     terra_queue_t *queue,
-    uint32_t *out
+    int32_t *out
 );
 terra_status_t terra_vk_get_physical_device(
     terra_app_t *app, terra_result_t *out

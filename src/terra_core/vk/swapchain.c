@@ -168,7 +168,8 @@ terra_status_t terra_vk_create_image_views(
 ) {
   VkImage *p_image          = app->vk_images;
   VkImageView *p_image_view = app->vk_image_views;
-  for (int i = 0; i < app->vk_images_count; i++, p_image++, p_image_view++) {
+  for (uint32_t i = 0; i < app->vk_images_count;
+       i++, p_image++, p_image_view++) {
     VkImageViewCreateInfo iv_info = {VK_FALSE};
     iv_info.sType                 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     iv_info.image                 = *p_image;

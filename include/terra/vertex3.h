@@ -21,9 +21,9 @@ typedef struct terra_vertex3 {
   vec4 color;
 } terra_vertex3_t;
 
-terra_status_t terra_vertex3_get_binding_description(
-    terra_app_t *app, VkVertexInputBindingDescription *out
-);
-terra_status_t terra_vertex3_get_attribute_descriptions(
-    terra_app_t *app, VkVertexInputAttributeDescription *out
-);
+// terra_status_t terra_vertex3_get_binding_description(
+//     terra_app_t *app, VkVertexInputBindingDescription *out
+// );
+// terra_status_t terra_vertex3_get_attribute_descriptions(
+//     terra_app_t *app, VkVertexInputAttributeDescription *out
+// );

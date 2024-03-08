@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <terra/terra.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/math/clamp.h>
@@ -15,7 +16,7 @@ terra_status_t _terra_vk_choose_sc_format(
       app->conf->color_space,
       terra_vk_colorspace_name(app->conf->color_space)
   );
-  for (int i = 0; i < sc_details->format_count; i++) {
+  for (uint32_t i = 0; i < sc_details->format_count; i++) {
     VkSurfaceFormatKHR f = sc_details->formats[i];
     if (f.format == app->conf->surface_format &&
         f.colorSpace == app->conf->color_space) {
@@ -31,7 +32,7 @@ terra_status_t _terra_vk_choose_sc_format(
 terra_status_t _terra_vk_choose_sc_present_mode(
     terra_app_t *app, terra_vk_sc_details_t *sc_details, VkPresentModeKHR *out
 ) {
-  for (int i = 0; i < sc_details->mode_count; i++) {
+  for (uint32_t i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
     if (m == app->conf->present_mode) {
       *out = m;

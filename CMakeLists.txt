@@ -62,9 +62,12 @@ set(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/pdb)
 # Directory of the code
 set(PROJECT_SOURCE_DIR_LOCATION ${CMAKE_SOURCE_DIR}/src)
 
+# Constants for the project
+set(PROJECT_COMPILE_OPTIONS -Wall -Wextra -Werror -pedantic
+                            -Wno-unused-parameter)
+
 # Names for the different libraries in the project
 set(PROJECT_UTILS_NAME ${PROJECT_NAME}_utils)
-# set(PROJECT_RENDER_NAME ${PROJECT_NAME}_render)
 set(PROJECT_CORE_NAME ${PROJECT_NAME}_core)
 set(PROJECT_VMA_NAME ${PROJECT_NAME}_vma)
 set(PROJECT_HEADERS ${CMAKE_SOURCE_DIR}/include)
@@ -73,16 +76,6 @@ option(TERRA_BUILD_EXAMPLES "Build the examples that come with the package."
        OFF)
 option(TERRA_BUILD_TESTS "Build the tests that come with the package." OFF)
 option(TERRA_INSTALL "Install target." OFF)
-
-if(MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-else()
-  # The MSVC warnings are annoying and uninformative
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-endif()
 
 add_compile_definitions(LOG_USE_COLOR)
 

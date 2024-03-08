@@ -26,13 +26,13 @@ const char _HEX_MAPPING[16] = {
     'F',
 };
 
-int64_t get_file_size(FILE *file) {
+size_t get_file_size(FILE *file) {
   fseek(file, 0, SEEK_END);
-  return ftell(file);
+  return (size_t)ftell(file);
 }
 
 terra_status_t terrau_read_binary_file(
-    terra_app_t *app, const char *filename, int64_t *out_size, char **out
+    terra_app_t *app, const char *filename, size_t *out_size, char **out
 ) {
   logi_debug("Reading file '%s'", filename);
   FILE *file = fopen(filename, "rb");
@@ -41,7 +41,7 @@ terra_status_t terrau_read_binary_file(
     fclose(file);
     return TERRA_STATUS_FAILURE;
   }
-  int64_t file_size = get_file_size(file);
+  size_t file_size = get_file_size(file);
   logi_debug("File size is %lli B, reading contents", file_size);
   fseek(file, 0, SEEK_SET);
   logi_debug("Allocating file");

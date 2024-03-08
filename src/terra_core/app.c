@@ -446,7 +446,7 @@ terra_status_t terra_app_cleanup_swapchain(
   logi_debug("Cleaning swapchain");
   VkFramebuffer *fb = app->vk_framebuffers;
   VkImageView *view = app->vk_image_views;
-  for (int i = 0; i < app->vk_images_count; i++, view++, fb++) {
+  for (uint32_t i = 0; i < app->vk_images_count; i++, view++, fb++) {
     vkDestroyFramebuffer(app->vk_ldevice, *fb, NULL);
     vkDestroyImageView(app->vk_ldevice, *view, NULL);
   }
@@ -522,11 +522,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
     const VkDebugUtilsMessengerCallbackDataEXT *cb_data,
     void *user_data
 ) {
-  logi_error("validation layer: %s", cb_data->pMessage);
+  logi_error("[VALIDATION LAYER] %s", cb_data->pMessage);
   return VK_FALSE;
 }
 
 void terra_app_fb_resize_callback(GLFWwindow *window, int width, int height) {
+  logi_debug("Resized to %dx%d", width, height);
   terra_app_t *app      = (terra_app_t *)glfwGetWindowUserPointer(window);
   app->state.fb_resized = 1;
 }

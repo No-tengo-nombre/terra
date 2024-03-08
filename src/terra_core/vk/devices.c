@@ -59,9 +59,9 @@ int terra_vk_check_validation_layer_support(terra_app_t *app) {
   }
   vkEnumerateInstanceLayerProperties(&layers, properties);
 
-  for (int i = 0; i < app->conf->validation_layers_total; i++) {
+  for (uint32_t i = 0; i < app->conf->validation_layers_total; i++) {
     int found = 0;
-    for (int j = 0; j < layers; j++) {
+    for (uint32_t j = 0; j < layers; j++) {
       if (strcmp(app->conf->validation_layers[i], properties[j].layerName) ==
           0) {
         found = 1;
@@ -98,7 +98,7 @@ terra_status_t terra_vk_find_queue_families(
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, qprops);
 
   VkBool32 pfound = 0;
-  for (int i = 0; i < count; i++) {
+  for (uint32_t i = 0; i < count; i++) {
     vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &pfound);
     unsigned char qflags_bin[5];
     for (int b = 0; b < 4; b++) {
@@ -140,9 +140,9 @@ int terra_check_device_extensions(
   vkEnumerateDeviceExtensionProperties(device, NULL, &ext_total, ext_props);
 
   int all_found = 1;
-  for (int i = 0; i < target_total; i++) {
+  for (size_t i = 0; i < target_total; i++) {
     int found = 0;
-    for (int j = 0; j < ext_total; j++) {
+    for (uint32_t j = 0; j < ext_total; j++) {
       if (strcmp(target[i], ext_props[j].extensionName) == 0) {
         found = 1;
         break;
@@ -165,7 +165,7 @@ terra_status_t terra_vk_rate_device(
     VkPhysicalDevice device,
     VkSurfaceKHR surface,
     terra_queue_t *queue,
-    uint32_t *out
+    int32_t *out
 ) {
   VkPhysicalDeviceProperties props;
   VkPhysicalDeviceFeatures feats;
@@ -233,9 +233,9 @@ terra_status_t terra_vk_get_physical_device(
   }
   vkEnumeratePhysicalDevices(app->vk_instance, &device_count, devices);
 
-  int32_t score      = -2;
-  uint32_t new_score = 0;
-  for (int i = 0; i < device_count; i++) {
+  int32_t score     = -2;
+  int32_t new_score = 0;
+  for (uint32_t i = 0; i < device_count; i++) {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(devices[i], &props);
     logi_info("Evaluating device '%s'", props.deviceName);

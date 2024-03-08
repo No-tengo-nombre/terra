@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
@@ -9,7 +10,7 @@ terra_status_t terra_vk_shader_from_spv(
     terra_app_t *app, const char *filename, terra_vk_shader_t *out
 ) {
   char *contents;
-  int64_t size;
+  size_t size;
 
   logi_debug("Reading binary file");
   TERRA_CALL_I(

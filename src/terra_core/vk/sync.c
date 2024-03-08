@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 
@@ -18,7 +19,7 @@ terra_status_t terra_vk_create_sync_objects(terra_app_t *app) {
   VkSemaphore *img_av          = app->vk_img_available_S;
   VkSemaphore *render_finished = app->vk_render_finished_S;
   VkFence *in_flight           = app->vk_in_flight_F;
-  for (int i = 0; i < app->conf->max_frames_in_flight; i++) {
+  for (uint32_t i = 0; i < app->conf->max_frames_in_flight; i++) {
     TERRA_VK_CALL_I(
         vkCreateSemaphore(app->vk_ldevice, &img_available_info, NULL, img_av),
         "Failed creating %i-th 'vk_img_available_S' semaphore",
@@ -71,7 +72,7 @@ terra_status_t terra_vk_reset_sync_objects(terra_app_t *app) {
 }
 
 terra_status_t terra_vk_detroy_sync_objects(terra_app_t *app) {
-  for (int i = 0; i < app->conf->max_frames_in_flight; i++) {
+  for (uint32_t i = 0; i < app->conf->max_frames_in_flight; i++) {
     vkDestroySemaphore(app->vk_ldevice, app->vk_img_available_S[i], NULL);
     vkDestroySemaphore(app->vk_ldevice, app->vk_render_finished_S[i], NULL);
     vkDestroyFence(app->vk_ldevice, app->vk_in_flight_F[i], NULL);

@@ -25,3 +25,4 @@ target_include_directories(
          ${CMAKE_DEPENDENCIES_DIR}/GLM/include
          ${CMAKE_DEPENDENCIES_DIR}/VulkanMemoryAllocator/include
          ${Vulkan_INCLUDE_DIRS})
+target_compile_options(${PROJECT_CORE_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})

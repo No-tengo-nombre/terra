@@ -1,5 +1,6 @@
 #include "_pipeline.h"
 
+#include <stdint.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 
@@ -77,7 +78,7 @@ terra_status_t terra_vk_pipeline_new(
   int dyn_viewport_found          = 0;
   int dyn_scissor_found           = 0;
   const VkDynamicState *dyn_state = p.dyn_state;
-  for (int i = 0; i < p.dyn_state_count; i++, dyn_state++) {
+  for (uint32_t i = 0; i < p.dyn_state_count; i++, dyn_state++) {
     switch (*dyn_state) {
     case VK_DYNAMIC_STATE_VIEWPORT:
       dyn_viewport_found = 1;

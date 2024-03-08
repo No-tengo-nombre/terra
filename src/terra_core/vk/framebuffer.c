@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 
@@ -11,7 +12,7 @@ terra_status_t terra_vk_framebuffer_new(terra_app_t *app) {
     return TERRA_STATUS_FAILURE;
   }
 
-  for (int i = 0; i < app->vk_images_count; i++) {
+  for (uint32_t i = 0; i < app->vk_images_count; i++) {
     VkFramebufferCreateInfo fb_info = {VK_FALSE};
     fb_info.sType                   = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     fb_info.renderPass              = app->vk_render_pass;

@@ -14,7 +14,6 @@ terra_status_t terra_buffer_new(
     VkBuffer *out_buffer
 );
 
-terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf);
-terra_status_t terra_buffer_map(terra_app_t *app, terra_buffer_t *buf);
+// terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf);
 
 terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf);

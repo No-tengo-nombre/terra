@@ -4,8 +4,8 @@
 
 terra_vertex3_t triangle_vertices[] = {
     {{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-    { {0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-    {{-0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}}
+    {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+    { {0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}}
 };
 terra_vector_t triangle_v;
 terra_mesh_t triangle_m;

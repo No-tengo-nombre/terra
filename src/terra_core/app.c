@@ -322,7 +322,14 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
   scissor.extent   = app->vk_extent;
   vkCmdSetScissor(cmd_buffer, 0, 1, &scissor);
 
-  vkCmdDraw(cmd_buffer, 3, 1, 0, 0);
+  // TODO: Implement instancing
+  terra_mesh_t *mesh = (terra_mesh_t *)app->shapes.data;
+  for (size_t i = 0; i < app->shapes.len; i++, mesh++) {
+    TERRA_CALL_I(
+        terra_mesh_draw(app, cmd_buffer, mesh, 1), "Failed to draw mesh"
+    );
+  }
+
   vkCmdEndRenderPass(cmd_buffer);
 
   TERRA_VK_CALL_I(

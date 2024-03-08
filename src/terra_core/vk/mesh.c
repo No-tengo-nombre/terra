@@ -48,3 +48,31 @@ terra_status_t terra_mesh_push(terra_app_t *app, terra_mesh_t *mesh) {
 
   return TERRA_STATUS_SUCCESS;
 }
+
+terra_status_t terra_mesh_bind(
+    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_mesh_t *mesh
+) {
+  TERRA_CALL_I(
+      terra_vb_bind(app, cmd_buffer, &mesh->buf), "Failed binding vertex buffer"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_mesh_draw(
+    terra_app_t *app,
+    VkCommandBuffer cmd_buffer,
+    terra_mesh_t *mesh,
+    uint32_t instances
+) {
+  TERRA_CALL_I(terra_mesh_bind(app, cmd_buffer, mesh), "Failed binding mesh");
+  vkCmdDraw(
+      cmd_buffer,
+      (uint32_t)terra_vector_total_size(app, mesh->verts),
+      instances,
+      0,
+      0
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}

@@ -19,3 +19,13 @@ terra_status_t terra_vb_new(
 
   return TERRA_STATUS_SUCCESS;
 }
+
+terra_status_t terra_vb_bind(
+    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
+) {
+  logi_debug("Binding vertex buffer");
+  VkDeviceSize offsets[] = {0};
+  vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &buf->buffer, offsets);
+
+  return TERRA_STATUS_SUCCESS;
+}

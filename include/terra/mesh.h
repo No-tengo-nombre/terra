@@ -21,6 +21,15 @@ terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh);
 
 terra_status_t terra_mesh_update(terra_app_t *app, terra_mesh_t *mesh);
 terra_status_t terra_mesh_push(terra_app_t *app, terra_mesh_t *mesh);
+terra_status_t terra_mesh_bind(
+    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_mesh_t *mesh
+);
+terra_status_t terra_mesh_draw(
+    terra_app_t *app,
+    VkCommandBuffer cmd_buffer,
+    terra_mesh_t *mesh,
+    uint32_t instances
+);
 
 #ifdef __cplusplus
 }

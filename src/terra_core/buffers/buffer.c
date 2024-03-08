@@ -19,6 +19,9 @@ terra_status_t terra_buffer_new(
 
   VmaAllocationCreateInfo alloc_info = {VK_FALSE};
   alloc_info.usage                   = VMA_MEMORY_USAGE_AUTO;
+  alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+  // alloc_info.requiredFlags           = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+  //                            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
   logi_debug("Calling VMA to create buffer");
   TERRA_VK_CALL_I(
@@ -31,15 +34,15 @@ terra_status_t terra_buffer_new(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf) {
-  logi_debug("Binding buffer");
-  TERRA_VK_CALL_I(
-      vmaBindBufferMemory(app->vma_alloc, buf->alloc, buf->buffer),
-      "Failed binding buffer"
-  );
+// terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf) {
+//   logi_debug("Binding buffer");
+//   TERRA_VK_CALL_I(
+//       vmaBindBufferMemory(app->vma_alloc, buf->alloc, buf->buffer),
+//       "Failed binding buffer"
+//   );
 
-  return TERRA_STATUS_SUCCESS;
-}
+//   return TERRA_STATUS_SUCCESS;
+// }
 
 terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf) {
   logi_debug("Destroying buffer");

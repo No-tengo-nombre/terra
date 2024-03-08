@@ -20,20 +20,11 @@ terra_status_t terra_vb_new(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_vb_bind(terra_app_t *app, terra_buffer_t *vb) {
-  logi_debug("Binding vertex buffer");
-  TERRA_VK_CALL_I(
-      vmaBindBufferMemory(app->vma_alloc, vb->alloc, vb->buffer),
-      "Failed binding vertex buffer"
-  );
-
-  return TERRA_STATUS_SUCCESS;
-}
-
 terra_status_t terra_vb_cleanup(terra_app_t *app) {
   logi_debug("Cleaning vertex buffer");
-  vmaDestroyBuffer(
-      app->vma_alloc, app->vert_buffer.buffer, app->vert_buffer.alloc
+  TERRA_CALL_I(
+      terra_buffer_cleanup(app, &app->vert_buffer),
+      "Failed cleaning vertex buffer"
   );
 
   return TERRA_STATUS_SUCCESS;

@@ -30,3 +30,19 @@ terra_status_t terra_buffer_new(
 
   return TERRA_STATUS_SUCCESS;
 }
+
+terra_status_t terra_buffer_bind(terra_app_t *app, terra_buffer_t *buf) {
+  logi_debug("Binding buffer");
+  TERRA_VK_CALL_I(
+      vmaBindBufferMemory(app->vma_alloc, buf->alloc, buf->buffer),
+      "Failed binding buffer"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf) {
+  logi_debug("Destroying buffer");
+  vmaDestroyBuffer(app->vma_alloc, buf->buffer, buf->alloc);
+  return TERRA_STATUS_SUCCESS;
+}

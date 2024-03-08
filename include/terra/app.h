@@ -1,5 +1,6 @@
 #pragma once
 
+#include "data/vector.h"
 #include "vulkan.h"
 
 #include <stdint.h>
@@ -116,7 +117,7 @@ typedef struct terra_app {
 
   /* Data containers */
 
-  terra_buffer_t vert_buffer;
+  terra_vector_t shapes;
 
   /* Vulkan attributes */
 

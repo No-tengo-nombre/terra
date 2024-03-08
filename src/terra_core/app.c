@@ -104,6 +104,10 @@ terra_status_t terra_app_new(
       ._idebug_malloced_total = 0,
 #endif
   };
+  TERRA_CALL_I(
+      terra_vector_new(&app, sizeof(terra_mesh_t), &app.shapes),
+      "Failed creating vector for shapes"
+  );
   *out = app;
   return TERRA_STATUS_SUCCESS;
 }
@@ -472,9 +476,6 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
   );
 
-  logi_debug("Cleaning up buffers");
-  TERRA_CALL_I(terra_vb_cleanup(app), "Failed cleaning up vertex buffer");
-
   logi_debug("Releasing heap allocated arrays");
   terrau_free(app, app->vk_img_available_S);
   terrau_free(app, app->vk_render_finished_S);
@@ -483,6 +484,9 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   terrau_free(app, app->vk_images);
   terrau_free(app, app->vk_image_views);
   terrau_free(app, app->vk_framebuffers);
+  TERRA_CALL_I(
+      terra_vector_cleanup(app, &app->shapes), "Failed to clean up shapes"
+  );
 
   logi_debug("Cleaning Vulkan objects");
   vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);

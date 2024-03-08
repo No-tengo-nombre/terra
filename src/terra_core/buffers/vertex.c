@@ -19,13 +19,3 @@ terra_status_t terra_vb_new(
 
   return TERRA_STATUS_SUCCESS;
 }
-
-terra_status_t terra_vb_cleanup(terra_app_t *app) {
-  logi_debug("Cleaning vertex buffer");
-  TERRA_CALL_I(
-      terra_buffer_cleanup(app, &app->vert_buffer),
-      "Failed cleaning vertex buffer"
-  );
-
-  return TERRA_STATUS_SUCCESS;
-}

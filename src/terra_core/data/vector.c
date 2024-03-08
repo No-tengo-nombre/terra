@@ -192,3 +192,11 @@ terra_status_t terra_vector_extend_array(
   }
   return TERRA_STATUS_SUCCESS;
 }
+
+size_t terra_vector_total_size(terra_app_t *app, const terra_vector_t *vec) {
+  return vec->len * vec->data_size;
+}
+
+size_t terra_vector_alloc_size(terra_app_t *app, const terra_vector_t *vec) {
+  return vec->capacity * vec->data_size;
+}

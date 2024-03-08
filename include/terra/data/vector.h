@@ -2,8 +2,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <terra/app.h>
 #include <terra/status.h>
+
+typedef struct terra_app terra_app_t;
 
 typedef struct terra_vector {
   void *data;
@@ -60,3 +61,6 @@ terra_status_t terra_vector_push(
 terra_status_t terra_vector_extend_array(
     terra_app_t *app, terra_vector_t *vec, const void *src, const size_t len
 );
+
+size_t terra_vector_total_size(terra_app_t *app, const terra_vector_t *vec);
+size_t terra_vector_alloc_size(terra_app_t *app, const terra_vector_t *vec);

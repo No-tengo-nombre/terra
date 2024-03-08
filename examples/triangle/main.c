@@ -34,7 +34,7 @@ terra_status_t start(terra_app_t *app) {
       terra_vector_from_array(
           app,
           triangle_vertices,
-          sizeof(triangle_vertices),
+          sizeof(triangle_vertices) / sizeof(triangle_vertices[0]),
           sizeof(triangle_vertices[0]),
           &triangle_v
       ),

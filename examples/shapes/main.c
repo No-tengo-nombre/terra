@@ -8,7 +8,7 @@ terra_vertex3_t quad_vertices[] = {
     {  {0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}},
     { {0.5f, -0.5f, 0.0f},  {1.0f, 1.0f, 1.0, 1.0f}}
 };
-size_t quad_indices[] = {0, 1, 2, 1, 2, 3};
+uint32_t quad_indices[] = {0, 1, 2, 1, 2, 3};
 terra_vector_t quad_v;
 terra_mesh_t quad_m;
 

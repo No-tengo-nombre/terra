@@ -135,8 +135,12 @@ terra_status_t terra_vector_push(
     // The vector is full so we have to reallocate
     // Default strategy is duplicate the current capacity
     // Perhaps the user can customize the behaviour?
-    void *new_data =
-        terrau_realloc(app, vec->data, (2 * vec->capacity) * vec->data_size);
+    size_t new_size = 2 * vec->capacity * vec->data_size;
+    if (new_size == 0) {
+      new_size = vec->data_size;
+    }
+    logi_debug("Reallocating for %d B", new_size);
+    void *new_data = terrau_realloc(app, vec->data, new_size);
     if (new_data == NULL) {
       return TERRA_STATUS_FAILURE;
     }

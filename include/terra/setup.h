@@ -24,6 +24,7 @@ terra_status_t terra_retrieve_device_queue(terra_app_t *app);
 terra_status_t terra_create_render_pass(
     terra_app_t *app, terra_init_params_t *params
 );
+terra_status_t terra_create_camera(terra_app_t *app);
 
 terra_status_t terra_recreate_swapchain(
     terra_app_t *app, terra_init_params_t *params

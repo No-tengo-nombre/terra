@@ -132,6 +132,7 @@ typedef struct terra_app {
   VkSwapchainKHR vk_swapchain;
   VkExtent2D vk_extent;
   VkFormat vk_format;
+  VkDescriptorSetLayout vk_camera_layout;
   VkPipelineLayout vk_layout;
   VkRenderPass vk_render_pass;
   VkPipeline vk_pipeline;
@@ -142,6 +143,8 @@ typedef struct terra_app {
   VkImage *vk_images;
   VkImageView *vk_image_views;
   VkFramebuffer *vk_framebuffers;
+  terra_buffer_t *ubos;
+  terra_buffer_t *ubos_mapped;
   uint32_t vk_images_count;
 
   /* Synchronization variables */

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "data/vector.h"
+#include "setup.h"
 #include "vulkan.h"
 
 #include <stdint.h>
@@ -28,27 +29,16 @@ For devices
 extern "C" {
 #endif
 
+// Forward declarations
+
+typedef struct terra_buffer terra_buffer_t;
+
+// Proper declarations
+
 typedef enum terra_dims {
   TERRA_2D = 2,
   TERRA_3D = 3,
 } terra_dims_t;
-
-typedef struct terra_buffer {
-  VkBuffer buffer;
-  VmaAllocation alloc;
-} terra_buffer_t;
-
-typedef struct terra_init_params {
-  VkImageUsageFlags image_usage;
-  VkImageViewType view_type;
-  VkSampleCountFlagBits samples;
-  VkAttachmentLoadOp load_op;
-  VkAttachmentStoreOp store_op;
-  VkAttachmentLoadOp stencil_load_op;
-  VkAttachmentStoreOp stencil_store_op;
-  VkImageLayout initial_layout;
-  VkImageLayout final_layout;
-} terra_init_params_t;
 
 typedef struct terra_app_state {
   uint64_t i;

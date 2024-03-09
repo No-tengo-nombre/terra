@@ -1,6 +1,5 @@
 #pragma once
 
-#include "app.h"
 #include "vulkan.h"
 
 #include <terra/status.h>
@@ -8,6 +7,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct terra_app terra_app_t;
+
+typedef struct terra_init_params {
+  VkImageUsageFlags image_usage;
+  VkImageViewType view_type;
+  VkSampleCountFlagBits samples;
+  VkAttachmentLoadOp load_op;
+  VkAttachmentStoreOp store_op;
+  VkAttachmentLoadOp stencil_load_op;
+  VkAttachmentStoreOp stencil_store_op;
+  VkImageLayout initial_layout;
+  VkImageLayout final_layout;
+} terra_init_params_t;
 
 terra_status_t terra_init_params_default(terra_init_params_t *out);
 

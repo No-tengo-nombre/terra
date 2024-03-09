@@ -313,6 +313,10 @@ terra_status_t terra_create_render_pass(
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t terra_create_camera(terra_app_t *app) {
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terra_recreate_swapchain(
     terra_app_t *app, terra_init_params_t *params
 ) {

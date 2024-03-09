@@ -9,6 +9,11 @@
 extern "C" {
 #endif
 
+typedef struct terra_buffer {
+  VkBuffer buffer;
+  VmaAllocation alloc;
+} terra_buffer_t;
+
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,

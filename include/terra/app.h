@@ -67,8 +67,10 @@ typedef struct terra_app_metadata {
 typedef struct terra_app_config {
   uint32_t validation_layers_total;
   uint32_t device_extensions_total;
+  uint32_t instance_extensions_total;
   const char **validation_layers;
   const char **device_extensions;
+  const char **instance_extensions;
 
   uint32_t vk_version;
   VkIndexType vk_idx_type;
@@ -147,6 +149,7 @@ typedef struct terra_app {
 
   VkDebugUtilsMessengerEXT _idebug_messenger;
   size_t _idebug_malloced_total;
+  terra_vector_t _idebug_malloced_locs;
 #endif
 } terra_app_t;
 
@@ -158,8 +161,10 @@ typedef terra_status_t(terra_clean_ft)(terra_app_t *);
 
 extern const char *DEFAULT_VALIDATION_LAYERS[];
 extern const char *DEFAULT_DEVICE_EXTENSIONS[];
+extern const char *DEFAULT_INSTANCE_EXTENSIONS[];
 extern const size_t DEFAULT_VALIDATION_LAYERS_TOTAL;
 extern const size_t DEFAULT_DEVICE_EXTENSIONS_TOTAL;
+extern const size_t DEFAULT_INSTANCE_EXTENSIONS_TOTAL;
 extern const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT;
 extern const terra_app_metadata_t TERRA_APP_METADATA_DEFAULT;
 extern const terra_app_config_t TERRA_APP_CONFIG_DEFAULT;
@@ -169,8 +174,10 @@ terra_app_metadata_t terra_app_metadata_default(void);
 terra_status_t terra_app_config_new(
     const char **validation_layers,
     const char **device_extensions,
+    const char **instance_extensions,
     uint32_t validation_layers_total,
     uint32_t device_extensions_total,
+    uint32_t instance_extensions_total,
     terra_app_config_t *out
 );
 terra_app_config_t terra_app_config_default(void);

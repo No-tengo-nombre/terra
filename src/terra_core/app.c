@@ -4,12 +4,15 @@
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>
 
-const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
-const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+const char *DEFAULT_VALIDATION_LAYERS[]   = {"VK_LAYER_KHRONOS_validation"};
+const char *DEFAULT_DEVICE_EXTENSIONS[]   = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+const char *DEFAULT_INSTANCE_EXTENSIONS[] = {VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
 const size_t DEFAULT_VALIDATION_LAYERS_TOTAL =
     sizeof(DEFAULT_VALIDATION_LAYERS) / sizeof(char *);
 const size_t DEFAULT_DEVICE_EXTENSIONS_TOTAL =
     sizeof(DEFAULT_DEVICE_EXTENSIONS) / sizeof(char *);
+const size_t DEFAULT_INSTANCE_EXTENSIONS_TOTAL =
+    sizeof(DEFAULT_INSTANCE_EXTENSIONS) / sizeof(char *);
 const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT = 2;
 
 const terra_app_metadata_t TERRA_APP_METADATA_DEFAULT = {
@@ -23,10 +26,12 @@ const terra_app_metadata_t TERRA_APP_METADATA_DEFAULT = {
 };
 
 const terra_app_config_t TERRA_APP_CONFIG_DEFAULT = {
-    .validation_layers_total = DEFAULT_VALIDATION_LAYERS_TOTAL,
-    .device_extensions_total = DEFAULT_DEVICE_EXTENSIONS_TOTAL,
-    .validation_layers       = DEFAULT_VALIDATION_LAYERS,
-    .device_extensions       = DEFAULT_DEVICE_EXTENSIONS,
+    .validation_layers_total   = DEFAULT_VALIDATION_LAYERS_TOTAL,
+    .device_extensions_total   = DEFAULT_DEVICE_EXTENSIONS_TOTAL,
+    .instance_extensions_total = DEFAULT_INSTANCE_EXTENSIONS_TOTAL,
+    .validation_layers         = DEFAULT_VALIDATION_LAYERS,
+    .device_extensions         = DEFAULT_DEVICE_EXTENSIONS,
+    .instance_extensions       = DEFAULT_INSTANCE_EXTENSIONS,
 
     .vk_version  = VK_API_VERSION_1_0,
     .vk_idx_type = VK_INDEX_TYPE_UINT32,
@@ -64,15 +69,21 @@ terra_app_metadata_t terra_app_metadata_default(void) {
 terra_status_t terra_app_config_new(
     const char **validation_layers,
     const char **device_extensions,
+    const char **instance_extensions,
     uint32_t validation_layers_total,
     uint32_t device_extensions_total,
+    uint32_t instance_extensions_total,
     terra_app_config_t *out
 ) {
-  terra_app_config_t conf      = TERRA_APP_CONFIG_DEFAULT;
-  conf.validation_layers_total = validation_layers_total,
-  conf.device_extensions_total = device_extensions_total,
-  conf.validation_layers       = validation_layers,
-  conf.device_extensions = device_extensions, *out = conf;
+  terra_app_config_t conf        = TERRA_APP_CONFIG_DEFAULT;
+  conf.validation_layers_total   = validation_layers_total,
+  conf.device_extensions_total   = device_extensions_total,
+  conf.instance_extensions_total = instance_extensions_total,
+  conf.validation_layers         = validation_layers,
+  conf.device_extensions         = device_extensions;
+  conf.instance_extensions       = instance_extensions;
+
+  *out = conf;
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -144,6 +155,14 @@ static void terra_app_log_startup_info(terra_app_t *app) {
   const char **dev = app->conf->device_extensions;
   for (uint32_t i = 0; i < app->conf->device_extensions_total; i++, dev++) {
     logi_info("   |-> %s", *dev);
+  }
+  logi_info(
+      " * Instance extensions in use  : %d",
+      app->conf->instance_extensions_total
+  );
+  const char **inst = app->conf->instance_extensions;
+  for (uint32_t i = 0; i < app->conf->instance_extensions_total; i++, inst++) {
+    logi_info("   |-> %s", *inst);
   }
   logi_info(
       " * Validation layers in use    : %d", app->conf->validation_layers_total
@@ -544,6 +563,17 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   vkDestroySurfaceKHR(app->vk_instance, app->vk_surface, NULL);
   vkDestroyDevice(app->vk_ldevice, NULL);
 
+#ifndef NDEBUG
+  logi_debug("Cleaning up debug messenger");
+  PFN_vkDestroyDebugUtilsMessengerEXT func =
+      (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+          app->vk_instance, "vkDestroyDebugUtilsMessengerEXT"
+      );
+  if (func != NULL) {
+    func(app->vk_instance, app->_idebug_messenger, NULL);
+  }
+#endif
+
   logi_debug("Destroying contexts");
   vkDestroyInstance(app->vk_instance, NULL);
   glfwDestroyWindow(app->glfw_window);
@@ -557,6 +587,12 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
         "MEMORY LEAK: Found %i elements in heap after cleanup",
         app->_idebug_malloced_total
     );
+
+    logi_warn("LOCATIONS:");
+    const char *loc = (const char *)app->_idebug_malloced_locs.data;
+    for (size_t i = 0; i < app->_idebug_malloced_locs.len; i++, loc++) {
+      logi_warn(" |-> %s", loc);
+    }
   }
 #endif
 

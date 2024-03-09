@@ -1,3 +1,4 @@
+#include <string.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
@@ -30,8 +31,16 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
   );
   app->init_params = p;
 
+#ifndef NDEBUG
+  TERRA_CALL_I(terra_init_debug(app), "Failed initializing debug information");
+#endif
   TERRA_CALL_I(terra_init_window(app), "Failed initializing window");
   TERRA_CALL_I(terra_init_instance(app), "Failed initializing instance");
+#ifndef NDEBUG
+  TERRA_CALL_I(
+      terra_init_debug_callback(app), "Failed initializing debug callback"
+  );
+#endif
   TERRA_CALL_I(
       terra_create_render_surface(app), "Failed creating render surface"
   );
@@ -54,6 +63,18 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
   );
   return TERRA_STATUS_SUCCESS;
 }
+
+#ifndef NDEBUG
+terra_status_t terra_init_debug(terra_app_t *app) {
+  app->_idebug_malloced_total = 0;
+  TERRA_CALL_I(
+      terra_vector_new(app, sizeof(const char *), &app->_idebug_malloced_locs),
+      "Failed initializing vector for malloc locations"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+#endif
 
 terra_status_t terra_init_window(terra_app_t *app) {
   logi_debug("Initializing GLFW and window");
@@ -95,10 +116,30 @@ terra_status_t terra_init_instance(terra_app_t *app) {
       terra_vk_create_application_info(app, &app_info),
       "Failed creating app info"
   );
+  logi_debug("Fetching GLFW instance extensions");
+  uint32_t extension_count = 0;
+  const char **extensions = glfwGetRequiredInstanceExtensions(&extension_count);
+
+  logi_debug("Assembling required instance extensions");
+  uint32_t total_count = extension_count + app->conf->instance_extensions_total;
+  const char *total_extensions[total_count];
+  memcpy(total_extensions, extensions, extension_count * sizeof(char *));
+  memcpy(
+      total_extensions + extension_count,
+      app->conf->instance_extensions,
+      app->conf->instance_extensions_total * sizeof(char *)
+  );
+  logi_info("Requested instance extensions are:");
+  for (uint32_t i = 0; i < total_count; i++) {
+    logi_info("  |-> %s", total_extensions[i]);
+  }
+
   logi_debug("Creating instance info");
   VkInstanceCreateInfo instance_info;
   TERRA_CALL_I(
-      terra_vk_create_instance_info(app, &app_info, &instance_info),
+      terra_vk_create_instance_info(
+          app, &app_info, total_count, total_extensions, &instance_info
+      ),
       "Failed creating instance info"
   );
   logi_debug("Creating instance");
@@ -138,12 +179,13 @@ terra_status_t terra_init_vma(terra_app_t *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_init_debug_callback(terra_app_t *app) {
 #ifndef NDEBUG
+terra_status_t terra_init_debug_callback(terra_app_t *app) {
   if (app->conf->validation_layers_total == 0) {
     return TERRA_STATUS_SUCCESS;
   }
 
+  logi_debug("Creating create info");
   VkDebugUtilsMessengerCreateInfoEXT info = {VK_FALSE};
   info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
   info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -152,20 +194,24 @@ terra_status_t terra_init_debug_callback(terra_app_t *app) {
   info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  info.pfnUserCallback                    = terra_app_debug_callback;
+  info.pfnUserCallback = terra_app_debug_callback;
+
+  logi_debug("Fetching 'vkCreateDebugUtilsMessengerEXT' function");
   PFN_vkCreateDebugUtilsMessengerEXT func = (PFN_vkCreateDebugUtilsMessengerEXT
   )vkGetInstanceProcAddr(app->vk_instance, "vkCreateDebugUtilsMessengerEXT");
   if (func == NULL) {
+    logi_error("Could not find function");
     return TERRA_STATUS_FAILURE;
   }
+  logi_debug("Setting up debug messenger");
   TERRA_VK_CALL_I(
       func(app->vk_instance, &info, NULL, &app->_idebug_messenger),
       "Failed setting up messenger"
   );
 
-#endif
   return TERRA_STATUS_SUCCESS;
 }
+#endif
 
 terra_status_t terra_create_render_surface(terra_app_t *app) {
   logi_debug("Creating render surface");

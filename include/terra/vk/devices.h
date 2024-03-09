@@ -18,7 +18,11 @@ terra_status_t terra_vk_create_application_info(
     terra_app_t *app, VkApplicationInfo *out
 );
 terra_status_t terra_vk_create_instance_info(
-    terra_app_t *app, VkApplicationInfo *app_info, VkInstanceCreateInfo *out
+    terra_app_t *app,
+    VkApplicationInfo *app_info,
+    uint32_t count,
+    const char **instance_exts,
+    VkInstanceCreateInfo *out
 );
 int terra_vk_check_validation_layer_support(terra_app_t *app);
 terra_status_t terra_vk_find_queue_families(

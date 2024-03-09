@@ -28,19 +28,21 @@ terra_status_t terra_vk_create_application_info(
 }
 
 terra_status_t terra_vk_create_instance_info(
-    terra_app_t *app, VkApplicationInfo *app_info, VkInstanceCreateInfo *out
+    terra_app_t *app,
+    VkApplicationInfo *app_info,
+    uint32_t count,
+    const char **instance_exts,
+    VkInstanceCreateInfo *out
 ) {
-  uint32_t extension_count = 0;
-  const char **extensions = glfwGetRequiredInstanceExtensions(&extension_count);
-  out->sType              = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  out->pApplicationInfo   = app_info;
-  out->enabledExtensionCount   = extension_count;
-  out->ppEnabledExtensionNames = extensions;
+  out->sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  out->pApplicationInfo        = app_info;
+  out->enabledExtensionCount   = count;
+  out->ppEnabledExtensionNames = instance_exts;
   out->flags                   = 0;
 #ifndef NDEBUG
   out->enabledLayerCount   = app->conf->validation_layers_total;
   out->ppEnabledLayerNames = app->conf->validation_layers;
-  out->pNext               = NULL; // TODO: Link to the debug callback
+  out->pNext               = app->_idebug_messenger;
 #else
   out->enabledLayerCount = 0;
   out->pNext             = NULL;

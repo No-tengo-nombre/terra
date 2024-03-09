@@ -166,13 +166,6 @@ terra_status_t terra_mesh_draw(
     uint32_t instances
 ) {
   TERRA_CALL_I(terra_mesh_bind(app, cmd_buffer, mesh), "Failed binding mesh");
-  // vkCmdDraw(
-  //     cmd_buffer,
-  //     (uint32_t)terra_vector_total_size(app, mesh->verts),
-  //     instances,
-  //     0,
-  //     0
-  // );
   vkCmdDrawIndexed(cmd_buffer, (uint32_t)mesh->idx->len, instances, 0, 0, 0);
 
   return TERRA_STATUS_SUCCESS;

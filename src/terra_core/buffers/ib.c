@@ -3,6 +3,9 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 
+// TODO: Make vertex and index buffers be allocated together using offsets to
+// make them cache friendly
+
 terra_status_t terra_ib_new(
     terra_app_t *app,
     terra_vector_t *data,

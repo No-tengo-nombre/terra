@@ -158,27 +158,28 @@ terra_status_t test_methods_set(terra_app_t *app) {
 terra_status_t test_modification_push1(terra_app_t *app) {
   terra_vector_t vec;
   uint32_t data[] = {0, 1, 2, 3, 4, 5, 6, 7};
-  size_t len      = 8;
+  size_t len      = sizeof(data) / sizeof(uint32_t);
 
   log_debug("Creating vector");
   TERRA_CALL(
       terra_vector_from_array(app, data, len, sizeof(uint32_t), &vec),
       "Failed creating vector"
   );
+  TERRA_ASSERT_EQI(vec.capacity, 8);
 
-  log_debug("Puhsing element");
+  log_debug("Pushing element");
   uint32_t val = 20;
   TERRA_CALL(terra_vector_push(app, &vec, &val), "Failed pushing element");
 
   log_debug("Checking that the dimensions changed properly");
   TERRA_ASSERT_EQI(vec.len, 9);
-  TERRA_ASSERT_EQI(vec.capacity, 9);
+  TERRA_ASSERT_EQI(vec.capacity, 16);
 
   log_debug("Checking border scenario");
   TERRA_ASSERT_FAILS(terra_vector_push(app, &vec, NULL));
   log_debug("Checking that the failed push does not modify the vector");
   TERRA_ASSERT_EQI(vec.len, 9);
-  TERRA_ASSERT_EQI(vec.capacity, 9);
+  TERRA_ASSERT_EQI(vec.capacity, 16);
 
   log_debug("Checking that the push happened fine");
   uint32_t contained_val;

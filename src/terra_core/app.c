@@ -247,6 +247,8 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
   void *framebuffers = terrau_realloc(
       app, app->vk_framebuffers, new_count * sizeof(VkFramebuffer)
   );
+  void *ubos =
+      terrau_realloc(app, app->ubos, new_count * sizeof(terra_buffer_t));
   if (images == NULL) {
     logi_error("Could not reallocate memory for %i images", new_count);
     return TERRA_STATUS_FAILURE;
@@ -259,9 +261,14 @@ terra_status_t terra_app_set_image_count(terra_app_t *app, uint32_t new_count) {
     logi_error("Could not reallocate memory for %i framebuffers", new_count);
     return TERRA_STATUS_FAILURE;
   }
+  if (ubos == NULL) {
+    logi_error("Could not reallocate memory for %i ubos", new_count);
+    return TERRA_STATUS_FAILURE;
+  }
   app->vk_images       = images;
   app->vk_image_views  = image_views;
   app->vk_framebuffers = framebuffers;
+  app->ubos            = ubos;
   return TERRA_STATUS_SUCCESS;
 }
 
@@ -526,6 +533,7 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   terrau_free(app, app->vk_images);
   terrau_free(app, app->vk_image_views);
   terrau_free(app, app->vk_framebuffers);
+  terrau_free(app, app->ubos);
   TERRA_CALL_I(
       terra_vector_cleanup(app, &app->shapes), "Failed to clean up shapes"
   );

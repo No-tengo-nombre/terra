@@ -26,12 +26,9 @@ terra_status_t terra_vbo_new(
   );
 
   logi_debug("Mapping data to staging buffer");
-  TERRA_VK_CALL_I(
-      vmaMapMemory(app->vma_alloc, out_stag->alloc, &out_stag->data),
-      "Failed mapping memory"
-  );
+  TERRA_CALL_I(terra_buffer_map(app, out_stag), "Failed mapping memory");
   memcpy(out_stag->data, data->data, size);
-  vmaUnmapMemory(app->vma_alloc, out_stag->alloc);
+  TERRA_CALL_I(terra_buffer_unmap(app, out_stag), "Failed unmapping memory");
 
   logi_debug("Creating vertex buffer");
   TERRA_CALL_I(

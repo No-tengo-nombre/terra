@@ -93,3 +93,19 @@ terra_status_t terra_buffer_copy(
 
   return TERRA_STATUS_SUCCESS;
 }
+
+terra_status_t terra_buffer_map(terra_app_t *app, terra_buffer_t *buf) {
+  logi_info("Mapping buffer");
+  TERRA_VK_CALL_I(
+      vmaMapMemory(app->vma_alloc, buf->alloc, &buf->data),
+      "Failed mapping memory"
+  );
+
+  return TERRA_STATUS_SUCCESS;
+}
+
+terra_status_t terra_buffer_unmap(terra_app_t *app, terra_buffer_t *buf) {
+  logi_info("Unmapping buffer");
+  vmaUnmapMemory(app->vma_alloc, buf->alloc);
+  return TERRA_STATUS_SUCCESS;
+}

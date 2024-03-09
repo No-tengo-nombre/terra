@@ -28,6 +28,8 @@ terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf);
 terra_status_t terra_buffer_copy(
     terra_app_t *app, terra_buffer_t *src, terra_buffer_t *dst, size_t size
 );
+terra_status_t terra_buffer_map(terra_app_t *app, terra_buffer_t *buf);
+terra_status_t terra_buffer_unmap(terra_app_t *app, terra_buffer_t *buf);
 
 #ifdef __cplusplus
 }

@@ -5,10 +5,8 @@
 #include <terra_utils/vendor/log.h>
 
 terra_status_t terra_ubo_new(
-    terra_app_t *app, terra_vector_t *data, terra_buffer_t *out
+    terra_app_t *app, uint64_t size, terra_buffer_t *out
 ) {
-  size_t size = terra_vector_total_size(app, data);
-
   logi_debug("Creating uniform buffer");
   TERRA_CALL_I(
       terra_buffer_new(
@@ -24,9 +22,8 @@ terra_status_t terra_ubo_new(
   );
 
   logi_debug("Mapping data to uniform buffer");
-  void *temp_data;
   TERRA_VK_CALL_I(
-      vmaMapMemory(app->vma_alloc, out->alloc, &temp_data),
+      vmaMapMemory(app->vma_alloc, out->alloc, &out->data),
       "Failed mapping memory"
   );
 

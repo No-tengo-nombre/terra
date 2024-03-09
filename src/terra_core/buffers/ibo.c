@@ -29,12 +29,11 @@ terra_status_t terra_ibo_new(
   );
 
   logi_debug("Mapping data to staging buffer");
-  void *temp_data;
   TERRA_VK_CALL_I(
-      vmaMapMemory(app->vma_alloc, out_stag->alloc, &temp_data),
+      vmaMapMemory(app->vma_alloc, out_stag->alloc, &out_stag->data),
       "Failed mapping memory"
   );
-  memcpy(temp_data, data->data, size);
+  memcpy(out_stag->data, data->data, size);
   vmaUnmapMemory(app->vma_alloc, out_stag->alloc);
 
   logi_debug("Creating index buffer");

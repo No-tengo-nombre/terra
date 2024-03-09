@@ -22,6 +22,7 @@ terra_status_t terra_buffer_new(
   alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
   alloc_info.requiredFlags = req_flags;
 
+  out->data = NULL;
   logi_debug("Calling VMA to create buffer");
   TERRA_VK_CALL_I(
       vmaCreateBuffer(

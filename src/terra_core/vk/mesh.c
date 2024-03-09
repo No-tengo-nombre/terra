@@ -13,11 +13,11 @@ terra_status_t terra_mesh_new(
   mesh.verts = verts;
   mesh.idx   = indices;
   TERRA_CALL_I(
-      terra_vb_new(app, verts, &mesh.vert_sbuf, &mesh.vert_buf),
+      terra_vbo_new(app, verts, &mesh.vert_sbuf, &mesh.vert_buf),
       "Failed allocating vertex buffer for the mesh"
   );
   TERRA_CALL_I(
-      terra_ib_new(app, indices, &mesh.idx_sbuf, &mesh.idx_buf),
+      terra_ibo_new(app, indices, &mesh.idx_sbuf, &mesh.idx_buf),
       "Failed allocating index buffer for the mesh"
   );
   *out = mesh;
@@ -148,11 +148,11 @@ terra_status_t terra_mesh_bind(
     terra_app_t *app, VkCommandBuffer cmd_buffer, terra_mesh_t *mesh
 ) {
   TERRA_CALL_I(
-      terra_vb_bind(app, cmd_buffer, &mesh->vert_buf),
+      terra_vbo_bind(app, cmd_buffer, &mesh->vert_buf),
       "Failed binding vertex buffer"
   );
   TERRA_CALL_I(
-      terra_ib_bind(app, cmd_buffer, &mesh->idx_buf),
+      terra_ibo_bind(app, cmd_buffer, &mesh->idx_buf),
       "Failed binding index buffer"
   );
 

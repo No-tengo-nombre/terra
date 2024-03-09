@@ -3,7 +3,7 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 
-terra_status_t terra_vb_new(
+terra_status_t terra_vbo_new(
     terra_app_t *app,
     terra_vector_t *data,
     terra_buffer_t *out_stag,
@@ -56,7 +56,7 @@ terra_status_t terra_vb_new(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_vb_bind(
+terra_status_t terra_vbo_bind(
     terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
 ) {
   VkDeviceSize offsets[] = {0};

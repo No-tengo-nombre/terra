@@ -6,7 +6,7 @@
 // TODO: Make vertex and index buffers be allocated together using offsets to
 // make them cache friendly
 
-terra_status_t terra_ib_new(
+terra_status_t terra_ibo_new(
     terra_app_t *app,
     terra_vector_t *data,
     terra_buffer_t *out_stag,
@@ -59,7 +59,7 @@ terra_status_t terra_ib_new(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_ib_bind(
+terra_status_t terra_ibo_bind(
     terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
 ) {
   vkCmdBindIndexBuffer(cmd_buffer, buf->buffer, 0, app->conf->vk_idx_type);

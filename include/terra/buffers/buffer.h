@@ -12,6 +12,7 @@ extern "C" {
 typedef struct terra_buffer {
   VkBuffer buffer;
   VmaAllocation alloc;
+  void *data; // Pointer to section in memory where it gets mapped
 } terra_buffer_t;
 
 terra_status_t terra_buffer_new(

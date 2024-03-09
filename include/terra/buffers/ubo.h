@@ -10,4 +10,9 @@ typedef struct terra_camera {
   mat4 proj;
 } terra_camera_t;
 
-terra_status_t terra_ubo_new(terra_app_t *app);
+terra_status_t terra_ubo_new(
+    terra_app_t *app, terra_vector_t *data, terra_buffer_t *out
+);
+terra_status_t terra_ubo_bind(
+    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
+);

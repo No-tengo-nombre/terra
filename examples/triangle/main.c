@@ -7,7 +7,9 @@ terra_vertex3_t triangle_vertices[] = {
     {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
     { {0.5f, 0.5f, 0.0f},  {0.0f, 0.0f, 1.0, 1.0f}}
 };
+uint32_t triangle_indices[] = {0, 1, 2};
 terra_vector_t triangle_v;
+terra_vector_t triangle_iv;
 terra_mesh_t triangle_m;
 
 terra_status_t start(terra_app_t *app) {
@@ -41,7 +43,18 @@ terra_status_t start(terra_app_t *app) {
       "Failed reading triangle"
   );
   TERRA_CALL(
-      terra_mesh_new(app, &triangle_v, &triangle_m), "Failed to create mesh"
+      terra_vector_from_array(
+          app,
+          triangle_indices,
+          sizeof(triangle_indices) / sizeof(triangle_indices[0]),
+          sizeof(triangle_indices[0]),
+          &triangle_iv
+      ),
+      "Failed reading triangle indices"
+  );
+  TERRA_CALL(
+      terra_mesh_new(app, &triangle_v, &triangle_iv, &triangle_m),
+      "Failed to create mesh"
   );
   TERRA_CALL(terra_mesh_push(app, &triangle_m), "Failed to push triangle");
 
@@ -56,7 +69,9 @@ terra_status_t loop(terra_app_t *app) {
   glfwPollEvents();
 
   // In reality you would probably not update the mesh on every frame
-  TERRA_CALL(terra_mesh_update(app, &triangle_m, NULL), "Failed updating mesh");
+  TERRA_CALL(
+      terra_mesh_update(app, &triangle_m, NULL, NULL), "Failed updating mesh"
+  );
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   return TERRA_STATUS_SUCCESS;

@@ -11,22 +11,32 @@ extern "C" {
 
 typedef struct terra_mesh {
   terra_vector_t *verts;
-  // terra_vector_t *indices;
+  terra_vector_t *idx;
   terra_buffer_t vert_buf;
-  terra_buffer_t stag_buf;
+  terra_buffer_t vert_sbuf;
   terra_buffer_t idx_buf;
+  terra_buffer_t idx_sbuf;
 } terra_mesh_t;
 
 terra_status_t terra_mesh_new(
     terra_app_t *app,
     terra_vector_t *verts,
-    // terra_vector_t *indices,
+    terra_vector_t *idx,
     terra_mesh_t *out
 );
 terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh);
 
 terra_status_t terra_mesh_update(
+    terra_app_t *app,
+    terra_mesh_t *mesh,
+    terra_vector_t *new_verts,
+    terra_vector_t *new_idx
+);
+terra_status_t terra_mesh_update_verts(
     terra_app_t *app, terra_mesh_t *mesh, terra_vector_t *new_verts
+);
+terra_status_t terra_mesh_update_idx(
+    terra_app_t *app, terra_mesh_t *mesh, terra_vector_t *new_idx
 );
 terra_status_t terra_mesh_push(terra_app_t *app, terra_mesh_t *mesh);
 terra_status_t terra_mesh_bind(

@@ -47,7 +47,8 @@ terra_status_t terra_app_config_new(
       .validation_layers       = validation_layers,
       .device_extensions       = device_extensions,
 
-      .vk_version = VK_API_VERSION_1_0,
+      .vk_version  = VK_API_VERSION_1_0,
+      .vk_idx_type = VK_INDEX_TYPE_UINT32,
 
       .surface_format       = VK_FORMAT_B8G8R8A8_SRGB,
       .color_space          = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,

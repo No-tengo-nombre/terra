@@ -81,6 +81,7 @@ typedef struct terra_app_config {
   const char **device_extensions;
 
   uint32_t vk_version;
+  VkIndexType vk_idx_type;
 
   VkFormat surface_format;
   VkColorSpaceKHR color_space;

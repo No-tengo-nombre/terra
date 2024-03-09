@@ -13,8 +13,8 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/app.c`)** Take the offset from the app
 - **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
 - **(`./src/terra_core/app.c`)** Implement instancing
+- **(`./src/terra_core/data/vertex2.c`)** Add option for the user to specify a custom descriptor
 - **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
-- **(`./src/terra_core/data/vertex3.c`)** Add option to use instanced rendering
 - **(`./src/terra_core/buffers/buffer.c`)** Implement concurrent memory transfers
 - **(`./src/terra_core/buffers/ibo.c`)** Make vertex and index buffers be allocated together using offsets to
 - **(`./src/terra_core/vk/command_pool.c`)** Evaluate need to extract command buffer creation outside for multiple

@@ -7,9 +7,3 @@
     log_error(msg, #__VA_ARGS__);                                              \
     return TERRA_STATUS_FAILURE;                                               \
   }
-
-#define TERRA_VK_CALL(x, msg, ...)                                             \
-  if (x != VK_SUCCESS) {                                                       \
-    log_error(msg, #__VA_ARGS__);                                              \
-    return TERRA_STATUS_FAILURE;                                               \
-  }

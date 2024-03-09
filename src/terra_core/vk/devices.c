@@ -297,8 +297,10 @@ terra_status_t terra_vk_create_device_info(
     VkDeviceQueueCreateInfo *queue_info,
     uint32_t queue_count,
     VkPhysicalDeviceFeatures *device_features,
+    const char **validation_layers,
+    uint32_t validation_layers_total,
     const char **device_extensions,
-    uint32_t device_extension_count,
+    uint32_t device_extensions_total,
     VkDeviceCreateInfo *out
 ) {
   out->sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -311,10 +313,10 @@ terra_status_t terra_vk_create_device_info(
 
   // The validation checks are done, so it can be assumed that the requested
   // features are available
-  out->enabledLayerCount   = 0;
-  out->ppEnabledLayerNames = NULL;
+  out->enabledLayerCount   = validation_layers_total;
+  out->ppEnabledLayerNames = validation_layers;
 
-  out->enabledExtensionCount   = device_extension_count;
+  out->enabledExtensionCount   = device_extensions_total;
   out->ppEnabledExtensionNames = device_extensions;
   return TERRA_STATUS_SUCCESS;
 }

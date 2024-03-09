@@ -147,7 +147,7 @@ terra_status_t terra_vector_push(
     memcpy((char *)new_data + vec->len * vec->data_size, src, vec->data_size);
     vec->data = new_data;
     vec->len++;
-    vec->capacity = new_size;
+    vec->capacity = new_size / vec->data_size;
   } else {
     // It can be assumed that vec->len < vec->capacity, so this
     // means we dont have to allocate more memory.

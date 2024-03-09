@@ -45,8 +45,10 @@ terra_status_t terra_vk_create_device_info(
     VkDeviceQueueCreateInfo *queue_info,
     uint32_t queue_count,
     VkPhysicalDeviceFeatures *device_features,
+    const char **validation_layers,
+    uint32_t validation_layers_total,
     const char **device_extensions,
-    uint32_t device_extension_count,
+    uint32_t device_extensions_total,
     VkDeviceCreateInfo *out
 );
 

@@ -134,7 +134,6 @@ typedef struct terra_app {
   VkImageView *vk_image_views;
   VkFramebuffer *vk_framebuffers;
   terra_buffer_t *ubos;
-  terra_buffer_t *ubos_mapped;
   uint32_t vk_images_count;
 
   /* Synchronization variables */
@@ -154,6 +153,16 @@ typedef struct terra_app {
 typedef terra_status_t(terra_start_ft)(terra_app_t *);
 typedef terra_status_t(terra_loop_ft)(terra_app_t *);
 typedef terra_status_t(terra_clean_ft)(terra_app_t *);
+
+// Constants
+
+extern const char *DEFAULT_VALIDATION_LAYERS[];
+extern const char *DEFAULT_DEVICE_EXTENSIONS[];
+extern const size_t DEFAULT_VALIDATION_LAYERS_TOTAL;
+extern const size_t DEFAULT_DEVICE_EXTENSIONS_TOTAL;
+extern const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT;
+extern const terra_app_metadata_t TERRA_APP_METADATA_DEFAULT;
+extern const terra_app_config_t TERRA_APP_CONFIG_DEFAULT;
 
 terra_app_state_t terra_app_state_default(void);
 terra_app_metadata_t terra_app_metadata_default(void);

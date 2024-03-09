@@ -4,12 +4,48 @@
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>
 
-static const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"
+const char *DEFAULT_VALIDATION_LAYERS[] = {"VK_LAYER_KHRONOS_validation"};
+const char *DEFAULT_DEVICE_EXTENSIONS[] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+const size_t DEFAULT_VALIDATION_LAYERS_TOTAL =
+    sizeof(DEFAULT_VALIDATION_LAYERS) / sizeof(char *);
+const size_t DEFAULT_DEVICE_EXTENSIONS_TOTAL =
+    sizeof(DEFAULT_DEVICE_EXTENSIONS) / sizeof(char *);
+const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT = 2;
+
+const terra_app_metadata_t TERRA_APP_METADATA_DEFAULT = {
+    .vmajor        = 1,
+    .vminor        = 0,
+    .vpatch        = 0,
+    .app_name      = "Terra - Default application",
+    .window_title  = NULL,
+    .window_width  = 800,
+    .window_height = 600,
 };
-static const char *DEFAULT_DEVICE_EXTENSIONS[] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+
+const terra_app_config_t TERRA_APP_CONFIG_DEFAULT = {
+    .validation_layers_total = DEFAULT_VALIDATION_LAYERS_TOTAL,
+    .device_extensions_total = DEFAULT_DEVICE_EXTENSIONS_TOTAL,
+    .validation_layers       = DEFAULT_VALIDATION_LAYERS,
+    .device_extensions       = DEFAULT_DEVICE_EXTENSIONS,
+
+    .vk_version  = VK_API_VERSION_1_0,
+    .vk_idx_type = VK_INDEX_TYPE_UINT32,
+
+    .surface_format       = VK_FORMAT_B8G8R8A8_SRGB,
+    .color_space          = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+    .present_mode         = VK_PRESENT_MODE_MAILBOX_KHR,
+    .image_array_layers   = 1,
+    .composite_alpha      = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+    .clipped              = VK_TRUE,
+    .command_pool_flags   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+    .max_frames_in_flight = DEFAULT_MAX_FRAMES_IN_FLIGHT,
+    .dims                 = TERRA_3D,
+
+    .resizable = 1,
+
+    .in_flight_fence_timeout = UINT64_MAX,
+    .img_acq_timeout         = UINT64_MAX,
 };
-static const uint32_t DEFAULT_MAX_FRAMES_IN_FLIGHT = 2;
 
 terra_app_state_t terra_app_state_default(void) {
   terra_app_state_t s = {
@@ -22,16 +58,7 @@ terra_app_state_t terra_app_state_default(void) {
 }
 
 terra_app_metadata_t terra_app_metadata_default(void) {
-  terra_app_metadata_t meta = {
-      .vmajor        = 1,
-      .vminor        = 0,
-      .vpatch        = 0,
-      .app_name      = "Terra - Default application",
-      .window_title  = NULL,
-      .window_width  = 800,
-      .window_height = 600,
-  };
-  return meta;
+  return TERRA_APP_METADATA_DEFAULT;
 }
 
 terra_status_t terra_app_config_new(
@@ -41,40 +68,16 @@ terra_status_t terra_app_config_new(
     uint32_t device_extensions_total,
     terra_app_config_t *out
 ) {
-  terra_app_config_t conf = {
-      .validation_layers_total = validation_layers_total,
-      .device_extensions_total = device_extensions_total,
-      .validation_layers       = validation_layers,
-      .device_extensions       = device_extensions,
-
-      .vk_version  = VK_API_VERSION_1_0,
-      .vk_idx_type = VK_INDEX_TYPE_UINT32,
-
-      .surface_format       = VK_FORMAT_B8G8R8A8_SRGB,
-      .color_space          = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
-      .present_mode         = VK_PRESENT_MODE_MAILBOX_KHR,
-      .image_array_layers   = 1,
-      .composite_alpha      = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .clipped              = VK_TRUE,
-      .command_pool_flags   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-      .max_frames_in_flight = DEFAULT_MAX_FRAMES_IN_FLIGHT,
-      .dims                 = TERRA_3D,
-
-      .resizable = 1,
-
-      .in_flight_fence_timeout = UINT64_MAX,
-      .img_acq_timeout         = UINT64_MAX,
-  };
-  *out = conf;
+  terra_app_config_t conf      = TERRA_APP_CONFIG_DEFAULT;
+  conf.validation_layers_total = validation_layers_total,
+  conf.device_extensions_total = device_extensions_total,
+  conf.validation_layers       = validation_layers,
+  conf.device_extensions = device_extensions, *out = conf;
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_app_config_t terra_app_config_default(void) {
-  terra_app_config_t conf;
-  terra_app_config_new(
-      DEFAULT_VALIDATION_LAYERS, DEFAULT_DEVICE_EXTENSIONS, 1, 1, &conf
-  );
-  return conf;
+  return TERRA_APP_CONFIG_DEFAULT;
 }
 
 terra_status_t terra_app_new(
@@ -97,6 +100,7 @@ terra_status_t terra_app_new(
       .vk_images            = NULL,
       .vk_image_views       = NULL,
       .vk_framebuffers      = NULL,
+      .ubos                 = NULL,
       .vk_img_available_S   = NULL,
       .vk_render_finished_S = NULL,
       .vk_in_flight_F       = NULL,
@@ -128,31 +132,57 @@ terra_status_t terra_app_new_wstate(
 }
 
 static void terra_app_log_startup_info(terra_app_t *app) {
-  logi_info("~~~~~~~~ STARTUP INFORMATION ~~~~~~~~");
+  logi_info("+-------------------------------------------------------+");
+  logi_info("|################# STARTUP INFORMATION #################|");
+  logi_info("+-------------------------------------------------------+");
 #ifndef NDEBUG
-  logi_warn("RUNNING IN DEBUG MODE");
+  logi_warn(" * RUNNING IN DEBUG MODE");
 #endif
-  logi_info("Renderer                  : %iD", app->conf->dims);
-  logi_info("Image array layers        : %u", app->conf->image_array_layers);
-  logi_info("Max frames in flight      : %u", app->conf->max_frames_in_flight);
-  logi_info("Resizable                 : %i", app->conf->resizable);
   logi_info(
-      "Target surface format     : %s",
+      " * Device extensions in use    : %d", app->conf->device_extensions_total
+  );
+  const char **dev = app->conf->device_extensions;
+  for (uint32_t i = 0; i < app->conf->device_extensions_total; i++, dev++) {
+    logi_info("   |-> %s", *dev);
+  }
+  logi_info(
+      " * Validation layers in use    : %d", app->conf->validation_layers_total
+  );
+  const char **layer = app->conf->validation_layers;
+  for (uint32_t i = 0; i < app->conf->validation_layers_total; i++, layer++) {
+    logi_info("   |-> %s", *layer);
+  }
+  logi_info(" * Renderer                    : %iD", app->conf->dims);
+  logi_info(" * `terra_app_t` struct size   : %d B", sizeof(terra_app_t));
+  logi_info(
+      " * Image array layers          : %u", app->conf->image_array_layers
+  );
+  logi_info(
+      " * Max frames in flight        : %u", app->conf->max_frames_in_flight
+  );
+  logi_info(" * Resizable                   : %i", app->conf->resizable);
+  logi_info(
+      " * Target surface format       : %s",
       terra_vk_format_name(app->conf->surface_format)
   );
   logi_info(
-      "Target color space        : %s",
+      " * Target color space          : %s",
       terra_vk_colorspace_name(app->conf->color_space)
   );
   logi_info(
-      "Target present mode       : %s",
+      " * Target present mode         : %s",
       terra_vk_present_mode_name(app->conf->present_mode)
   );
   logi_info(
-      "In flight fence timeout   : %llu", app->conf->in_flight_fence_timeout
+      " * In flight fence timeout     : %llu",
+      app->conf->in_flight_fence_timeout
   );
-  logi_info("Image acquisition timeout : %llu", app->conf->img_acq_timeout);
-  logi_info("~~~~~~~~ END OF INFORMATION ~~~~~~~~");
+  logi_info(
+      " * Image acquisition timeout   : %llu", app->conf->img_acq_timeout
+  );
+  logi_info("+-------------------------------------------------------+");
+  logi_info("|################# END OF INFORMATION ##################|");
+  logi_info("+-------------------------------------------------------+");
 }
 
 terra_status_t terra_app_run(terra_app_t *app) {

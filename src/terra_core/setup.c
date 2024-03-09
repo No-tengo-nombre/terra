@@ -236,6 +236,8 @@ terra_status_t terra_create_ldevice(terra_app_t *app) {
           queue_infos,
           queue_count,
           &device_features,
+          app->conf->validation_layers,
+          app->conf->validation_layers_total,
           app->conf->device_extensions,
           app->conf->device_extensions_total,
           &device_info

@@ -268,25 +268,34 @@ terra_status_t test_modification_extend_array(terra_app_t *app) {
   return TERRA_STATUS_SUCCESS;
 }
 
+terra_status_t start(terra_app_t *app) {
+  TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
+  TERRA_CALL(terra_vk_framebuffer_new(app), "Failed creating framebuffers");
+  TERRA_CALL(terra_vk_command_pool_new(app), "Failed creating command pool");
+  TERRA_CALL(terra_vk_create_sync_objects(app), "Failed creating sync objects");
+
+  TERRA_CALL_TEST(app, test_creation_new);
+  TERRA_CALL_TEST(app, test_creation_zero);
+  TERRA_CALL_TEST(app, test_creation_with_capacity);
+  TERRA_CALL_TEST(app, test_creation_from_array);
+
+  TERRA_CALL_TEST(app, test_methods_get);
+  TERRA_CALL_TEST(app, test_methods_set);
+
+  TERRA_CALL_TEST(app, test_modification_push1);
+  TERRA_CALL_TEST(app, test_modification_push2);
+  TERRA_CALL_TEST(app, test_modification_extend_array);
+  return TERRA_STATUS_SUCCESS;
+}
+
 int main(void) {
   terra_app_metadata_t meta = terra_app_metadata_default();
   meta.app_name             = "Terra (test)";
   terra_app_config_t conf   = terra_app_config_default();
 
   terra_app_t app;
-  terra_app_new(NULL, NULL, NULL, &meta, &conf, &app);
-
-  TERRA_CALL_TEST(&app, test_creation_new);
-  TERRA_CALL_TEST(&app, test_creation_zero);
-  TERRA_CALL_TEST(&app, test_creation_with_capacity);
-  TERRA_CALL_TEST(&app, test_creation_from_array);
-
-  TERRA_CALL_TEST(&app, test_methods_get);
-  TERRA_CALL_TEST(&app, test_methods_set);
-
-  TERRA_CALL_TEST(&app, test_modification_push1);
-  TERRA_CALL_TEST(&app, test_modification_push2);
-  TERRA_CALL_TEST(&app, test_modification_extend_array);
+  terra_app_new(&start, NULL, NULL, &meta, &conf, &app);
+  TERRA_CALL(terra_app_run(&app), "Failed test");
 
   return TEST_PASS;
 }

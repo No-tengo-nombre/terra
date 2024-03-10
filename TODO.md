@@ -25,4 +25,3 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement multisampling configuration
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement local configuration of color blending
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement global configuration of color blending
-- **(`./src/terra_core/vk/devices.c`)** Link to the debug callback

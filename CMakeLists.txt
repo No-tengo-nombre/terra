@@ -71,6 +71,7 @@ else()
       -Wextra
       -Werror
       -Wno-unused-parameter
+      -Wno-unused-function
       -Wconversion
       -Wsign-conversion
       -pedantic

@@ -2,9 +2,12 @@
 
 #include <stdlib.h>
 #include <terra/app.h>
+#include <terra_utils/macros.h>
 #include <terrau/mem.h>
 
 #ifndef NDEBUG
+
+// These functions only get defined and called if in debug mode
 
 extern inline void *_terrau_malloc(
     terra_app_t *app, size_t size, const char *filename, int line

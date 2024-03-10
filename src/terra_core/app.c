@@ -584,15 +584,9 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
 #ifndef NDEBUG
   if (app->_idebug_malloced_total != 0) {
     logi_warn(
-        "MEMORY LEAK: Found %i elements in heap after cleanup",
+        "MEMORY LEAK: Found %lli elements in heap after cleanup",
         app->_idebug_malloced_total
     );
-
-    logi_warn("LOCATIONS:");
-    const char *loc = (const char *)app->_idebug_malloced_locs.data;
-    for (size_t i = 0; i < app->_idebug_malloced_locs.len; i++, loc++) {
-      logi_warn(" |-> %s", loc);
-    }
   }
 #endif
 

@@ -67,10 +67,6 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
 #ifndef NDEBUG
 terra_status_t terra_init_debug(terra_app_t *app) {
   app->_idebug_malloced_total = 0;
-  TERRA_CALL_I(
-      terra_vector_new(app, sizeof(const char *), &app->_idebug_malloced_locs),
-      "Failed initializing vector for malloc locations"
-  );
 
   return TERRA_STATUS_SUCCESS;
 }

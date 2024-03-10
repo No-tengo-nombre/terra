@@ -16,8 +16,6 @@ extern "C" {
 
 #else
 
-  #define __FILENAME__ (__FILE__ + SOURCE_PATH_SIZE)
-
 void *_terrau_malloc(
     terra_app_t *app, size_t size, const char *filename, int line
 );

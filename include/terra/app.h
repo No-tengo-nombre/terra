@@ -148,8 +148,7 @@ typedef struct terra_app {
   /* Internal debug information */
 
   VkDebugUtilsMessengerEXT _idebug_messenger;
-  size_t _idebug_malloced_total;
-  terra_vector_t _idebug_malloced_locs;
+  int64_t _idebug_malloced_total;
 #endif
 } terra_app_t;
 

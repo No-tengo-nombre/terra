@@ -53,7 +53,7 @@ terra_status_t terra_vk_create_instance_info(
 int terra_vk_check_validation_layer_support(terra_app_t *app) {
   uint32_t layers;
   vkEnumerateInstanceLayerProperties(&layers, NULL);
-  logi_debug("Allocating layer properties");
+  logi_debug("Allocating %d layer properties", layers);
   VkLayerProperties *properties =
       terrau_malloc(app, layers * sizeof(VkLayerProperties));
   if (properties == NULL) {
@@ -91,7 +91,7 @@ terra_status_t terra_vk_find_queue_families(
 
   uint32_t count = 0;
   vkGetPhysicalDeviceQueueFamilyProperties(device, &count, NULL);
-  logi_debug("Allocating pdevice queue family properties");
+  logi_debug("Allocating %d pdevice queue family properties", count);
   VkQueueFamilyProperties *qprops =
       terrau_malloc(app, count * sizeof(VkQueueFamilyProperties));
   if (qprops == NULL) {

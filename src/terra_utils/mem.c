@@ -13,11 +13,18 @@ extern inline void *_terrau_malloc(
     terra_app_t *app, size_t size, const char *filename, int line
 ) {
   logi_debug(
-      "Allocating %i B in heap with malloc @ %s:%d", size, filename, line
+      "Allocating %i B in heap with 'malloc' @ %s:%d", size, filename, line
   );
   void *ret = malloc(size);
   if (ret != NULL) {
+    heapinfo_push(app, ret, size, filename, line);
     app->_idebug_malloced_total++;
+    app->_idebug_malloced_size += size;
+    logi_debug(
+        "%d elements (%d B) in heap",
+        app->_idebug_malloced_total,
+        app->_idebug_malloced_size
+    );
   }
   return ret;
 }
@@ -28,9 +35,24 @@ extern inline void *_terrau_realloc(
   logi_debug(
       "Allocating %i B in heap with 'realloc' @ %s:%d", new_size, filename, line
   );
-  void *ret = realloc(ptr, new_size);
+  if (ptr == NULL) {
+    logi_debug("'realloc' will allocate brand new memory");
+  }
+  size_t addr = (size_t)ptr;
+  void *ret   = realloc(ptr, new_size);
   if (ret != NULL) {
-    app->_idebug_malloced_total++;
+    if (addr != 0) {
+      app->_idebug_malloced_size -= heapinfo_popaddr(app, (void *)addr);
+    } else {
+      app->_idebug_malloced_total++;
+    }
+    heapinfo_push(app, ret, new_size, filename, line);
+    app->_idebug_malloced_size += new_size;
+    logi_debug(
+        "%d elements (%d B) in heap",
+        app->_idebug_malloced_total,
+        app->_idebug_malloced_size
+    );
   }
   return ret;
 }
@@ -47,7 +69,14 @@ extern inline void *_terrau_calloc(
   );
   void *ret = calloc(num, size);
   if (ret != NULL) {
+    heapinfo_push(app, ret, num * size, filename, line);
+    app->_idebug_malloced_size += num * size;
     app->_idebug_malloced_total++;
+    logi_debug(
+        "%d elements (%d B) in heap",
+        app->_idebug_malloced_total,
+        app->_idebug_malloced_size
+    );
   }
   return ret;
 }
@@ -55,11 +84,18 @@ extern inline void *_terrau_calloc(
 extern inline void _terrau_free(
     terra_app_t *app, void *ptr, const char *filename, int line
 ) {
-  logi_debug(
-      "Freeing memory in heap at address %#10x @ %s:%d", ptr, filename, line
-  );
   if (ptr != NULL) {
+    logi_debug(
+        "Freeing memory in heap at address %#p @ %s:%d", ptr, filename, line
+    );
+    size_t size                 = heapinfo_popaddr(app, ptr);
+    app->_idebug_malloced_size -= size;
     app->_idebug_malloced_total--;
+    logi_debug(
+        "%d elements (%d B) in heap",
+        app->_idebug_malloced_total,
+        app->_idebug_malloced_size
+    );
   }
   free(ptr);
 }

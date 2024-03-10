@@ -30,10 +30,6 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
       "Could not set desired frames in flight"
   );
   app->init_params = p;
-
-#ifndef NDEBUG
-  TERRA_CALL_I(terra_init_debug(app), "Failed initializing debug information");
-#endif
   TERRA_CALL_I(terra_init_window(app), "Failed initializing window");
   TERRA_CALL_I(terra_init_instance(app), "Failed initializing instance");
 #ifndef NDEBUG
@@ -67,6 +63,12 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
 #ifndef NDEBUG
 terra_status_t terra_init_debug(terra_app_t *app) {
   app->_idebug_malloced_total = 0;
+  _idebug_heap_info_t *head   = heapinfo_new(app);
+  if (head == NULL) {
+    logi_error("Could not allocate memory for head node of heap info");
+    return TERRA_STATUS_FAILURE;
+  }
+  app->_idebug_heap_head = head;
 
   return TERRA_STATUS_SUCCESS;
 }

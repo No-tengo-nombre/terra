@@ -207,6 +207,9 @@ static void terra_app_log_startup_info(terra_app_t *app) {
 terra_status_t terra_app_run(terra_app_t *app) {
   logi_info("Application start");
   terra_app_log_startup_info(app);
+#ifndef NDEBUG
+  TERRA_CALL_I(terra_init_debug(app), "Failed initializing debug information");
+#endif
 
   terra_status_t start_status   = app->start(app);
   terra_status_t loop_status    = TERRA_STATUS_SUCCESS;
@@ -584,10 +587,48 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
 #ifndef NDEBUG
   if (app->_idebug_malloced_total != 0) {
     logi_warn(
-        "MEMORY LEAK: Found %lli elements in heap after cleanup",
-        app->_idebug_malloced_total
+        "MEMORY LEAK: Found %lli elements (%d B) in heap after cleanup",
+        app->_idebug_malloced_total,
+        app->_idebug_malloced_size
     );
+
+    logi_warn("MEMORY LEAK LOCATIONS:");
+    _idebug_heap_info_t *node = app->_idebug_heap_head;
+    while (node != NULL) {
+      logi_warn(
+          " * %#p (%d B) @ %s:%d",
+          node->addr,
+          node->size,
+          node->file,
+          node->line
+      );
+      node = node->next;
+    }
   }
+
+  _idebug_heap_info_t *node = app->_idebug_heap_head;
+  int64_t count             = (int64_t)heapinfo_count(app);
+  if (app->_idebug_malloced_total != count) {
+    logi_error(
+        "Found mismatch between reported (%d) and stored (%d) allocations",
+        app->_idebug_malloced_total,
+        count
+    );
+
+    node = app->_idebug_heap_head;
+    logi_error("Stored allocations are:");
+    while (node != NULL) {
+      logi_error(
+          " * %#p (%d B) @ %s:%d",
+          node->addr,
+          node->size,
+          node->file,
+          node->line
+      );
+      node = node->next;
+    }
+  }
+  heapinfo_clean(app);
 #endif
 
   return TERRA_STATUS_SUCCESS;

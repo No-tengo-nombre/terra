@@ -5,6 +5,7 @@
 #include "vulkan.h"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <terra/status.h>
 #include <terra/vma.h>
 
@@ -33,7 +34,28 @@ extern "C" {
 
 typedef struct terra_buffer terra_buffer_t;
 
-// Proper declarations
+// Debug declarations
+
+#ifndef NDEBUG
+typedef struct _idebug_heap_info {
+  void *addr;
+  size_t size;
+  char file[FILENAME_MAX];
+  int line;
+  struct _idebug_heap_info *next;
+} _idebug_heap_info_t;
+
+_idebug_heap_info_t *heapinfo_new(terra_app_t *app);
+void heapinfo_free_node(_idebug_heap_info_t *node);
+void heapinfo_clean(terra_app_t *app);
+void heapinfo_push(
+    terra_app_t *app, void *addr, size_t size, const char *file, int line
+);
+size_t heapinfo_popaddr(terra_app_t *app, void *addr);
+size_t heapinfo_count(terra_app_t *app);
+#endif
+
+// Application declarations
 
 typedef enum terra_dims {
   TERRA_2D = 2,
@@ -149,6 +171,8 @@ typedef struct terra_app {
 
   VkDebugUtilsMessengerEXT _idebug_messenger;
   int64_t _idebug_malloced_total;
+  size_t _idebug_malloced_size;
+  _idebug_heap_info_t *_idebug_heap_head;
 #endif
 } terra_app_t;
 

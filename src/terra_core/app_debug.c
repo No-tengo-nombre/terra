@@ -47,10 +47,7 @@ void heapinfo_push(
     logi_debug("Pushing to start of list");
     head->addr = addr;
     head->size = size;
-    if (strncpy_s(head->file, FILENAME_MAX, file, FILENAME_MAX)) {
-      logi_error("Could not copy filename");
-      return;
-    };
+    strncpy(head->file, file, FILENAME_MAX);
     head->line = line;
     logi_debug("Count after push is %d", count + 1);
     return;
@@ -69,10 +66,7 @@ void heapinfo_push(
 
   node->addr = addr;
   node->size = size;
-  if (strncpy_s(node->file, FILENAME_MAX, file, FILENAME_MAX)) {
-    logi_error("Could not copy filename");
-    return;
-  };
+  strncpy(node->file, file, FILENAME_MAX);
   node->line = line;
   head->next = node;
   logi_debug("Count after push is %d", count + 1);

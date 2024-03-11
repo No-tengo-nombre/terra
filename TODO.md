@@ -1,9 +1,10 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
-- **(`./examples/shapes/main.c`)** Move the rest of the initializations into the terra_init function
-- **(`./examples/triangle/main.c`)** Move the rest of the initializations into the terra_init function
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/terra/material.h`)** Figure out how to do materials
+- **(`./src/terra_core/setup.c`)** Imlement creation of multiple pipelines
+- **(`./src/terra_core/setup.c`)** Implement the other types of shaders
+- **(`./src/terra_core/setup.c`)** Implement shader creation from sources other than filenames
 - **(`./src/terra_core/setup.c`)** Figure out a better way to store the queue info
 - **(`./src/terra_core/setup.c`)** Implement more types of attachments
 - **(`./src/terra_core/setup.c`)** Implement the option to specify more than one attachment and more

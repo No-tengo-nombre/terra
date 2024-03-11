@@ -16,7 +16,13 @@ terra_status_t terra_init_params_default(terra_init_params_t *out) {
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
+terra_status_t terra_init(
+    terra_app_t *app,
+    terra_init_params_t *params,
+    terra_vk_pipeline_params_t *pipelines_params,
+    terra_pipeline_fnames_t *pipelines_files,
+    size_t pipelines_count
+) {
   terra_init_params_t p;
   if (params == NULL) {
     TERRA_CALL_I(
@@ -56,6 +62,35 @@ terra_status_t terra_init(terra_app_t *app, terra_init_params_t *params) {
   );
   TERRA_CALL_I(
       terra_create_render_pass(app, &p), "Failed creating render pass"
+  );
+
+  // TODO: Imlement creation of multiple pipelines
+  // TODO: Implement the other types of shaders
+  // TODO: Implement shader creation from sources other than filenames
+  if (pipelines_count > 1) {
+    logi_warn("Multiple pipelines not yet supported, only the first will be "
+              "considered");
+  }
+  if (pipelines_count != 0) {
+    terra_pipeline_fnames_t *shaders = pipelines_files;
+    terra_vk_pipeline_params_t *pl_params;
+    if (pipelines_params == NULL) {
+      pl_params = NULL;
+    } else {
+      pl_params = pipelines_params;
+    }
+    log_info("Creating pipeline");
+    TERRA_CALL_I(
+        terra_vk_pipeline_from_filenames(
+            app, pl_params, shaders->vert, shaders->frag
+        ),
+        "Failed creating pipeline"
+    );
+  }
+  TERRA_CALL_I(terra_vk_framebuffer_new(app), "Failed creating framebuffers");
+  TERRA_CALL_I(terra_vk_command_pool_new(app), "Failed creating command pool");
+  TERRA_CALL_I(
+      terra_vk_create_sync_objects(app), "Failed creating sync objects"
   );
   return TERRA_STATUS_SUCCESS;
 }

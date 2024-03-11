@@ -10,6 +10,25 @@
 extern "C" {
 #endif
 
+typedef struct terra_pipeline_fnames {
+  const char *vert;
+  const char *frag;
+  const char *geom;
+  const char *comp;
+  const char *tesc;
+  const char *tese;
+  const char *rgen;
+  const char *rint;
+  const char *rahit;
+  const char *rchit;
+  const char *rmiss;
+  const char *rcall;
+  const char *mesh;
+  const char *task;
+} terra_pipeline_fnames_t;
+
+extern const terra_pipeline_fnames_t TERRA_DEFAULT_PIPELINE;
+
 typedef struct terra_vk_pipeline_params {
   const char *vert_entrypoint;
   const char *frag_entrypoint;
@@ -29,6 +48,7 @@ typedef struct terra_vk_pipeline_params {
 } terra_vk_pipeline_params_t;
 
 terra_vk_pipeline_params_t terra_vk_pipeline_params_default(void);
+terra_pipeline_fnames_t terra_pipeline_fnames_default(void);
 
 terra_status_t terra_vk_pipeline_new(
     terra_app_t *app,

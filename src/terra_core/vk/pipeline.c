@@ -4,6 +4,23 @@
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 
+const terra_pipeline_fnames_t TERRA_DEFAULT_PIPELINE = {
+    .vert  = NULL,
+    .frag  = NULL,
+    .geom  = NULL,
+    .comp  = NULL,
+    .tesc  = NULL,
+    .tese  = NULL,
+    .rgen  = NULL,
+    .rint  = NULL,
+    .rahit = NULL,
+    .rchit = NULL,
+    .rmiss = NULL,
+    .rcall = NULL,
+    .mesh  = NULL,
+    .task  = NULL,
+};
+
 const VkDynamicState _DYN_STATE_DEFAULT[] = {
     VK_DYNAMIC_STATE_VIEWPORT,
     VK_DYNAMIC_STATE_SCISSOR,
@@ -30,6 +47,10 @@ terra_vk_pipeline_params_t terra_vk_pipeline_params_default(void) {
       .scissor_offset    = {0, 0},
   };
   return result;
+}
+
+terra_pipeline_fnames_t terra_pipeline_fnames_default(void) {
+  return TERRA_DEFAULT_PIPELINE;
 }
 
 terra_status_t terra_vk_pipeline_new(

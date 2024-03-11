@@ -87,22 +87,16 @@ terra_status_t create_vectors(terra_app_t *app) {
 }
 
 terra_status_t start(terra_app_t *app) {
-  TERRA_CALL(terra_init(app, NULL), "Failed initializing app");
+  terra_pipeline_fnames_t pl          = terra_pipeline_fnames_default();
+  pl.vert                             = "bin/debug/ex.shapes/shapes.vert.spv";
+  pl.frag                             = "bin/debug/ex.shapes/shapes.frag.spv";
+  terra_pipeline_fnames_t pipelines[] = {pl};
+  size_t pipelines_count = sizeof(pipelines) / sizeof(pipelines[0]);
 
-  // TODO: Move the rest of the initializations into the terra_init function
-  log_info("Creating pipeline");
   TERRA_CALL(
-      terra_vk_pipeline_from_filenames(
-          app,
-          NULL,
-          "bin/debug/ex.shapes/shapes.vert.spv",
-          "bin/debug/ex.shapes/shapes.frag.spv"
-      ),
-      "Failed creating pipeline"
+      terra_init(app, NULL, NULL, pipelines, pipelines_count),
+      "Failed initializing app"
   );
-  TERRA_CALL(terra_vk_framebuffer_new(app), "Failed creating framebuffers");
-  TERRA_CALL(terra_vk_command_pool_new(app), "Failed creating command pool");
-  TERRA_CALL(terra_vk_create_sync_objects(app), "Failed creating sync objects");
 
   log_info("Initialized application, reading shapes");
   TERRA_CALL(create_vectors(app), "Failed to create vectors");

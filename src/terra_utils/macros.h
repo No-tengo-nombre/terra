@@ -21,3 +21,18 @@
       return TERRA_STATUS_FAILURE;                                             \
     }                                                                          \
   }
+
+#define TERRA_CALLDF_I(x, msg, ...)                                            \
+  if (x != TERRA_STATUS_SUCCESS) {                                             \
+    logi_error(msg, #__VA_ARGS__);                                             \
+  }
+
+#define TERRA_VK_CALLDF_I(x, msg, ...)                                         \
+  {                                                                            \
+    VkResult err_ = x;                                                         \
+    if (err_ != VK_SUCCESS) {                                                  \
+      const char *err_str = terra_vk_result_name(err_);                        \
+      logi_error(msg, #__VA_ARGS__);                                           \
+      logi_error("Vulkan error [%d]'%s'", err_, err_str);                      \
+    }                                                                          \
+  }

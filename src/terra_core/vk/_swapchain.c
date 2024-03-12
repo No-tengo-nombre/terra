@@ -32,6 +32,11 @@ terra_status_t _terra_vk_choose_sc_format(
 terra_status_t _terra_vk_choose_sc_present_mode(
     terra_app_t *app, terra_vk_sc_details_t *sc_details, VkPresentModeKHR *out
 ) {
+  logi_debug(
+      "Desired swapchain presentation mode is %u:'%s",
+      app->conf->present_mode,
+      terra_vk_present_mode_name(app->conf->present_mode)
+  );
   for (uint32_t i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
     if (m == app->conf->present_mode) {

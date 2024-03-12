@@ -26,7 +26,7 @@ set_target_properties(
 compile_shader(
   ${EXAMPLE_NAME}
   ENV
-  vulkan1.3
+  vulkan1.0
   FORMAT
   bin
   SOURCES

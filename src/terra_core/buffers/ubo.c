@@ -22,16 +22,7 @@ terra_status_t terra_ubo_new(
   );
 
   logi_debug("Mapping data to uniform buffer");
-  TERRA_VK_CALL_I(
-      vmaMapMemory(app->vma_alloc, out->alloc, &out->data),
-      "Failed mapping memory"
-  );
+  TERRA_CALL_I(terra_buffer_map(app, out), "Failed mapping memory");
 
-  return TERRA_STATUS_SUCCESS;
-}
-
-terra_status_t terra_ubo_bind(
-    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
-) {
   return TERRA_STATUS_SUCCESS;
 }

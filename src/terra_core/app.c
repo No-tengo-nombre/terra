@@ -536,15 +536,26 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   vmaDestroyAllocator(app->vma_alloc);
 
   logi_debug("Cleaning up sync objects");
-  TERRA_CALL_I(
+  TERRA_CALLDF_I(
       terra_vk_detroy_sync_objects(app), "Failed destroying sync objects"
   );
 
   logi_debug("Cleaning up command pool");
   vkDestroyCommandPool(app->vk_ldevice, app->vk_commands, NULL);
   vkDestroyCommandPool(app->vk_ldevice, app->vk_mem_commands, NULL);
-  TERRA_CALL_I(
+  TERRA_CALLDF_I(
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
+  );
+
+  logi_debug("Cleaning up buffers");
+  terra_buffer_t *ubo = app->ubos;
+  for (uint32_t i = 0; i < app->vk_images_count; i++, ubo++) {
+    TERRA_CALLDF_I(
+        terra_buffer_cleanup(app, ubo), "Failed cleaning up UBO[%d]", i
+    );
+  }
+  TERRA_CALLDF_I(
+      terra_vector_cleanup(app, &app->shapes), "Failed to clean up shapes"
   );
 
   logi_debug("Releasing heap allocated arrays");
@@ -556,9 +567,6 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
   terrau_free(app, app->vk_image_views);
   terrau_free(app, app->vk_framebuffers);
   terrau_free(app, app->ubos);
-  TERRA_CALL_I(
-      terra_vector_cleanup(app, &app->shapes), "Failed to clean up shapes"
-  );
 
   logi_debug("Cleaning Vulkan objects");
   vkDestroyPipeline(app->vk_ldevice, app->vk_pipeline, NULL);

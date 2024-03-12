@@ -1,2 +1,2 @@
 CompileFlags:
-    Add: [-Wno-string-plus-int, -ferror-limit=0]
+    Add: [-Wno-string-plus-int, -Wno-gnu-zero-variadic-macro-arguments, -ferror-limit=0]

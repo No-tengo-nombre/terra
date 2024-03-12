@@ -53,6 +53,7 @@ _deps
 .vscode
 
 ### terra ###
+.cache/
 bin/
 build/
 pdb/

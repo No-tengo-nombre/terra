@@ -341,8 +341,11 @@ terra_status_t terra_app_run(terra_app_t *app) {
 
   if (app->loop != NULL) {
     logi_info("Application loop");
-    while (loop_status == TERRA_STATUS_SUCCESS) {
-      loop_status = app->loop(app);
+    while (!terra_app_should_close(app)) {
+      loop_status |= app->loop(app);
+      if (loop_status != TERRA_STATUS_SUCCESS) {
+        app->state.should_close = 1;
+      }
 
       // Update internal state
       app->state.i++;

@@ -118,10 +118,6 @@ terra_status_t start(terra_app_t *app) {
 }
 
 terra_status_t loop(terra_app_t *app) {
-  if (terra_app_should_close(app)) {
-    log_info("Terminating program loop");
-    return TERRA_STATUS_EXIT;
-  }
   glfwPollEvents();
 
   if (app->state.i == 10000) {

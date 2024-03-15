@@ -2,6 +2,7 @@
 This file contains a list of the TODO tasks found within the source code.
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/terra/material.h`)** Figure out how to do materials
+- **(`./src/terra_utils/vendor/log.c`)** Make the file callback be on another thread
 - **(`./src/terra_core/data/vertex2.c`)** Add option for the user to specify a custom descriptor
 - **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
 - **(`./src/terra_core/app.c`)** Check if this method harms performance

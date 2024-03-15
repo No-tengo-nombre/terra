@@ -235,15 +235,18 @@ void log_log_internal(
 
   lock();
 
+  #ifndef TERRA_DISABLE_STDLOG
   if (!L.quiet && level >= L.level) {
     init_event(&ev, stderr);
     va_start(ev.ap, fmt);
     stdout_callback_internal(&ev);
     va_end(ev.ap);
   }
+  #endif
 
+  #ifndef TERRA_DISABLE_CBLOG
   for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
-    Callback *cb = &L.callbacks[i];
+    Callback *cb = L.callbacks + i;
     if (level >= cb->level) {
       init_event(&ev, cb->udata);
       va_start(ev.ap, fmt);
@@ -251,6 +254,7 @@ void log_log_internal(
       va_end(ev.ap);
     }
   }
+  #endif
 
   unlock();
 #endif

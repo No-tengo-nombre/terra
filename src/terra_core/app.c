@@ -11,11 +11,29 @@
   #include <windows.h>
   #define CREATE_DIRECTORY(dirname)     CreateDirectory(dirname, NULL)
   #define DIR_ALREADY_EXISTS_ERROR_CODE ERROR_ALREADY_EXISTS
+  #define EPOCH_DIFF                    11644473600000ULL // Milliseconds
+  #define GET_CURRENT_TIME(current_time)                                       \
+    {                                                                          \
+      FILETIME ft;                                                             \
+      ULARGE_INTEGER ft64;                                                     \
+      GetSystemTimeAsFileTime(&ft);                                            \
+      ft64.LowPart  = ft.dwLowDateTime;                                        \
+      ft64.HighPart = ft.dwHighDateTime;                                       \
+      current_time  = (int64_t)(ft64.QuadPart / 10000 - EPOCH_DIFF);           \
+    }
 #else
   #include <errno.h>
   #include <sys/stat.h>
+  #include <sys/time.h>
   #define CREATE_DIRECTORY(dirname)     mkdir(dirname, 0777)
   #define DIR_ALREADY_EXISTS_ERROR_CODE EEXIST
+  #define GET_CURRENT_TIME(current_time)                                       \
+    {                                                                          \
+      struct timeval tv;                                                       \
+      gettimeofday(&tv, NULL);                                                 \
+      current_time =                                                           \
+          (int64_t)tv.tv_sec * 1000LL + (int64_t)tv.tv_usec / 1000LL;          \
+    }
 #endif
 
 const char *DEFAULT_VALIDATION_LAYERS[]   = {"VK_LAYER_KHRONOS_validation"};
@@ -167,8 +185,8 @@ terra_status_t terra_app_new(
   };
 
   // Logging setup
-  time_t t = time(NULL);
-  app.time = localtime(&t);
+  time_t seconds  = time(NULL);
+  struct tm *time = localtime(&seconds);
   log_set_level(app.conf->log_stdlvl);
 
   if (app.conf->log_dir == NULL) {
@@ -183,7 +201,7 @@ terra_status_t terra_app_new(
                app.log_filename + log_dir_len,
                _TERRA_LOGFILE_MAX,
                "/%Y%m%d_%H%M%S.txt",
-               app.time
+               time
            ) +
            log_dir_len] = '\0';
 
@@ -283,6 +301,21 @@ static void terra_app_log_startup_info(terra_app_t *app) {
   logi_info("+-------------------------------------------------------+");
 }
 
+static inline void init_time(terra_app_t *app) {
+  int64_t current_time;
+  GET_CURRENT_TIME(current_time);
+  logi_info("Start time is %lli ms", current_time);
+  app->state.start_msec = current_time;
+  app->state.curr_msec  = current_time;
+}
+
+static inline void update_time(terra_app_t *app) {
+  int64_t new_time;
+  GET_CURRENT_TIME(new_time);
+  app->state.delta_sec = (double)(new_time - app->state.curr_msec) / 1000.0;
+  app->state.curr_msec = new_time;
+}
+
 terra_status_t terra_app_run(terra_app_t *app) {
   logi_info("Application start");
   terra_app_log_startup_info(app);
@@ -290,6 +323,8 @@ terra_status_t terra_app_run(terra_app_t *app) {
   TERRA_CALL_I(terra_init_debug(app), "Failed initializing debug information");
 #endif
 
+  logi_debug("Initting timekeeper");
+  init_time(app);
   terra_status_t start_status   = app->start(app);
   terra_status_t loop_status    = TERRA_STATUS_SUCCESS;
   terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;
@@ -313,6 +348,7 @@ terra_status_t terra_app_run(terra_app_t *app) {
       app->state.i++;
       app->state.vk_frame =
           (app->state.vk_frame + 1) % app->conf->max_frames_in_flight;
+      update_time(app);
     }
     logi_info("Finished loop");
     logi_info("Waiting for remaining draw calls");

@@ -8,10 +8,13 @@
 #include <stdio.h>
 #include <terra/status.h>
 #include <terra/vma.h>
+#include <time.h>
 
 #define TERRA_ENGINE_VERSION_MAJOR 1
 #define TERRA_ENGINE_VERSION_MINOR 0
 #define TERRA_ENGINE_VERSION_PATCH 0
+
+#define _TERRA_LOGFILE_MAX 64
 
 /*
 PREFIXES
@@ -115,6 +118,12 @@ typedef struct terra_app_config {
 
   uint64_t in_flight_fence_timeout;
   uint64_t img_acq_timeout;
+
+  /* Logging configuration */
+
+  const char *log_dir;
+  int log_stdlvl;
+  int log_filelvl;
 } terra_app_config_t;
 
 typedef struct terra_app {
@@ -129,6 +138,12 @@ typedef struct terra_app {
   void *glfw_window;
   VmaAllocator vma_alloc;
   terra_init_params_t init_params;
+
+  /* Data handles */
+
+  char log_filename[FILENAME_MAX + _TERRA_LOGFILE_MAX];
+  FILE *log_file;
+  struct tm *time;
 
   /* Data containers */
 

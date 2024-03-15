@@ -70,6 +70,9 @@ typedef struct terra_app_state {
   int should_close;
   uint32_t vk_frame;
   int fb_resized;
+  int64_t start_msec;
+  int64_t curr_msec;
+  double delta_sec;
 } terra_app_state_t;
 
 typedef struct terra_queue {
@@ -126,10 +129,14 @@ typedef struct terra_app_config {
   int log_filelvl;
 } terra_app_config_t;
 
+typedef terra_status_t(terra_start_ft)(terra_app_t *);
+typedef terra_status_t(terra_loop_ft)(terra_app_t *);
+typedef terra_status_t(terra_clean_ft)(terra_app_t *);
+
 typedef struct terra_app {
-  terra_status_t (*start)(struct terra_app *);
-  terra_status_t (*loop)(struct terra_app *);
-  terra_status_t (*cleanup)(struct terra_app *);
+  terra_start_ft *start;
+  terra_loop_ft *loop;
+  terra_clean_ft *cleanup;
 
   terra_app_metadata_t *meta;
   terra_app_config_t *conf;
@@ -143,7 +150,6 @@ typedef struct terra_app {
 
   char log_filename[FILENAME_MAX + _TERRA_LOGFILE_MAX];
   FILE *log_file;
-  struct tm *time;
 
   /* Data containers */
 
@@ -190,10 +196,6 @@ typedef struct terra_app {
   _idebug_heap_info_t *_idebug_heap_head;
 #endif
 } terra_app_t;
-
-typedef terra_status_t(terra_start_ft)(terra_app_t *);
-typedef terra_status_t(terra_loop_ft)(terra_app_t *);
-typedef terra_status_t(terra_clean_ft)(terra_app_t *);
 
 // Constants
 

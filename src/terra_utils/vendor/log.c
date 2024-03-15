@@ -245,6 +245,7 @@ void log_log_internal(
   #endif
 
   #ifndef TERRA_DISABLE_CBLOG
+  // TODO: Make the file callback be on another thread
   for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
     Callback *cb = L.callbacks + i;
     if (level >= cb->level) {

@@ -58,3 +58,4 @@ bin/
 build/
 pdb/
 lib/
+logs/

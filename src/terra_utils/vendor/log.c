@@ -46,6 +46,9 @@ static const char *level_strings[] = {
 static const char *level_colors[] = {
     "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"
 };
+static const char *level_bg_colors[] = {
+    "\x1b[0m", "\x1b[0m", "\x1b[0m", "\x1b[0m", "\x1b[37;41m", "\x1b[37;45m"
+};
 #endif
 
 static void stdout_callback(log_Event *ev) {
@@ -54,12 +57,13 @@ static void stdout_callback(log_Event *ev) {
 #ifdef LOG_USE_COLOR
   fprintf(
       ev->udata,
-      "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+      "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m %s",
       buf,
       level_colors[ev->level],
       level_strings[ev->level],
       ev->file,
-      ev->line
+      ev->line,
+      level_bg_colors[ev->level]
   );
 #else
   fprintf(
@@ -72,7 +76,7 @@ static void stdout_callback(log_Event *ev) {
   );
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
+  fprintf(ev->udata, "\x1b[0m\n");
   fflush(ev->udata);
 }
 
@@ -98,12 +102,13 @@ static void stdout_callback_internal(log_Event *ev) {
 #ifdef LOG_USE_COLOR
   fprintf(
       ev->udata,
-      "[I] %s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
+      "[I] %s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m %s",
       buf,
       level_colors[ev->level],
       level_strings[ev->level],
       ev->file,
-      ev->line
+      ev->line,
+      level_bg_colors[ev->level]
   );
 #else
   fprintf(
@@ -116,7 +121,7 @@ static void stdout_callback_internal(log_Event *ev) {
   );
 #endif
   vfprintf(ev->udata, ev->fmt, ev->ap);
-  fprintf(ev->udata, "\n");
+  fprintf(ev->udata, "\x1b[0m\n");
   fflush(ev->udata);
 }
 

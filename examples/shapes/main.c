@@ -169,6 +169,7 @@ int main(void) {
   meta.app_name             = "Terra (example) - Triangle";
 
   terra_app_config_t conf = terra_app_config_default();
+  conf.log_dir            = "logs";
 
   terra_app_t app;
   terra_app_new(&start, &loop, &cleanup, &meta, &conf, &app);

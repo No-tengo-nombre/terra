@@ -10,7 +10,7 @@
 // loop is formed
 
 _idebug_heap_info_t *heapinfo_new(terra_app_t *app) {
-  logi_info("Creating new node with heap info");
+  logi_trace("Creating new node with heap info");
   _idebug_heap_info_t *node = malloc(sizeof(_idebug_heap_info_t));
   if (node == NULL) {
     logi_error("Could not allocate memory for node");
@@ -27,7 +27,7 @@ _idebug_heap_info_t *heapinfo_new(terra_app_t *app) {
 void heapinfo_free_node(_idebug_heap_info_t *node) { free(node); }
 
 void heapinfo_clean(terra_app_t *app) {
-  logi_info("Removing heap info");
+  logi_trace("Removing heap info");
   _idebug_heap_info_t *node = app->_idebug_heap_head;
   _idebug_heap_info_t *next;
   while (node != NULL) {
@@ -40,16 +40,16 @@ void heapinfo_clean(terra_app_t *app) {
 void heapinfo_push(
     terra_app_t *app, void *addr, size_t size, const char *file, int line
 ) {
-  logi_info("Pushing %#p @ %s:%d", addr, file, line);
+  logi_trace("Pushing %#p @ %s:%d", addr, file, line);
   _idebug_heap_info_t *head = app->_idebug_heap_head;
   size_t count              = 0;
   if (head->addr == NULL) {
-    logi_debug("Pushing to start of list");
+    logi_trace("Pushing to start of list");
     head->addr = addr;
     head->size = size;
     strncpy(head->file, file, FILENAME_MAX);
     head->line = line;
-    logi_debug("Count after push is %d", count + 1);
+    logi_trace("Count after push is %d", count + 1);
     return;
   }
   count++;
@@ -69,17 +69,17 @@ void heapinfo_push(
   strncpy(node->file, file, FILENAME_MAX);
   node->line = line;
   head->next = node;
-  logi_debug("Count after push is %d", count + 1);
+  logi_trace("Count after push is %d", count + 1);
 }
 
 size_t heapinfo_popaddr(terra_app_t *app, void *addr) {
-  logi_info("Searching element with address %#p", addr);
+  logi_trace("Searching element with address %#p", addr);
   size_t count              = 0;
   _idebug_heap_info_t *curr = app->_idebug_heap_head;
   if (curr->addr == addr) {
     // First element is the one to pop (border case)
-    logi_debug("HEAP INFO (%d) %#p", count, curr->addr);
-    logi_info("Popping %#p @ %s:%d", curr->addr, curr->file, curr->line);
+    logi_trace("HEAP INFO (%d) %#p", count, curr->addr);
+    logi_trace("Popping %#p @ %s:%d", curr->addr, curr->file, curr->line);
     app->_idebug_heap_head = curr->next;
     size_t size            = curr->size;
     heapinfo_free_node(curr);
@@ -87,11 +87,11 @@ size_t heapinfo_popaddr(terra_app_t *app, void *addr) {
   }
 
   while (curr->next != NULL) {
-    logi_debug("HEAP INFO (%d) %#p", count, curr->addr);
+    logi_trace("HEAP INFO (%d) %#p", count, curr->addr);
     if (curr->next->addr == addr) {
       _idebug_heap_info_t *node = curr->next;
-      logi_debug("HEAP INFO (%d) %#p", count + 1, node->addr);
-      logi_info("Popping %#p @ %s:%d", node->addr, node->file, node->line);
+      logi_trace("HEAP INFO (%d) %#p", count + 1, node->addr);
+      logi_trace("Popping %#p @ %s:%d", node->addr, node->file, node->line);
       curr->next  = node->next;
       size_t size = node->size;
       heapinfo_free_node(node);

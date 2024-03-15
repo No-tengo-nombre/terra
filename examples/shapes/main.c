@@ -133,6 +133,12 @@ terra_status_t loop(terra_app_t *app) {
   }
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
+  log_info(
+      "Time %lli s, delta %f",
+      (app->state.curr_msec - app->state.start_msec),
+      app->state.delta_sec
+  );
+
   return TERRA_STATUS_SUCCESS;
 }
 

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -rf ./bin ./build ./lib ./pdb ./Testing
+rm -rf ./bin ./build ./lib ./pdb ./Testing ./logs

@@ -1,8 +1,22 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 #include <terrau/mem.h>
+#include <time.h>
+
+#ifdef _WIN32
+  #include <windows.h>
+  #define CREATE_DIRECTORY(dirname)     CreateDirectory(dirname, NULL)
+  #define DIR_ALREADY_EXISTS_ERROR_CODE ERROR_ALREADY_EXISTS
+#else
+  #include <errno.h>
+  #include <sys/stat.h>
+  #define CREATE_DIRECTORY(dirname)     mkdir(dirname, 0777)
+  #define DIR_ALREADY_EXISTS_ERROR_CODE EEXIST
+#endif
 
 const char *DEFAULT_VALIDATION_LAYERS[]   = {"VK_LAYER_KHRONOS_validation"};
 const char *DEFAULT_DEVICE_EXTENSIONS[]   = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -50,6 +64,10 @@ const terra_app_config_t TERRA_APP_CONFIG_DEFAULT = {
 
     .in_flight_fence_timeout = UINT64_MAX,
     .img_acq_timeout         = UINT64_MAX,
+
+    .log_dir     = NULL,
+    .log_stdlvl  = LOG_INFO,
+    .log_filelvl = LOG_TRACE,
 };
 
 terra_app_state_t terra_app_state_default(void) {
@@ -91,6 +109,33 @@ terra_app_config_t terra_app_config_default(void) {
   return TERRA_APP_CONFIG_DEFAULT;
 }
 
+static terra_status_t create_directory(const char *dirname) {
+#ifdef _WIN32
+  if (CREATE_DIRECTORY(dirname) == 0) {
+    DWORD error = GetLastError();
+    if (error == DIR_ALREADY_EXISTS_ERROR_CODE) {
+      logi_debug("Log directory '%s' already exists", dirname);
+      return TERRA_STATUS_SUCCESS;
+    } else {
+      logi_error("Failed to create directory '%s'", dirname);
+      return TERRA_STATUS_FAILURE;
+    }
+  }
+#else
+  if (CREATE_DIRECTORY(dirname) == -1) {
+    if (errno == DIR_ALREADY_EXISTS_ERROR_CODE) {
+      logi_debug("Log directory '%s' already exists", dirname);
+      return TERRA_STATUS_SUCCESS;
+    } else {
+      logi_error("Failed to create directory '%s'", dirname);
+      return TERRA_STATUS_FAILURE;
+    }
+  }
+#endif
+  logi_debug("Succesfully created directory '%s'", dirname);
+  return TERRA_STATUS_SUCCESS;
+}
+
 terra_status_t terra_app_new(
     terra_start_ft *start,
     terra_loop_ft *loop,
@@ -120,6 +165,40 @@ terra_status_t terra_app_new(
       ._idebug_malloced_total = 0,
 #endif
   };
+
+  // Logging setup
+  time_t t = time(NULL);
+  app.time = localtime(&t);
+  log_set_level(app.conf->log_stdlvl);
+
+  if (app.conf->log_dir == NULL) {
+    logi_warn("Log directory not specified, not logging to file");
+  } else {
+    if (create_directory(app.conf->log_dir) == TERRA_STATUS_SUCCESS) {
+      size_t log_dir_len = strnlen(app.conf->log_dir, FILENAME_MAX);
+      strncpy(app.log_filename, app.conf->log_dir, log_dir_len);
+
+      app.log_filename
+          [strftime(
+               app.log_filename + log_dir_len,
+               _TERRA_LOGFILE_MAX,
+               "/%Y%m%d_%H%M%S.txt",
+               app.time
+           ) +
+           log_dir_len] = '\0';
+
+      app.log_file = fopen(app.log_filename, "w");
+      if (app.log_file == NULL) {
+        logi_error("Failed to create log file, not logging to file");
+      } else {
+        logi_info("Log file : '%s'", app.log_filename);
+        log_add_fp_internal(app.log_file, app.conf->log_filelvl);
+      }
+    } else {
+      logi_error("Failed to create log directory, not logging to file");
+    }
+  }
+
   TERRA_CALL_I(
       terra_vector_new(&app, sizeof(terra_mesh_t), &app.shapes),
       "Failed creating vector for shapes"

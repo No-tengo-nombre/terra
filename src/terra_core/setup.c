@@ -164,7 +164,7 @@ terra_status_t terra_init_instance(terra_app_t *app) {
   );
   logi_info("Requested instance extensions are:");
   for (uint32_t i = 0; i < total_count; i++) {
-    logi_info("  |-> %s", total_extensions[i]);
+    logi_info("|-> %s", total_extensions[i]);
   }
 
   logi_debug("Creating instance info");

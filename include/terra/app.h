@@ -36,6 +36,9 @@ extern "C" {
 // Forward declarations
 
 typedef struct terra_buffer terra_buffer_t;
+typedef struct terra_pipeline_fnames terra_pipeline_fnames_t;
+typedef struct terra_vk_pipeline_params terra_vk_pipeline_params_t;
+typedef struct terra_init_params terra_init_params_t;
 
 // Debug declarations
 
@@ -99,6 +102,11 @@ typedef struct terra_app_config {
   const char **validation_layers;
   const char **device_extensions;
   const char **instance_extensions;
+
+  terra_init_params_t init_params;
+  terra_vk_pipeline_params_t *pipelines_params;
+  terra_pipeline_fnames_t *pipelines_fnames;
+  size_t pipelines_count;
 
   uint32_t vk_version;
   VkIndexType vk_idx_type;

@@ -3,17 +3,21 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 
-terra_status_t terra_init_params_default(terra_init_params_t *out) {
-  out->image_usage      = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  out->view_type        = VK_IMAGE_VIEW_TYPE_2D;
-  out->samples          = VK_SAMPLE_COUNT_1_BIT;
-  out->load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR;
-  out->store_op         = VK_ATTACHMENT_STORE_OP_STORE;
-  out->stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  out->stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  out->initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED;
-  out->final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-  return TERRA_STATUS_SUCCESS;
+// const terra_init_params_t TERRA_INIT_PARAMS_DEFAULT = {
+//     .image_usage      = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+//     .view_type        = VK_IMAGE_VIEW_TYPE_2D,
+//     .samples          = VK_SAMPLE_COUNT_1_BIT,
+//     .load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR,
+//     .store_op         = VK_ATTACHMENT_STORE_OP_STORE,
+//     .stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+//     .stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+//     .initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED,
+//     .final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+// };
+
+terra_init_params_t terra_init_params_default(void) {
+  terra_init_params_t out = TERRA_INIT_PARAMS_DEFAULT;
+  return out;
 }
 
 terra_status_t terra_init(
@@ -25,9 +29,7 @@ terra_status_t terra_init(
 ) {
   terra_init_params_t p;
   if (params == NULL) {
-    TERRA_CALL_I(
-        terra_init_params_default(&p), "Failed creating default init parameters"
-    );
+    p = terra_init_params_default();
   } else {
     p = *params;
   }
@@ -35,7 +37,6 @@ terra_status_t terra_init(
       terra_app_set_frames_in_flight(app, app->conf->max_frames_in_flight),
       "Could not set desired frames in flight"
   );
-  app->init_params = p;
   TERRA_CALL_I(terra_init_window(app), "Failed initializing window");
   TERRA_CALL_I(terra_init_instance(app), "Failed initializing instance");
 #ifndef NDEBUG
@@ -403,7 +404,7 @@ terra_status_t terra_recreate_swapchain(
 ) {
   terra_init_params_t p;
   if (params == NULL) {
-    p = app->init_params;
+    p = app->conf->init_params;
   } else {
     p = *params;
   }

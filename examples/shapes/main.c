@@ -87,18 +87,7 @@ terra_status_t create_vectors(terra_app_t *app) {
 }
 
 terra_status_t start(terra_app_t *app) {
-  terra_pipeline_fnames_t pl          = terra_pipeline_fnames_default();
-  pl.vert                             = "bin/debug/ex.shapes/shapes.vert.spv";
-  pl.frag                             = "bin/debug/ex.shapes/shapes.frag.spv";
-  terra_pipeline_fnames_t pipelines[] = {pl};
-  size_t pipelines_count = sizeof(pipelines) / sizeof(pipelines[0]);
-
-  TERRA_CALL(
-      terra_init(app, NULL, NULL, pipelines, pipelines_count),
-      "Failed initializing app"
-  );
-
-  log_info("Initialized application, reading shapes");
+  log_info("Reading shapes");
   TERRA_CALL(create_vectors(app), "Failed to create vectors");
 
   log_debug("Creating meshes");
@@ -167,11 +156,22 @@ terra_status_t cleanup(terra_app_t *app) {
 }
 
 int main(void) {
+  // Load data
+  terra_pipeline_fnames_t pl          = terra_pipeline_fnames_default();
+  pl.vert                             = "bin/debug/ex.shapes/shapes.vert.spv";
+  pl.frag                             = "bin/debug/ex.shapes/shapes.frag.spv";
+  terra_pipeline_fnames_t pipelines[] = {pl};
+  size_t pipelines_count = sizeof(pipelines) / sizeof(pipelines[0]);
+
+  // Set up application
   terra_app_metadata_t meta = terra_app_metadata_default();
   meta.app_name             = "Terra (example) - Triangle";
 
   terra_app_config_t conf = terra_app_config_default();
   conf.log_dir            = "logs";
+  conf.pipelines_params   = NULL;
+  conf.pipelines_fnames   = pipelines;
+  conf.pipelines_count    = pipelines_count;
 
   terra_app_t app;
   terra_app_new(&start, &loop, &cleanup, &meta, &conf, &app);

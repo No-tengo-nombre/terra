@@ -65,6 +65,11 @@ const terra_app_config_t TERRA_APP_CONFIG_DEFAULT = {
     .device_extensions         = DEFAULT_DEVICE_EXTENSIONS,
     .instance_extensions       = DEFAULT_INSTANCE_EXTENSIONS,
 
+    .init_params      = TERRA_INIT_PARAMS_DEFAULT,
+    .pipelines_params = NULL,
+    .pipelines_fnames = NULL,
+    .pipelines_count  = 0,
+
     .vk_version  = VK_API_VERSION_1_0,
     .vk_idx_type = VK_INDEX_TYPE_UINT32,
 
@@ -325,6 +330,20 @@ terra_status_t terra_app_run(terra_app_t *app) {
 
   logi_debug("Initting timekeeper");
   init_time(app);
+
+  logi_info("Initializing application");
+  TERRA_CALL_I(
+      terra_init(
+          app,
+          &app->conf->init_params,
+          app->conf->pipelines_params,
+          app->conf->pipelines_fnames,
+          app->conf->pipelines_count
+      ),
+      "Failed initializing app"
+  );
+
+  logi_debug("Running application start");
   terra_status_t start_status   = app->start(app);
   terra_status_t loop_status    = TERRA_STATUS_SUCCESS;
   terra_status_t cleanup_status = TERRA_STATUS_SUCCESS;

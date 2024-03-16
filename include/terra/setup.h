@@ -5,6 +5,18 @@
 #include <stddef.h>
 #include <terra/status.h>
 
+#define TERRA_INIT_PARAMS_DEFAULT                                              \
+  {                                                                            \
+    .image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,                        \
+    .view_type = VK_IMAGE_VIEW_TYPE_2D, .samples = VK_SAMPLE_COUNT_1_BIT,      \
+    .load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR,                           \
+    .store_op         = VK_ATTACHMENT_STORE_OP_STORE,                          \
+    .stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,                       \
+    .stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE,                      \
+    .initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED,                             \
+    .final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                       \
+  }
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -25,7 +37,7 @@ typedef struct terra_init_params {
   VkImageLayout final_layout;
 } terra_init_params_t;
 
-terra_status_t terra_init_params_default(terra_init_params_t *out);
+terra_init_params_t terra_init_params_default(void);
 
 terra_status_t terra_init(
     terra_app_t *app,
@@ -34,6 +46,8 @@ terra_status_t terra_init(
     terra_pipeline_fnames_t *pipelines_files,
     size_t pipelines_count
 );
+
+// extern const terra_init_params_t TERRA_INIT_PARAMS_DEFAULT;
 
 #ifndef NDEBUG
 terra_status_t terra_init_debug(terra_app_t *app);

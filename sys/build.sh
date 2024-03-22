@@ -15,7 +15,7 @@ testing=0
 verbose=0
 python_install=0
 
-while getopts "hcxvisetrdwlpG:R:P:j:" arg
+while getopts "hcxvisetrdG:R:P:j:" arg
 do
     case "$arg" in
         c)
@@ -45,17 +45,8 @@ do
         d)
             release_mode=0
         ;;
-        w)
-            platform="WINDOWS"
-        ;;
-        l)
-            platform="LINUX"
-        ;;
         v)
             verbose=1
-        ;;
-        p)
-            python_install=1
         ;;
         G)
             force_generator="${OPTARG}"
@@ -87,12 +78,6 @@ if [ $release_mode -eq "1" ]; then
     params+=" -DCMAKE_BUILD_TYPE=Release"
 else
     params+=" -DCMAKE_BUILD_TYPE=Debug"
-fi
-
-if [[ "${platform}" == "WINDOWS" ]]; then
-    generator="Visual Studio 17 2022"
-    elif [[ "${platform}" == "LINUX" ]]; then
-    generator="Unix Makefiles"
 fi
 
 if [[ "${force_generator}" != "" ]]; then

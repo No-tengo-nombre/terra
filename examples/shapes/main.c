@@ -111,7 +111,7 @@ terra_status_t start(terra_app_t *app) {
 terra_status_t loop(terra_app_t *app) {
   glfwPollEvents();
 
-  if (app->state.curr_msec - app->state.start_msec >= 5 * 1000 && !changed) {
+  if (app->state.time_msec >= 5 * 1000 && !changed) {
     log_info("Updating triangle mesh, iteration %d", app->state.i);
     changed = 1;
     TERRA_CALL(
@@ -123,7 +123,7 @@ terra_status_t loop(terra_app_t *app) {
 
   log_info(
       "Time %f s, delta %f (FPS %d)",
-      (double)(app->state.curr_msec - app->state.start_msec) / 1000.0,
+      (double)app->state.time_msec / 1000.0,
       app->state.delta_sec,
       (uint32_t)(1.0 / app->state.delta_sec)
   );

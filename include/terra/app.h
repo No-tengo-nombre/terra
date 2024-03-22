@@ -75,6 +75,7 @@ typedef struct terra_app_state {
   int fb_resized;
   int64_t start_msec;
   int64_t curr_msec;
+  int64_t time_msec;
   double delta_sec;
 } terra_app_state_t;
 

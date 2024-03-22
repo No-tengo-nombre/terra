@@ -319,6 +319,7 @@ static inline void update_time(terra_app_t *app) {
   GET_CURRENT_TIME(new_time);
   app->state.delta_sec = (double)(new_time - app->state.curr_msec) / 1000.0;
   app->state.curr_msec = new_time;
+  app->state.time_msec = app->state.curr_msec - app->state.start_msec;
 }
 
 terra_status_t terra_app_run(terra_app_t *app) {

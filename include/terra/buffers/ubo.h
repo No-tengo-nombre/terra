@@ -13,6 +13,3 @@ typedef struct terra_camera {
 terra_status_t terra_ubo_new(
     terra_app_t *app, uint64_t size, terra_buffer_t *out
 );
-terra_status_t terra_ubo_bind(
-    terra_app_t *app, VkCommandBuffer cmd_buffer, terra_buffer_t *buf
-);

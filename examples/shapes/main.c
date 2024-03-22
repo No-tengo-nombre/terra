@@ -30,6 +30,8 @@ terra_vector_t triangle_iv;
 terra_mesh_t quad_m;
 terra_mesh_t triangle_m;
 
+int changed = 0;
+
 terra_status_t create_vectors(terra_app_t *app) {
   log_debug("Loading vectors with data");
   TERRA_CALL(
@@ -109,8 +111,9 @@ terra_status_t start(terra_app_t *app) {
 terra_status_t loop(terra_app_t *app) {
   glfwPollEvents();
 
-  if (app->state.i == 10000) {
-    log_info("Updating triangle mesh");
+  if (app->state.curr_msec - app->state.start_msec >= 5 * 1000 && !changed) {
+    log_info("Updating triangle mesh, iteration %d", app->state.i);
+    changed = 1;
     TERRA_CALL(
         terra_mesh_update(app, &triangle_m, &triangle2_v, NULL),
         "Failed updating triangle mesh"
@@ -119,9 +122,10 @@ terra_status_t loop(terra_app_t *app) {
   TERRA_CALL(terra_app_draw(app), "Failed high-level draw call");
 
   log_info(
-      "Time %lli s, delta %f",
-      (app->state.curr_msec - app->state.start_msec),
-      app->state.delta_sec
+      "Time %f s, delta %f (FPS %d)",
+      (double)(app->state.curr_msec - app->state.start_msec) / 1000.0,
+      app->state.delta_sec,
+      (uint32_t)(1.0 / app->state.delta_sec)
   );
 
   return TERRA_STATUS_SUCCESS;

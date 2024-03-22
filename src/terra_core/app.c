@@ -245,12 +245,12 @@ terra_status_t terra_app_new_wstate(
 }
 
 static void terra_app_log_startup_info(terra_app_t *app) {
+#ifndef NDEBUG
+  logi_warn("!!! RUNNING IN DEBUG MODE !!!");
+#endif
   logi_info("+-------------------------------------------------------+");
   logi_info("|################# STARTUP INFORMATION #################|");
   logi_info("+-------------------------------------------------------+");
-#ifndef NDEBUG
-  logi_warn(" * RUNNING IN DEBUG MODE");
-#endif
   logi_info(
       " * Device extensions in use    : %d", app->conf->device_extensions_total
   );

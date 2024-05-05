@@ -60,6 +60,10 @@ int terra_vk_check_validation_layer_support(terra_app_t *app) {
     return 0;
   }
   vkEnumerateInstanceLayerProperties(&layers, properties);
+  logi_debug("Available layer properties are:");
+  for (uint32_t i = 0; i < layers; i++) {
+    logi_debug(" * %s", properties[i].layerName);
+  }
 
   for (uint32_t i = 0; i < app->conf->validation_layers_total; i++) {
     int found = 0;

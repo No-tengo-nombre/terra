@@ -7,17 +7,19 @@ terra_status_t _terra_vk_choose_sc_format(
     terra_app_t *app, terra_vk_sc_details_t *sc_details, VkSurfaceFormatKHR *out
 ) {
   logi_debug(
-      "Desired swapchain format is %u:'%s'",
-      app->conf->surface_format,
-      terra_vk_format_name(app->conf->surface_format)
+      "Desired swapchain format is '%s' [%u]",
+      terra_vk_format_name(app->conf->surface_format),
+      app->conf->surface_format
   );
   logi_debug(
-      "Desired swapchain colorspace is %u:'%s'",
-      app->conf->color_space,
-      terra_vk_colorspace_name(app->conf->color_space)
+      "Desired swapchain colorspace is '%s' [%u]",
+      terra_vk_colorspace_name(app->conf->color_space),
+      app->conf->color_space
   );
+  logi_debug("Available swapchain formats: %u", sc_details->format_count);
   for (uint32_t i = 0; i < sc_details->format_count; i++) {
     VkSurfaceFormatKHR f = sc_details->formats[i];
+    logi_debug("Found format %s [%u], cp %s [%u]", terra_vk_format_name(f.format), f.format, terra_vk_colorspace_name(f.colorSpace), f.colorSpace);
     if (f.format == app->conf->surface_format &&
         f.colorSpace == app->conf->color_space) {
       *out = f;
@@ -33,12 +35,14 @@ terra_status_t _terra_vk_choose_sc_present_mode(
     terra_app_t *app, terra_vk_sc_details_t *sc_details, VkPresentModeKHR *out
 ) {
   logi_debug(
-      "Desired swapchain presentation mode is %u:'%s",
-      app->conf->present_mode,
-      terra_vk_present_mode_name(app->conf->present_mode)
+      "Desired swapchain presentation mode is '%s' [%u]",
+      terra_vk_present_mode_name(app->conf->present_mode),
+      app->conf->present_mode
   );
+  logi_debug("Available swapchain presentation modes: %u", sc_details->mode_count);
   for (uint32_t i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
+    logi_debug("Found mode %s [%u]", terra_vk_present_mode_name(m), m);
     if (m == app->conf->present_mode) {
       *out = m;
       return TERRA_STATUS_SUCCESS;

@@ -673,3 +673,18 @@ const char *terra_vk_result_name(VkResult res) {
     return "Unknown error";
   }
 }
+
+const char *terra_vk_version_name(uint32_t vk_version) {
+  switch (vk_version) {
+  case VK_API_VERSION_1_0:
+    return "1.0";
+  case VK_API_VERSION_1_1:
+    return "1.1";
+  case VK_API_VERSION_1_2:
+    return "1.2";
+  case VK_API_VERSION_1_3:
+    return "1.3";
+  default:
+    return "Unknown version";
+  }
+}

@@ -7,22 +7,29 @@
 #include <terrau/math/clamp.h>
 #include <terrau/mem.h>
 
+/* char *get_vk_version(uint32_t vk_version) { */
+/*     return */ 
+/* } */
+
 terra_status_t terra_vk_create_application_info(
     terra_app_t *app, VkApplicationInfo *out
 ) {
   out->sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   out->apiVersion         = app->conf->vk_version;
+  logi_info("Requested VK version is %s (%u)", terra_vk_version_name(out->apiVersion), out->apiVersion);
   out->applicationVersion = VK_MAKE_API_VERSION(
       1, app->meta->vmajor, app->meta->vminor, app->meta->vpatch
   );
+  logi_debug("Application version is %u", out->applicationVersion);
   out->engineVersion = VK_MAKE_API_VERSION(
       1,
       TERRA_ENGINE_VERSION_MAJOR,
       TERRA_ENGINE_VERSION_MINOR,
       TERRA_ENGINE_VERSION_PATCH
   );
+  logi_debug("Engine version is %u.%u.%u", TERRA_ENGINE_VERSION_MAJOR, TERRA_ENGINE_VERSION_MINOR, TERRA_ENGINE_VERSION_PATCH);
   out->pApplicationName = app->meta->app_name;
-  out->pEngineName      = "Terra";
+  out->pEngineName      = TERRA_ENGINE_NAME;
   out->pNext            = NULL;
   return TERRA_STATUS_SUCCESS;
 }

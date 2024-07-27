@@ -109,7 +109,7 @@ terra_status_t start(terra_app_t *app) {
 }
 
 terra_status_t loop(terra_app_t *app) {
-  glfwPollEvents();
+  terra_app_poll_events(app);
 
   if (app->state.time_msec >= 5 * 1000 && !changed) {
     log_info("Updating triangle mesh, iteration %d", app->state.i);

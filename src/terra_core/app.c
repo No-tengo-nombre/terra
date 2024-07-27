@@ -789,6 +789,10 @@ int terra_app_should_close(terra_app_t *app) {
   return glfwWindowShouldClose(app->glfw_window) || app->state.should_close;
 }
 
+void terra_app_poll_events(terra_app_t *app) {
+  glfwPollEvents();
+}
+
 VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity,
     VkDebugUtilsMessageTypeFlagsEXT msg_type,

@@ -258,6 +258,7 @@ terra_status_t terra_app_set_frames_in_flight(
 terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx);
 terra_status_t terra_app_draw(terra_app_t *app);
 int terra_app_should_close(terra_app_t *app);
+void terra_app_poll_events(terra_app_t *app);
 
 terra_status_t terra_app_cleanup_swapchain(
     terra_app_t *app, VkSwapchainKHR *sc

@@ -173,9 +173,11 @@ int main(void) {
 
   terra_app_config_t conf = terra_app_config_default();
   conf.log_dir            = "logs";
+  conf.log_stdlvl         = LOG_DEBUG;
   conf.pipelines_params   = NULL;
   conf.pipelines_fnames   = pipelines;
   conf.pipelines_count    = pipelines_count;
+  conf.present_mode       = VK_PRESENT_MODE_IMMEDIATE_KHR;
 
   terra_app_t app;
   terra_app_new(&start, &loop, &cleanup, &meta, &conf, &app);

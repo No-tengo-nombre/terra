@@ -2,6 +2,7 @@
 This file contains a list of the TODO tasks found within the source code.
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
 - **(`./include/terra/material.h`)** Figure out how to do materials
+- **(`./include/terra/data/vertex3.h`)** Implement flexible formats for the vertices
 - **(`./src/terra_utils/vendor/log.c`)** Make the file callback be on another thread
 - **(`./src/terra_core/setup.c`)** Imlement creation of multiple pipelines
 - **(`./src/terra_core/setup.c`)** Implement the other types of shaders

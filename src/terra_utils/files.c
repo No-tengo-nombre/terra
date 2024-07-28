@@ -1,12 +1,12 @@
-#include <stdio.h>
+#include "vendor/log.h"
+
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <terra/app.h>
 #include <terrau/files.h>
 #include <terrau/mem.h>
-#include "vendor/log.h"
 
 terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
   size_t max_length = 128;
@@ -19,7 +19,7 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
   }
 
   logi_debug("Reading first character");
-  char ch = (char)getc(file);
+  char ch      = (char)getc(file);
   size_t count = 0;
 
   logi_debug("Iterating");
@@ -27,7 +27,7 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
     if (count == max_length) {
       logi_debug("Encountered max length, reallocating");
       max_length += 128;
-      buffer = terrau_realloc(app, buffer, max_length);
+      buffer      = terrau_realloc(app, buffer, max_length);
       if (buffer == NULL) {
         logi_error("Error reallocating space for line buffer");
         return TERRA_STATUS_FAILURE;
@@ -47,4 +47,3 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
   *out = line;
   return TERRA_STATUS_SUCCESS;
 }
-

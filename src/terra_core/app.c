@@ -252,10 +252,24 @@ static void terra_app_log_startup_info(terra_app_t *app) {
   logi_info("|################# STARTUP INFORMATION #################|");
   logi_info("+-------------------------------------------------------+");
   logi_info(" * Application name            : %s", app->meta->app_name);
-  logi_info(" * Application version         : %u.%u.%u", app->meta->vmajor, app->meta->vminor, app->meta->vpatch);
-  logi_info(" * Engine version              : %u.%u.%u", TERRA_ENGINE_VERSION_MAJOR, TERRA_ENGINE_VERSION_MINOR, TERRA_ENGINE_VERSION_PATCH);
+  logi_info(
+      " * Application version         : %u.%u.%u",
+      app->meta->vmajor,
+      app->meta->vminor,
+      app->meta->vpatch
+  );
+  logi_info(
+      " * Engine version              : %u.%u.%u",
+      TERRA_ENGINE_VERSION_MAJOR,
+      TERRA_ENGINE_VERSION_MINOR,
+      TERRA_ENGINE_VERSION_PATCH
+  );
   logi_info(" * Engine name                 : %s", TERRA_ENGINE_NAME);
-  logi_info(" * VK API version              : %s (%u)", terra_vk_version_name(app->conf->vk_version), app->conf->vk_version);
+  logi_info(
+      " * VK API version              : %s (%u)",
+      terra_vk_version_name(app->conf->vk_version),
+      app->conf->vk_version
+  );
   logi_info(
       " * Device extensions in use    : %d", app->conf->device_extensions_total
   );
@@ -789,9 +803,7 @@ int terra_app_should_close(terra_app_t *app) {
   return glfwWindowShouldClose(app->glfw_window) || app->state.should_close;
 }
 
-void terra_app_poll_events(terra_app_t *app) {
-  glfwPollEvents();
-}
+void terra_app_poll_events(terra_app_t *app) { glfwPollEvents(); }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL terra_app_debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity,

@@ -11,7 +11,7 @@ const VkVertexInputBindingDescription
 
 const VkVertexInputAttributeDescription
     TERRA_VERTEX2_ATTR_DESC[TERRA_VERTEX2_ATTR_DESC_SIZE] = {
-  // (location, binding, format, offset)
+        // (location, binding, format, offset)
         {0, 0,       VK_FORMAT_R32G32_SFLOAT, offsetof(terra_vertex2_t, position)},
         {1, 0, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof(terra_vertex2_t,    color)}
 };

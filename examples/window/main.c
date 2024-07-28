@@ -2,9 +2,7 @@
 #include <terrau/log.h>
 #include <terrau/macros.h>
 
-terra_status_t start(terra_app_t *app) {
-  return TERRA_STATUS_SUCCESS;
-}
+terra_status_t start(terra_app_t *app) { return TERRA_STATUS_SUCCESS; }
 
 terra_status_t loop(terra_app_t *app) {
   if (terra_app_should_close(app)) {

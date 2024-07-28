@@ -19,7 +19,13 @@ terra_status_t _terra_vk_choose_sc_format(
   logi_debug("Available swapchain formats: %u", sc_details->format_count);
   for (uint32_t i = 0; i < sc_details->format_count; i++) {
     VkSurfaceFormatKHR f = sc_details->formats[i];
-    logi_debug("Found format %s [%u], cp %s [%u]", terra_vk_format_name(f.format), f.format, terra_vk_colorspace_name(f.colorSpace), f.colorSpace);
+    logi_debug(
+        "Found format %s [%u], cp %s [%u]",
+        terra_vk_format_name(f.format),
+        f.format,
+        terra_vk_colorspace_name(f.colorSpace),
+        f.colorSpace
+    );
     if (f.format == app->conf->surface_format &&
         f.colorSpace == app->conf->color_space) {
       *out = f;
@@ -39,7 +45,9 @@ terra_status_t _terra_vk_choose_sc_present_mode(
       terra_vk_present_mode_name(app->conf->present_mode),
       app->conf->present_mode
   );
-  logi_debug("Available swapchain presentation modes: %u", sc_details->mode_count);
+  logi_debug(
+      "Available swapchain presentation modes: %u", sc_details->mode_count
+  );
   for (uint32_t i = 0; i < sc_details->mode_count; i++) {
     VkPresentModeKHR m = sc_details->modes[i];
     logi_debug("Found mode %s [%u]", terra_vk_present_mode_name(m), m);

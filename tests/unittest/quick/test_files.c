@@ -1,14 +1,14 @@
 #include <stdio.h>
-
 #include <terra/terra.h>
 #include <terra_utils/test.h>
+#include <terrau/files.h>
 #include <terrau/log.h>
 #include <terrau/macros.h>
-#include <terrau/files.h>
 
 terra_status_t test_readline(terra_app_t *app) {
   log_debug("Opening file");
-  const char *FILENAME = TERRA_PROJECT_ROOT_DIR "resources/tests/test_files.txt";
+  const char *FILENAME =
+      TERRA_PROJECT_ROOT_DIR "resources/tests/test_files.txt";
   FILE *f = fopen(FILENAME, "r");
   if (f == NULL) {
     logi_error("Could not open file '%s'", FILENAME);
@@ -51,4 +51,3 @@ int main(void) {
 
   return TEST_PASS;
 }
-

@@ -7,14 +7,15 @@
 
 #define TERRA_INIT_PARAMS_DEFAULT                                              \
   {                                                                            \
-    .image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,                        \
-    .view_type = VK_IMAGE_VIEW_TYPE_2D, .samples = VK_SAMPLE_COUNT_1_BIT,      \
-    .load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR,                           \
-    .store_op         = VK_ATTACHMENT_STORE_OP_STORE,                          \
-    .stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,                       \
-    .stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE,                      \
-    .initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED,                             \
-    .final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                       \
+      .image_usage      = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,                 \
+      .view_type        = VK_IMAGE_VIEW_TYPE_2D,                               \
+      .samples          = VK_SAMPLE_COUNT_1_BIT,                               \
+      .load_op          = VK_ATTACHMENT_LOAD_OP_CLEAR,                         \
+      .store_op         = VK_ATTACHMENT_STORE_OP_STORE,                        \
+      .stencil_load_op  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,                     \
+      .stencil_store_op = VK_ATTACHMENT_STORE_OP_DONT_CARE,                    \
+      .initial_layout   = VK_IMAGE_LAYOUT_UNDEFINED,                           \
+      .final_layout     = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                     \
   }
 
 #ifdef __cplusplus

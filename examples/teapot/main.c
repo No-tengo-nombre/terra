@@ -7,7 +7,8 @@ terra_mesh_t teapot;
 terra_status_t start(terra_app_t *app) {
   log_debug("Creating meshes");
   TERRA_CALL(
-      terra_mesh_from_off(app, "resources/off/utah_teapot/teapot.off", &teapot), "Failed to create mesh from file"
+      terra_mesh_from_off(app, "resources/off/utah_teapot/teapot.off", &teapot),
+      "Failed to create mesh from file"
   );
 
   log_debug("Registering mesh with app");

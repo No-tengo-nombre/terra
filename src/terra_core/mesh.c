@@ -24,7 +24,9 @@ terra_status_t terra_mesh_new(
   return TERRA_STATUS_SUCCESS;
 }
 
-terra_status_t terra_mesh_from_descriptor(terra_app_t *app, const terrau_mesh_descriptor_t *desc, terra_mesh_t *out) {
+terra_status_t terra_mesh_from_descriptor(
+    terra_app_t *app, const terrau_mesh_descriptor_t *desc, terra_mesh_t *out
+) {
   logi_debug("Creating new mesh from descriptor");
   return terra_mesh_new(app, desc->verts, desc->idx, out);
 }

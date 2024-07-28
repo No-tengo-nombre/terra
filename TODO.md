@@ -4,6 +4,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./include/terra/material.h`)** Figure out how to do materials
 - **(`./include/terra/data/vertex3.h`)** Implement flexible formats for the vertices
 - **(`./src/terra_utils/formats/obj.c`)** Implement importing OBJ files
+- **(`./src/terra_utils/formats/off.c`)** Implement importing OFF files
 - **(`./src/terra_utils/vendor/log.c`)** Make the file callback be on another thread
 - **(`./src/terra_core/setup.c`)** Imlement creation of multiple pipelines
 - **(`./src/terra_core/setup.c`)** Implement the other types of shaders

@@ -3,8 +3,6 @@
 #include <terrau/macros.h>
 
 terra_status_t start(terra_app_t *app) {
-  TERRA_CALL(terra_init(app, NULL, NULL, NULL, 0), "Failed initializing app");
-
   return TERRA_STATUS_SUCCESS;
 }
 

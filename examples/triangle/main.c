@@ -13,18 +13,6 @@ terra_vector_t triangle_iv;
 terra_mesh_t triangle_m;
 
 terra_status_t start(terra_app_t *app) {
-  terra_pipeline_fnames_t pl = terra_pipeline_fnames_default();
-  pl.vert                    = "bin/debug/ex.triangle/triangle.vert.spv";
-  pl.frag                    = "bin/debug/ex.triangle/triangle.frag.spv";
-  terra_pipeline_fnames_t pipelines[] = {pl};
-  size_t pipelines_count = sizeof(pipelines) / sizeof(pipelines[0]);
-
-  TERRA_CALL(
-      terra_init(app, NULL, NULL, pipelines, pipelines_count),
-      "Failed initializing app"
-  );
-
-  log_info("Initialized application, reading shapes");
   log_debug("Loading triangle");
   TERRA_CALL(
       terra_vector_from_array(
@@ -84,10 +72,20 @@ terra_status_t cleanup(terra_app_t *app) {
 }
 
 int main(void) {
+  terra_pipeline_fnames_t pl = terra_pipeline_fnames_default();
+  pl.vert                    = "bin/debug/ex.triangle/triangle.vert.spv";
+  pl.frag                    = "bin/debug/ex.triangle/triangle.frag.spv";
+  terra_pipeline_fnames_t pipelines[] = {pl};
+  size_t pipelines_count = sizeof(pipelines) / sizeof(pipelines[0]);
+
   terra_app_metadata_t meta = terra_app_metadata_default();
   meta.app_name             = "Terra (example) - Triangle";
 
   terra_app_config_t conf = terra_app_config_default();
+  conf.log_dir            = "logs";
+  conf.pipelines_params   = NULL;
+  conf.pipelines_fnames   = pipelines;
+  conf.pipelines_count    = pipelines_count;
 
   terra_app_t app;
   terra_app_new(&start, &loop, &cleanup, &meta, &conf, &app);

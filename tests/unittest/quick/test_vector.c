@@ -269,8 +269,6 @@ terra_status_t test_modification_extend_array(terra_app_t *app) {
 }
 
 terra_status_t start(terra_app_t *app) {
-  TERRA_CALL(terra_init(app, NULL, NULL, NULL, 0), "Failed initializing app");
-
   TERRA_CALL_TEST(app, test_creation_new);
   TERRA_CALL_TEST(app, test_creation_zero);
   TERRA_CALL_TEST(app, test_creation_with_capacity);

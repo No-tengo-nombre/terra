@@ -18,10 +18,11 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
     return TERRA_STATUS_FAILURE;
   }
 
-  logi_debug("Reading file");
+  logi_debug("Reading first character");
   char ch = (char)getc(file);
   size_t count = 0;
 
+  logi_debug("Iterating");
   while ((ch != '\n') && (ch != EOF)) {
     if (count == max_length) {
       logi_debug("Encountered max length, reallocating");

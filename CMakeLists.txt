@@ -90,6 +90,7 @@ option(TERRA_BUILD_TESTS "Build the tests that come with the package." OFF)
 option(TERRA_INSTALL "Install target." OFF)
 
 add_compile_definitions(LOG_USE_COLOR)
+add_compile_definitions(TERRA_PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}/")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
   add_compile_definitions(TERRA_BUILD_TYPE_RELEASE)

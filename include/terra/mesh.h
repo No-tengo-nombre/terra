@@ -57,9 +57,15 @@ terra_status_t terra_mesh_draw(
   Creation of meshes from files
 */
 
-typedef enum terra_mesh_formats { TERRA_MESH_OBJ = 0 } terra_mesh_formats_t;
+typedef enum terra_mesh_formats {
+  TERRA_MESH_OBJ = 0,
+  TERRA_MESH_OFF = 1,
+} terra_mesh_formats_t;
 
 terra_status_t terra_mesh_from_obj(
+    terra_app_t *app, const char *filename, terra_mesh_t *out
+);
+terra_status_t terra_mesh_from_off(
     terra_app_t *app, const char *filename, terra_mesh_t *out
 );
 

@@ -1,11 +1,11 @@
 file(GLOB CORE_ROOT_SOURCE *.c)
 file(GLOB CORE_ROOT_HEADER *.h)
-file(GLOB CORE_VK_SOURCE vk/*.c)
-file(GLOB CORE_VK_HEADER vk/*.h)
-file(GLOB CORE_BUFFERS_SOURCE buffers/*.c)
-file(GLOB CORE_BUFFERS_HEADER buffers/*.h)
 file(GLOB CORE_DATA_SOURCE data/*.c)
 file(GLOB CORE_DATA_HEADER data/*.h)
+file(GLOB CORE_BUFFERS_SOURCE buffers/*.c)
+file(GLOB CORE_BUFFERS_HEADER buffers/*.h)
+file(GLOB CORE_VK_SOURCE vk/*.c)
+file(GLOB CORE_VK_HEADER vk/*.h)
 
 add_library(
   ${PROJECT_CORE_NAME}

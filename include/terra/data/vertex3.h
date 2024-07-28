@@ -19,6 +19,8 @@ extern const VkVertexInputBindingDescription
 extern const VkVertexInputAttributeDescription
     TERRA_VERTEX3_ATTR_DESC[TERRA_VERTEX3_ATTR_DESC_SIZE];
 
+// TODO: Implement flexible formats for the vertices
+
 typedef struct terra_vertex3 {
   vec3 position;
   vec4 color;

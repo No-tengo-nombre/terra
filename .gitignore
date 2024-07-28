@@ -59,3 +59,4 @@ build/
 pdb/
 lib/
 logs/
+!resources/**/*.obj

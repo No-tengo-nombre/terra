@@ -12,6 +12,8 @@ terra_status_t terrau_load_obj(const char *filename, terrau_mesh_descriptor_t *d
     return TERRA_STATUS_FAILURE;
   }
 
-  return TERRA_STATUS_SUCCESS;
+  // TODO: Implement importing OBJ files
+  logi_error("Importing OBJ files not implemented");
+  return TERRA_STATUS_FAILURE;
 }
 

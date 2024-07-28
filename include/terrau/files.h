@@ -4,5 +4,5 @@
 
 #include <terra/status.h>
 
-terra_status_t terrau_readline(FILE *f, char **out);
+terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out);
 

@@ -12,8 +12,6 @@ terra_status_t terrau_load_obj(const char *filename, terrau_mesh_descriptor_t *d
     return TERRA_STATUS_FAILURE;
   }
 
-  fread()
-
   return TERRA_STATUS_SUCCESS;
 }
 

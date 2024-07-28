@@ -1,5 +1,6 @@
 #include <terra/terra.h>
-#include <terrau/files/obj.h>
+#include <terrau/formats/descriptors.h>
+#include <terrau/formats/obj.h>
 #include <terra_utils/macros.h>
 
 

@@ -169,7 +169,7 @@ int main(void) {
 
   // Set up application
   terra_app_metadata_t meta = terra_app_metadata_default();
-  meta.app_name             = "Terra (example) - Triangle";
+  meta.app_name             = "Terra (example) - Shapes";
 
   terra_app_config_t conf = terra_app_config_default();
   conf.log_dir            = "logs";

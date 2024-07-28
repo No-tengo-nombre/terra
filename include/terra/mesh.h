@@ -4,7 +4,7 @@
 #include <terra/buffers/buffers.h>
 #include <terra/data/vector.h>
 #include <terra/status.h>
-#include <terrau/files/descriptors.h>
+#include <terrau/formats/descriptors.h>
 
 #ifdef __cplusplus
 extern "C" {

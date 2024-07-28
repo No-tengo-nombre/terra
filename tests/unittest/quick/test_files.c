@@ -8,7 +8,12 @@
 
 terra_status_t test_readline(terra_app_t *app) {
   log_debug("Opening file");
-  FILE *f = fopen("resources/tests/test_files.txt", "r");
+  const char *FILENAME = TERRA_PROJECT_ROOT_DIR "resources/tests/test_files.txt";
+  FILE *f = fopen(FILENAME, "r");
+  if (f == NULL) {
+    logi_error("Could not open file '%s'", FILENAME);
+    return TERRA_STATUS_FAILURE;
+  }
   char *line;
 
   log_debug("Reading line");
@@ -20,17 +25,15 @@ terra_status_t test_readline(terra_app_t *app) {
   log_debug("Reading line");
   TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "Lorem ipsum and stuff");
+  log_debug("Reading line");
+  TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
+  TERRA_ASSERT_STREQ(line, "");
 
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_status_t start(terra_app_t *app) {
   TERRA_CALL_TEST(app, test_readline);
-  return TERRA_STATUS_SUCCESS;
-}
-
-terra_status_t loop(terra_app_t *app) {
-  terra_app_poll_events(app);
   return TERRA_STATUS_SUCCESS;
 }
 

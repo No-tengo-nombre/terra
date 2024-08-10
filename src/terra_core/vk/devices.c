@@ -230,7 +230,7 @@ terra_status_t terra_vk_rate_device(
     score += 1000;
   }
   score += (int32_t)props.limits.maxImageDimension2D;
-  logi_debug("Device '%s' score: %I32u", props.deviceName, score);
+  logi_debug("Device '%s' score: %i", props.deviceName, score);
   *out = score;
   return TERRA_STATUS_SUCCESS;
 }

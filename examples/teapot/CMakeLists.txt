@@ -3,7 +3,7 @@ file(GLOB EXAMPLE_ROOT_HEADER *.h)
 file(GLOB EXAMPLE_GLSL_VERT glsl/*.vert)
 file(GLOB EXAMPLE_GLSL_FRAG glsl/*.frag)
 
-set(EXAMPLE_NAME ex.obj)
+set(EXAMPLE_NAME ex.teapot)
 
 add_executable(${EXAMPLE_NAME} ${EXAMPLE_ROOT_HEADER} ${EXAMPLE_ROOT_SOURCE})
 

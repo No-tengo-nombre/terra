@@ -27,6 +27,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/setup.c`)** Implement more types of attachments
 - **(`./src/terra_core/setup.c`)** Implement the option to specify more than one attachment and more
 - **(`./src/terra_core/setup.c`)** Add user customization to how minimization should be handled
-- **(`./src/terra_utils/formats/off.c`)** Implement importing OFF files
+- **(`./src/terra_utils/formats/off.c`)** Implement different vertex formats
+- **(`./src/terra_utils/formats/off.c`)** Finish implementing importing OFF files
 - **(`./src/terra_utils/formats/obj.c`)** Implement importing OBJ files
 - **(`./src/terra_utils/vendor/log.c`)** Make the file callback be on another thread

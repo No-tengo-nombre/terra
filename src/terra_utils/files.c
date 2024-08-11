@@ -8,10 +8,14 @@
 #include <terrau/files.h>
 #include <terrau/mem.h>
 
-terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
+terra_status_t terrau_readline(terra_app_t *app, FILE *file, char *buffer, char **out) {
+  int alloced = 0;
   size_t max_length = 128;
-  logi_debug("Allocating memory for line buffer");
-  char *buffer = terrau_malloc(app, sizeof(char) * max_length);
+  if (buffer == NULL) {
+    alloced = 1;
+    logi_info("No preallocated buffer was passed, allocating one");
+    buffer = terrau_malloc(app, sizeof(char) * max_length);
+  }
 
   if (buffer == NULL) {
     logi_error("Could not allocate memory for line buffer");
@@ -43,7 +47,8 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char **out) {
   buffer[count] = '\0';
   char line[count + 1];
   strncpy(line, buffer, count + 1);
-  terrau_free(app, buffer);
+  if (alloced)
+    terrau_free(app, buffer);
   *out = line;
   return TERRA_STATUS_SUCCESS;
 }

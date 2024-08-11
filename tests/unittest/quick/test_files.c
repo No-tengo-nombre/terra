@@ -4,6 +4,7 @@
 #include <terrau/files.h>
 #include <terrau/log.h>
 #include <terrau/macros.h>
+#include <terrau/mem.h>
 
 terra_status_t test_readline(terra_app_t *app) {
   log_debug("Opening file");
@@ -11,24 +12,28 @@ terra_status_t test_readline(terra_app_t *app) {
       TERRA_PROJECT_ROOT_DIR "resources/tests/test_files.txt";
   FILE *f = fopen(FILENAME, "r");
   if (f == NULL) {
+    fclose(f);
     logi_error("Could not open file '%s'", FILENAME);
     return TERRA_STATUS_FAILURE;
   }
   char *line;
 
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, NULL, &line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "Hello world!");
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, NULL, &line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "This is a file for testing purposes");
+  log_debug("Preallocating buffer");
+  char *buffer = terrau_malloc(app, sizeof(char) * 128);
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, buffer, &line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "Lorem ipsum and stuff");
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, buffer, &line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "");
 
+  fclose(f);
   return TERRA_STATUS_SUCCESS;
 }
 

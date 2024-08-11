@@ -8,8 +8,10 @@
 #include <terrau/files.h>
 #include <terrau/mem.h>
 
-terra_status_t terrau_readline(terra_app_t *app, FILE *file, char *buffer, char **out) {
-  int alloced = 0;
+terra_status_t terrau_readline(
+    terra_app_t *app, FILE *file, char *buffer, char **out
+) {
+  int alloced       = 0;
   size_t max_length = 128;
   if (buffer == NULL) {
     alloced = 1;
@@ -29,11 +31,16 @@ terra_status_t terrau_readline(terra_app_t *app, FILE *file, char *buffer, char 
   logi_debug("Iterating");
   while ((ch != '\n') && (ch != EOF)) {
     if (count == max_length) {
-      logi_debug("Encountered max length, reallocating");
-      max_length += 128;
-      buffer      = terrau_realloc(app, buffer, max_length);
-      if (buffer == NULL) {
-        logi_error("Error reallocating space for line buffer");
+      if (alloced) {
+        logi_debug("Encountered max length, reallocating");
+        max_length += 128;
+        buffer      = terrau_realloc(app, buffer, max_length);
+        if (buffer == NULL) {
+          logi_error("Error reallocating space for line buffer");
+          return TERRA_STATUS_FAILURE;
+        }
+      } else {
+        logi_error("Encountered max length, failing");
         return TERRA_STATUS_FAILURE;
       }
     }

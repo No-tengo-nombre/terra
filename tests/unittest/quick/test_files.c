@@ -34,6 +34,7 @@ terra_status_t test_readline(terra_app_t *app) {
   TERRA_ASSERT_STREQ(line, "");
 
   fclose(f);
+  terrau_free(app, buffer);
   return TERRA_STATUS_SUCCESS;
 }
 

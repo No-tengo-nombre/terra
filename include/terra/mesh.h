@@ -26,7 +26,7 @@ terra_status_t terra_mesh_new(
     terra_mesh_t *out
 );
 terra_status_t terra_mesh_from_descriptor(
-    terra_app_t *app, const terrau_mesh_descriptor_t *desc, terra_mesh_t *out
+    terra_app_t *app, terrau_mesh_descriptor_t *desc, terra_mesh_t *out
 );
 terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh);
 

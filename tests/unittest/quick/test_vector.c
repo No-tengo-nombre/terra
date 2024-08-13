@@ -232,7 +232,7 @@ terra_status_t test_modification_extend_array(terra_app_t *app) {
   uint32_t values[] = {20, 19, 15};
   size_t values_len = 3;
   TERRA_CALL(
-      terra_vector_extend_array(app, &vec, &values, values_len),
+      terra_vector_extend_array(app, &vec, values, values_len),
       "Failed extending array"
   );
 
@@ -254,6 +254,7 @@ terra_status_t test_modification_extend_array(terra_app_t *app) {
         "Failed getting vec[%d]",
         i
     );
+    logi_debug("Found %u", contained_val);
     TERRA_ASSERT_EQI(contained_val, data[i]);
   }
   for (uint32_t i = 0; i < values_len; i++) {
@@ -262,6 +263,7 @@ terra_status_t test_modification_extend_array(terra_app_t *app) {
         "Failed getting vec[%d]",
         i + len
     );
+    logi_debug("Found %u", contained_val);
     TERRA_ASSERT_EQI(contained_val, values[i]);
   }
   log_debug("Found no issues");
@@ -287,6 +289,8 @@ int main(void) {
   terra_app_metadata_t meta = terra_app_metadata_default();
   meta.app_name             = "Terra (test)";
   terra_app_config_t conf   = terra_app_config_default();
+  conf.log_dir              = "logs";
+  conf.log_stdlvl           = LOG_TRACE;
 
   terra_app_t app;
   terra_app_new(&start, NULL, NULL, &meta, &conf, &app);

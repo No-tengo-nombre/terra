@@ -24,11 +24,11 @@ terra_status_t terrau_readline(
     return TERRA_STATUS_FAILURE;
   }
 
-  logi_debug("Reading first character");
+  logi_trace("Reading first character");
   char ch      = (char)getc(file);
   size_t count = 0;
 
-  logi_debug("Iterating");
+  logi_trace("Iterating");
   while ((ch != '\n') && (ch != EOF)) {
     if (count == max_length) {
       if (alloced) {
@@ -50,7 +50,7 @@ terra_status_t terrau_readline(
     ch = (char)getc(file);
   }
 
-  logi_debug("Finished reading line");
+  logi_trace("Finished reading line");
   buffer[count] = '\0';
   char line[count + 1];
   strncpy(line, buffer, count + 1);

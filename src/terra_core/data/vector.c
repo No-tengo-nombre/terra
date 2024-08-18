@@ -164,12 +164,17 @@ terra_status_t terra_vector_extend_array(
     return TERRA_STATUS_FAILURE;
   }
 
-  size_t delta = len - (vec->capacity - vec->len);
+  // size_t delta = vec->len + len - vec->capacity;
+  int64_t _delta = (int64_t)(vec->len + len - vec->capacity);
+  size_t delta = 0;
+  if (_delta > 0) {
+    delta = (size_t)_delta;
+  }
   if (delta > 0) {
     // The vector does not have enough space so we have to allocate more
     // memory
     logi_info("Allocating memory for extension of vector");
-    logi_debug("Allocating %d more bytes", delta);
+    logi_debug("Allocating %d more bytes", delta * vec->data_size);
     void *new_data = terrau_realloc(
         app, vec->data, (vec->capacity + delta) * vec->data_size
     );

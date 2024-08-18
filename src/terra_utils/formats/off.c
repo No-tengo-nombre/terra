@@ -23,16 +23,17 @@ terra_status_t _load_off_file(
 terra_status_t terrau_load_off(
     terra_app_t *app, const char *filename, terrau_mesh_descriptor_t *desc
 ) {
+  logi_debug("Loading OFF file");
   FILE *f           = fopen(filename, "r");
   char *line_buffer = terrau_malloc(app, sizeof(char) * 128);
   if (f == NULL) {
     logi_error("Could not open file '%s'", filename);
     return TERRA_STATUS_FAILURE;
-  }
+ }
 
   // TODO: Implement different vertex formats
   terrau_mesh_descriptor_t out;
-  if (_load_off_file(app, f, line_buffer, out.verts, out.idx) !=
+  if (_load_off_file(app, f, line_buffer, &out.verts, &out.idx) !=
       TERRA_STATUS_SUCCESS) {
     fclose(f);
     terrau_free(app, line_buffer);
@@ -55,9 +56,11 @@ terra_status_t _load_off_file(
 ) {
   // NOTE: This function assumes verts and idx have not been initialized
   // TODO: Consider comments within the file
+  // TODO: Implement two-dimensional shapes
   char *buffer;
 
   // Ensure valid header
+  logi_debug("Reading header");
   TERRA_CALL_I(
       terrau_readline(app, f, line_buffer, &buffer), "Failed reading header"
   );
@@ -67,8 +70,11 @@ terra_status_t _load_off_file(
   }
 
   // Read number of vertices and faces
+  logi_debug("Reading number of vertices and faces");
   size_t num_verts, num_faces, num_edges;
-  TERRA_CALL_I(terrau_readline(app, f, line_buffer, &buffer), "Failed reading line");
+  TERRA_CALL_I(
+      terrau_readline(app, f, line_buffer, &buffer), "Failed reading line"
+  );
   if (sscanf(buffer, "%zu %zu %zu", &num_verts, &num_faces, &num_edges) != 3) {
     logi_error("Failed parsing number of attributes in file");
     return TERRA_STATUS_FAILURE;
@@ -77,41 +83,81 @@ terra_status_t _load_off_file(
     logi_error("Non-zero number of edges not supported");
     return TERRA_STATUS_FAILURE;
   }
+  logi_info("Loading %zu vertices, %zu faces", num_verts, num_faces);
 
   // Allocate associated vectors
+  logi_debug("Allocating vectors for vertices and faces");
   terra_vector_t out_verts;
   terra_vector_t out_idx;
-  TERRA_CALL_I(terra_vector_with_capacity(app, num_verts, TERRA_DEFAULT_DATA_SIZE, &out_verts), "Failed allocating vertices");
-  TERRA_CALL_I(terra_vector_with_capacity(app, num_faces, TERRA_DEFAULT_DATA_SIZE, &out_idx), "Failed allocating indices");
+  TERRA_CALL_I(
+      terra_vector_with_capacity(
+          app, num_verts, TERRA_DEFAULT_VERTEX3_DSIZE, &out_verts
+      ),
+      "Failed allocating vertices"
+  );
+  TERRA_CALL_I(
+      terra_vector_with_capacity(
+          app, 3 * num_faces, TERRA_DEFAULT_FACE3_DSIZE, &out_idx
+      ),
+      "Failed allocating indices"
+  );
 
   // Read vertices
+  logi_debug("Reading vertices");
   terra_vertex3_t vert;
   for (size_t i = 0; i < num_verts; i++) {
     // TODO: Consider different formats in files
-    TERRA_CALL_I(terrau_readline(app, f, line_buffer, &buffer), "Failed reading vertex line");
-    if (sscanf(buffer, "%f %f %f", &vert.position[0], &vert.position[1], &vert.position[2]) != 3) {
+    TERRA_CALL_I(
+        terrau_readline(app, f, line_buffer, &buffer),
+        "Failed reading vertex line"
+    );
+    if (sscanf(
+            buffer,
+            "%f %f %f",
+            &vert.position[0],
+            &vert.position[1],
+            &vert.position[2]
+        ) != 3) {
       logi_error("Found failure at %zu-th vertex", i);
       return TERRA_STATUS_FAILURE;
     }
 
     // TODO: Implement automatically calculating normals
-    TERRA_CALL_I(terra_vector_push(app, &out_verts, &vert), "Failed pushing vector");
+    TERRA_CALL_I(
+        terra_vector_push(app, &out_verts, &vert), "Failed pushing vector"
+    );
   }
 
   // Read the faces
+  // TODO: Allow for primitives different than triangles
+  logi_debug("Reading faces");
   uint32_t face[3];
+  uint32_t vert_size;
   for (size_t i = 0; i < num_faces; i++) {
-    TERRA_CALL_I(terrau_readline(app, f, line_buffer, &buffer), "Failed reading face line");
-    if (sscanf(buffer, "%d %s", &vert.position[0], &vert.position[1], &vert.position[2]) != 3) {
-      logi_error("Found failure at %zu-th vertex", i);
+    TERRA_CALL_I(
+        terrau_readline(app, f, line_buffer, &buffer),
+        "Failed reading face line"
+    );
+    if (sscanf(
+            buffer, "%u %u %u %u", &vert_size, &face[0], &face[1], &face[2]
+        ) != 4) {
+      logi_error("Failed parsing %zu-th vertex", i);
       return TERRA_STATUS_FAILURE;
     }
 
-    // TODO: Implement automatically calculating normals
-    TERRA_CALL_I(terra_vector_push(app, &out_verts, &vert), "Failed pushing vector");
+    // Fail if non-triangles are detected
+    if (vert_size != 3) {
+      logi_error("Only triangular primitives are currently supported");
+      return TERRA_STATUS_FAILURE;
+    }
+
+    TERRA_CALL_I(terra_vector_extend_array(app, &out_idx, face, 3), "Failed pushing face");
   }
 
-  // TODO: Finish implementing importing OFF files
-  logi_error("Importing OFF files not implemented");
-  return TERRA_STATUS_FAILURE;
+  logi_debug("Writing result");
+  *verts = out_verts;
+  *idx   = out_idx;
+  // TERRA_CALL_I(terra_vector_cleanup(app, &out_verts), "Failed cleaning vertices");
+  // TERRA_CALL_I(terra_vector_cleanup(app, &out_idx), "Failed cleaning indices");
+  return TERRA_STATUS_SUCCESS;
 }

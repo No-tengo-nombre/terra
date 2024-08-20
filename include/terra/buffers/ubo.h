@@ -4,6 +4,11 @@
 #include <terra/app.h>
 #include <terra/status.h>
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct terra_camera {
   mat4 model;
   mat4 view;
@@ -13,3 +18,8 @@ typedef struct terra_camera {
 terra_status_t terra_ubo_new(
     terra_app_t *app, uint64_t size, terra_buffer_t *out
 );
+
+#ifdef __cplusplus
+}
+#endif
+

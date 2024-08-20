@@ -65,7 +65,7 @@ terra_status_t terra_init(
       terra_create_render_pass(app, &p), "Failed creating render pass"
   );
 
-  // TODO: Imlement creation of multiple pipelines
+  // TODO: Implement creation of multiple pipelines
   // TODO: Implement the other types of shaders
   // TODO: Implement shader creation from sources other than filenames
   if (pipelines_count > 1) {

@@ -11,8 +11,8 @@ extern "C" {
 #endif
 
 typedef struct terra_mesh {
-  terra_vector_t verts;
-  terra_vector_t idx;
+  uint64_t num_verts;
+  uint32_t num_idx;
   terra_buffer_t vert_buf;
   terra_buffer_t vert_sbuf;
   terra_buffer_t idx_buf;

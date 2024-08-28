@@ -10,6 +10,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement multisampling configuration
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement local configuration of color blending
 - **(`./src/terra_core/vk/_pipeline.c`)** Implement global configuration of color blending
+- **(`./src/terra_core/vk/descriptor_set.c`)** Generalize descriptor set layouts
 - **(`./src/terra_core/vk/_swapchain.c`)** Implement ownership when using different graphics and present
 - **(`./src/terra_core/data/vertex2.c`)** Add option for the user to specify a custom descriptor
 - **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
@@ -18,6 +19,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/app.c`)** Check if this method harms performance
 - **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
 - **(`./src/terra_core/app.c`)** Take the offset from the app
+- **(`./src/terra_core/app.c`)** Make mesh specify pipeline to be used
 - **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
 - **(`./src/terra_core/app.c`)** Implement instancing
 - **(`./src/terra_core/setup.c`)** Implement creation of multiple pipelines

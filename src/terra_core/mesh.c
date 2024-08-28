@@ -11,7 +11,7 @@ terra_status_t terra_mesh_new(
   logi_debug("Creating new mesh from data");
   terra_mesh_t mesh;
   mesh.num_verts = verts->len;
-  mesh.num_idx = (uint32_t)indices->len;
+  mesh.num_idx   = (uint32_t)indices->len;
   TERRA_CALL_I(
       terra_vbo_new(app, verts, &mesh.vert_sbuf, &mesh.vert_buf),
       "Failed allocating vertex buffer for the mesh"
@@ -20,9 +20,7 @@ terra_status_t terra_mesh_new(
       terra_ibo_new(app, indices, &mesh.idx_sbuf, &mesh.idx_buf),
       "Failed allocating index buffer for the mesh"
   );
-  TERRA_CALL_I(
-      terra_vector_cleanup(app, verts), "Failed cleaning up vertices"
-  );
+  TERRA_CALL_I(terra_vector_cleanup(app, verts), "Failed cleaning up vertices");
   TERRA_CALL_I(
       terra_vector_cleanup(app, indices), "Failed cleaning up indices"
   );
@@ -90,7 +88,7 @@ terra_status_t terra_mesh_update_verts(
     terra_app_t *app, terra_mesh_t *mesh, terra_vector_t *new_verts
 ) {
   logi_debug("Updating mesh vertices");
-  size_t size = terra_vector_total_size(app, new_verts);
+  size_t size     = terra_vector_total_size(app, new_verts);
   mesh->num_verts = new_verts->len;
 
   void *temp_data;
@@ -114,7 +112,7 @@ terra_status_t terra_mesh_update_idx(
     terra_app_t *app, terra_mesh_t *mesh, terra_vector_t *new_idx
 ) {
   logi_debug("Updating mesh indices");
-  size_t size = terra_vector_total_size(app, new_idx);
+  size_t size   = terra_vector_total_size(app, new_idx);
   mesh->num_idx = (uint32_t)new_idx->len;
 
   void *temp_data;

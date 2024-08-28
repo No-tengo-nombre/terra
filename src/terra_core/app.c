@@ -518,7 +518,7 @@ terra_status_t terra_app_record_cmd_buffer(terra_app_t *app, uint32_t idx) {
   rp_info.clearValueCount       = 1;
   rp_info.pClearValues          = &clear_color;
 
-  // TODO: Make mesh specify pipeline
+  // TODO: Make mesh specify pipeline to be used
   vkCmdBeginRenderPass(cmd_buffer, &rp_info, VK_SUBPASS_CONTENTS_INLINE);
   vkCmdBindPipeline(
       cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, app->vk_pipeline

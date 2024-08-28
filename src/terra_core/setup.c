@@ -65,6 +65,9 @@ terra_status_t terra_init(
       terra_create_render_pass(app, &p), "Failed creating render pass"
   );
 
+  // Create descriptor sets
+  TERRA_CALL_I(terra_vk_create_descriptor_set_layout(app, 0, ), "Failed to create descriptor set layout");
+
   // TODO: Implement creation of multiple pipelines
   // TODO: Implement the other types of shaders
   // TODO: Implement shader creation from sources other than filenames

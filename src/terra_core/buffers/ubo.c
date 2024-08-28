@@ -4,6 +4,15 @@
 #include <terra_utils/macros.h>
 #include <terra_utils/vendor/log.h>
 
+const terra_ubo_descriptor_t TERRA_UBO_DESCRIPTOR_DEFAULT = {
+    .count = 1,
+    .stage = VK_SHADER_STAGE_VERTEX_BIT,
+};
+
+terra_ubo_descriptor_t terra_ubo_descriptor_default(void) {
+  return TERRA_UBO_DESCRIPTOR_DEFAULT;
+}
+
 terra_status_t terra_ubo_new(
     terra_app_t *app, uint64_t size, terra_buffer_t *out
 ) {

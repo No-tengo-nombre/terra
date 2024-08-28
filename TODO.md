@@ -20,7 +20,7 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/app.c`)** Take the offset from the app
 - **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
 - **(`./src/terra_core/app.c`)** Implement instancing
-- **(`./src/terra_core/setup.c`)** Imlement creation of multiple pipelines
+- **(`./src/terra_core/setup.c`)** Implement creation of multiple pipelines
 - **(`./src/terra_core/setup.c`)** Implement the other types of shaders
 - **(`./src/terra_core/setup.c`)** Implement shader creation from sources other than filenames
 - **(`./src/terra_core/setup.c`)** Figure out a better way to store the queue info

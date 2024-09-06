@@ -1,27 +1,8 @@
 # TODO
 This file contains a list of the TODO tasks found within the source code.
-- **(`./include/terra/data/vertex3.h`)** Implement flexible formats for the vertices
-- **(`./include/terra/material.h`)** Figure out how to do materials
 - **(`./include/terra/status.h`)** Evaluate removal of runtime error detection on release builds
-- **(`./src/terra_core/vk/command_pool.c`)** Evaluate need to extract command buffer creation outside for multiple
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for vertex shaders
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for fragment shaders
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement 2D rendering
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement multisampling configuration
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement local configuration of color blending
-- **(`./src/terra_core/vk/_pipeline.c`)** Implement global configuration of color blending
-- **(`./src/terra_core/vk/descriptor_set.c`)** Generalize descriptor set layouts
-- **(`./src/terra_core/vk/_swapchain.c`)** Implement ownership when using different graphics and present
-- **(`./src/terra_core/data/vertex2.c`)** Add option for the user to specify a custom descriptor
-- **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
-- **(`./src/terra_core/buffers/ibo.c`)** Make vertex and index buffers be allocated together using offsets to
-- **(`./src/terra_core/buffers/buffer.c`)** Implement concurrent memory transfers
-- **(`./src/terra_core/app.c`)** Check if this method harms performance
-- **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
-- **(`./src/terra_core/app.c`)** Take the offset from the app
-- **(`./src/terra_core/app.c`)** Make mesh specify pipeline to be used
-- **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
-- **(`./src/terra_core/app.c`)** Implement instancing
+- **(`./include/terra/material.h`)** Figure out how to do materials
+- **(`./include/terra/data/vertex3.h`)** Implement flexible formats for the vertices
 - **(`./src/terra_core/setup.c`)** Implement creation of multiple pipelines
 - **(`./src/terra_core/setup.c`)** Implement the other types of shaders
 - **(`./src/terra_core/setup.c`)** Implement shader creation from sources other than filenames
@@ -29,6 +10,25 @@ This file contains a list of the TODO tasks found within the source code.
 - **(`./src/terra_core/setup.c`)** Implement more types of attachments
 - **(`./src/terra_core/setup.c`)** Implement the option to specify more than one attachment and more
 - **(`./src/terra_core/setup.c`)** Add user customization to how minimization should be handled
+- **(`./src/terra_core/data/vertex2.c`)** Add option for the user to specify a custom descriptor
+- **(`./src/terra_core/data/vertex3.c`)** Add option for the user to specify a custom descriptor
+- **(`./src/terra_core/app.c`)** Check if this method harms performance
+- **(`./src/terra_core/app.c`)** Move the clear color to the configurations of the app
+- **(`./src/terra_core/app.c`)** Take the offset from the app
+- **(`./src/terra_core/app.c`)** Make mesh specify pipeline to be used
+- **(`./src/terra_core/app.c`)** Add check at runtime if they are dynamic
+- **(`./src/terra_core/app.c`)** Implement instancing
+- **(`./src/terra_core/buffers/ibo.c`)** Make vertex and index buffers be allocated together using offsets to
+- **(`./src/terra_core/buffers/buffer.c`)** Implement concurrent memory transfers
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for vertex shaders
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement specialization for fragment shaders
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement 2D rendering
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement multisampling configuration
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement local configuration of color blending
+- **(`./src/terra_core/vk/_pipeline.c`)** Implement global configuration of color blending
+- **(`./src/terra_core/vk/command_pool.c`)** Evaluate need to extract command buffer creation outside for multiple
+- **(`./src/terra_core/vk/_swapchain.c`)** Implement ownership when using different graphics and present
+- **(`./src/terra_core/vk/descriptor_set.c`)** Generalize descriptor set layouts
 - **(`./src/terra_utils/formats/off.c`)** Implement different vertex formats
 - **(`./src/terra_utils/formats/off.c`)** Consider comments within the file
 - **(`./src/terra_utils/formats/off.c`)** Implement two-dimensional shapes

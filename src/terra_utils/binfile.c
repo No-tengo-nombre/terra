@@ -38,7 +38,6 @@ terra_status_t terrau_read_binary_file(
   FILE *file = fopen(filename, "rb");
   if (file == NULL) {
     logi_error("Could not open file '%s'", filename);
-    fclose(file);
     return TERRA_STATUS_FAILURE;
   }
   size_t file_size = get_file_size(file);

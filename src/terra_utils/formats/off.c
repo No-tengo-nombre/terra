@@ -57,14 +57,14 @@ terra_status_t _load_off_file(
   // NOTE: This function assumes verts and idx have not been initialized
   // TODO: Consider comments within the file
   // TODO: Implement two-dimensional shapes
-  char *buffer;
 
   // Ensure valid header
   logi_debug("Reading header");
   TERRA_CALL_I(
-      terrau_readline(app, f, line_buffer, &buffer), "Failed reading header"
+      terrau_readline(app, f, line_buffer), "Failed reading header"
   );
-  if (strncmp(buffer, "OFF", 3) != 0) {
+  // if (strncmp(buffer, "OFF", 3) != 0) {
+  if (strncmp(line_buffer, "OFF", 3) != 0) {
     logi_error("Invalid file format");
     return TERRA_STATUS_FAILURE;
   }
@@ -73,9 +73,9 @@ terra_status_t _load_off_file(
   logi_debug("Reading number of vertices and faces");
   size_t num_verts, num_faces, num_edges;
   TERRA_CALL_I(
-      terrau_readline(app, f, line_buffer, &buffer), "Failed reading line"
+      terrau_readline(app, f, line_buffer), "Failed reading line"
   );
-  if (sscanf(buffer, "%zu %zu %zu", &num_verts, &num_faces, &num_edges) != 3) {
+  if (sscanf(line_buffer, "%zu %zu %zu", &num_verts, &num_faces, &num_edges) != 3) {
     logi_error("Failed parsing number of attributes in file");
     return TERRA_STATUS_FAILURE;
   }
@@ -108,11 +108,11 @@ terra_status_t _load_off_file(
   for (size_t i = 0; i < num_verts; i++) {
     // TODO: Consider different formats in files
     TERRA_CALL_I(
-        terrau_readline(app, f, line_buffer, &buffer),
+        terrau_readline(app, f, line_buffer),
         "Failed reading vertex line"
     );
     if (sscanf(
-            buffer,
+            line_buffer,
             "%f %f %f",
             &vert.position[0],
             &vert.position[1],
@@ -135,11 +135,11 @@ terra_status_t _load_off_file(
   uint32_t vert_size;
   for (size_t i = 0; i < num_faces; i++) {
     TERRA_CALL_I(
-        terrau_readline(app, f, line_buffer, &buffer),
+        terrau_readline(app, f, line_buffer),
         "Failed reading face line"
     );
     if (sscanf(
-            buffer, "%u %u %u %u", &vert_size, &face[0], &face[1], &face[2]
+            line_buffer, "%u %u %u %u", &vert_size, &face[0], &face[1], &face[2]
         ) != 4) {
       logi_error("Failed parsing %zu-th vertex", i);
       return TERRA_STATUS_FAILURE;

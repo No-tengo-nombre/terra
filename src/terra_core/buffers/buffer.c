@@ -5,6 +5,7 @@
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,
+    const char *name,
     VkBufferUsageFlags usage,
     VkSharingMode mode,
     VkMemoryPropertyFlags req_flags,
@@ -30,12 +31,28 @@ terra_status_t terra_buffer_new(
       ),
       "Failed to create buffer"
   );
+  if (name != NULL)
+    vmaSetAllocationName(app->vma_alloc, out->alloc, name);
+  if (out->buffer == NULL) {
+    logi_warn("Resulting VkBuffer is NULL");
+  }
+  if (out->alloc == NULL) {
+    logi_warn("Resulting VmaAllocation is NULL");
+  }
 
   return TERRA_STATUS_SUCCESS;
 }
 
 terra_status_t terra_buffer_cleanup(terra_app_t *app, terra_buffer_t *buf) {
-  logi_debug("Destroying buffer");
+  VmaAllocationInfo alloc_info;
+  vmaGetAllocationInfo(app->vma_alloc, buf->alloc, &alloc_info);
+  logi_debug("Destroying buffer '%s'", alloc_info.pName);
+  if (buf->buffer == NULL) {
+    logi_warn("VkBuffer is NULL");
+  }
+  if (buf->alloc == NULL) {
+    logi_warn("VmaAllocation is NULL");
+  }
   vmaDestroyBuffer(app->vma_alloc, buf->buffer, buf->alloc);
   return TERRA_STATUS_SUCCESS;
 }

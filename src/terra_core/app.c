@@ -705,13 +705,14 @@ terra_status_t terra_app_cleanup(terra_app_t *app) {
       terra_app_cleanup_swapchain(app, NULL), "Failed cleaning up swapchain"
   );
 
-  logi_debug("Cleaning up buffers");
-  terra_buffer_t *ubo = app->ubos;
-  for (uint32_t i = 0; i < app->vk_images_count; i++, ubo++) {
-    TERRA_CALLDF_I(
-        terra_buffer_cleanup(app, ubo), "Failed cleaning up UBO[%d]", i
-    );
-  }
+  logi_debug("Cleaning up %u UBOs", app->vk_images_count);
+  // TODO: Reimplement when UBOs are implement
+  // terra_buffer_t *ubo = app->ubos;
+  // for (uint32_t i = 0; i < app->vk_images_count; i++, ubo++) {
+  //   TERRA_CALLDF_I(
+  //       terra_buffer_cleanup(app, ubo), "Failed cleaning up UBO[%d]", i
+  //   );
+  // }
   TERRA_CALLDF_I(
       terra_vector_cleanup(app, &app->shapes), "Failed to clean up shapes"
   );

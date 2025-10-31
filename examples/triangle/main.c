@@ -35,7 +35,7 @@ terra_status_t start(terra_app_t *app) {
       "Failed reading triangle indices"
   );
   TERRA_CALL(
-      terra_mesh_new(app, &triangle_v, &triangle_iv, &triangle_m),
+      terra_mesh_new(app, "ExampleTriangle", &triangle_v, &triangle_iv, &triangle_m),
       "Failed to create mesh"
   );
   TERRA_CALL(terra_mesh_push(app, &triangle_m), "Failed to push triangle");
@@ -83,11 +83,13 @@ int main(void) {
 
   terra_app_config_t conf = terra_app_config_default();
   conf.log_dir            = "logs";
+  conf.log_stdlvl         = LOG_DEBUG;
   conf.pipelines_params   = NULL;
   conf.pipelines_fnames   = pipelines;
   conf.pipelines_count    = pipelines_count;
 
   terra_app_t app;
   terra_app_new(&start, &loop, &cleanup, &meta, &conf, &app);
+
   return terra_app_run(&app);
 }

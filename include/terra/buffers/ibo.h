@@ -12,6 +12,7 @@ extern "C" {
 
 terra_status_t terra_ibo_new(
     terra_app_t *app,
+    const char *name,
     terra_vector_t *data,
     terra_buffer_t *out_stag,
     terra_buffer_t *out_vert

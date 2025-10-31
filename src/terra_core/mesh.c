@@ -1,23 +1,31 @@
+#include "terra/mesh.h"
 #include <string.h>
 #include <terra/terra.h>
 #include <terra_utils/macros.h>
 
 terra_status_t terra_mesh_new(
     terra_app_t *app,
+    const char *mesh_name,
     terra_vector_t *verts,
     terra_vector_t *indices,
     terra_mesh_t *out
 ) {
   logi_debug("Creating new mesh from data");
   terra_mesh_t mesh;
+  if (mesh_name == NULL) {
+    mesh_name = "Mesh";
+  }
+  size_t name_len = strnlen(mesh_name, TERRA_MESH_MAXNAME);
+  strncpy(mesh.name, mesh_name, name_len);
   mesh.num_verts = verts->len;
   mesh.num_idx   = (uint32_t)indices->len;
+
   TERRA_CALL_I(
-      terra_vbo_new(app, verts, &mesh.vert_sbuf, &mesh.vert_buf),
+      terra_vbo_new(app, mesh.name, verts, &mesh.vert_sbuf, &mesh.vert_buf),
       "Failed allocating vertex buffer for the mesh"
   );
   TERRA_CALL_I(
-      terra_ibo_new(app, indices, &mesh.idx_sbuf, &mesh.idx_buf),
+      terra_ibo_new(app, mesh.name, indices, &mesh.idx_sbuf, &mesh.idx_buf),
       "Failed allocating index buffer for the mesh"
   );
   TERRA_CALL_I(terra_vector_cleanup(app, verts), "Failed cleaning up vertices");
@@ -29,10 +37,10 @@ terra_status_t terra_mesh_new(
 }
 
 terra_status_t terra_mesh_from_descriptor(
-    terra_app_t *app, terrau_mesh_descriptor_t *desc, terra_mesh_t *out
+    terra_app_t *app, const char *mesh_name, terrau_mesh_descriptor_t *desc, terra_mesh_t *out
 ) {
   logi_debug("Creating new mesh from descriptor");
-  return terra_mesh_new(app, &desc->verts, &desc->idx, out);
+  return terra_mesh_new(app, mesh_name, &desc->verts, &desc->idx, out);
 }
 
 terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh) {

@@ -290,7 +290,7 @@ int main(void) {
   meta.app_name             = "Terra (test)";
   terra_app_config_t conf   = terra_app_config_default();
   conf.log_dir              = "logs";
-  conf.log_stdlvl           = LOG_TRACE;
+  conf.log_stdlvl           = LOG_DEBUG;
 
   terra_app_t app;
   terra_app_new(&start, NULL, NULL, &meta, &conf, &app);

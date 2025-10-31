@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 terra_status_t terrau_readline(
-    terra_app_t *app, FILE *file, char *buffer, char **out
+    terra_app_t *app, FILE *file, char *buffer
 );
 
 #ifdef __cplusplus

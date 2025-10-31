@@ -94,10 +94,10 @@ terra_status_t start(terra_app_t *app) {
 
   log_debug("Creating meshes");
   TERRA_CALL(
-      terra_mesh_new(app, &quad_v, &quad_iv, &quad_m), "Failed to create mesh"
+      terra_mesh_new(app, "ExampleQuad", &quad_v, &quad_iv, &quad_m), "Failed to create mesh"
   );
   TERRA_CALL(
-      terra_mesh_new(app, &triangle_v, &triangle_iv, &triangle_m),
+      terra_mesh_new(app, "ExampleTriangle", &triangle_v, &triangle_iv, &triangle_m),
       "Failed to create mesh"
   );
 

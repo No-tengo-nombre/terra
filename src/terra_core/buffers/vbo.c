@@ -5,17 +5,27 @@
 
 terra_status_t terra_vbo_new(
     terra_app_t *app,
+    const char *name,
     terra_vector_t *data,
     terra_buffer_t *out_stag,
     terra_buffer_t *out_vert
 ) {
   size_t size = terra_vector_total_size(app, data);
 
+  char stag_name[TERRA_MESH_MAXNAME + 6];
+  strncpy(stag_name, name, TERRA_MESH_MAXNAME);
+  strcat(stag_name, ".vbo_s");
+
+  char vbo_name[TERRA_MESH_MAXNAME + 4];
+  strncpy(vbo_name, name, TERRA_MESH_MAXNAME);
+  strcat(vbo_name, ".vbo");
+
   logi_debug("Creating staging buffer");
   TERRA_CALL_I(
       terra_buffer_new(
           app,
           size,
+          stag_name,
           VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
           VK_SHARING_MODE_EXCLUSIVE,
           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -35,6 +45,7 @@ terra_status_t terra_vbo_new(
       terra_buffer_new(
           app,
           size,
+          vbo_name,
           VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
           VK_SHARING_MODE_EXCLUSIVE,
           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

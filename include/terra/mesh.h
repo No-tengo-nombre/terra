@@ -6,11 +6,14 @@
 #include <terra/status.h>
 #include <terrau/formats/descriptors.h>
 
+#define TERRA_MESH_MAXNAME 128
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct terra_mesh {
+  char name[TERRA_MESH_MAXNAME];
   uint64_t num_verts;
   uint32_t num_idx;
   terra_buffer_t vert_buf;
@@ -21,12 +24,13 @@ typedef struct terra_mesh {
 
 terra_status_t terra_mesh_new(
     terra_app_t *app,
+    const char *mesh_name,
     terra_vector_t *verts,
     terra_vector_t *idx,
     terra_mesh_t *out
 );
 terra_status_t terra_mesh_from_descriptor(
-    terra_app_t *app, terrau_mesh_descriptor_t *desc, terra_mesh_t *out
+    terra_app_t *app, const char *mesh_name, terrau_mesh_descriptor_t *desc, terra_mesh_t *out
 );
 terra_status_t terra_mesh_cleanup(terra_app_t *app, terra_mesh_t *mesh);
 
@@ -63,10 +67,10 @@ typedef enum terra_mesh_formats {
 } terra_mesh_formats_t;
 
 terra_status_t terra_mesh_from_obj(
-    terra_app_t *app, const char *filename, terra_mesh_t *out
+    terra_app_t *app, const char *mesh_name, const char *filename, terra_mesh_t *out
 );
 terra_status_t terra_mesh_from_off(
-    terra_app_t *app, const char *filename, terra_mesh_t *out
+    terra_app_t *app, const char *mesh_name, const char *filename, terra_mesh_t *out
 );
 
 #ifdef __cplusplus

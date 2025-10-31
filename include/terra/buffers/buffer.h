@@ -18,6 +18,7 @@ typedef struct terra_buffer {
 terra_status_t terra_buffer_new(
     terra_app_t *app,
     uint64_t size,
+    const char *name,
     VkBufferUsageFlags usage,
     VkSharingMode mode,
     VkMemoryPropertyFlags req_flags,

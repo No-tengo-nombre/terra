@@ -9,7 +9,7 @@
 #include <terrau/mem.h>
 
 terra_status_t terrau_readline(
-    terra_app_t *app, FILE *file, char *buffer, char **out
+    terra_app_t *app, FILE *file, char *buffer
 ) {
   int alloced       = 0;
   size_t max_length = 128;
@@ -52,10 +52,7 @@ terra_status_t terrau_readline(
 
   logi_trace("Finished reading line");
   buffer[count] = '\0';
-  char line[count + 1];
-  strncpy(line, buffer, count + 1);
   if (alloced)
     terrau_free(app, buffer);
-  *out = line;
   return TERRA_STATUS_SUCCESS;
 }

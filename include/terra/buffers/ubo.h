@@ -22,7 +22,7 @@ typedef struct terra_ubo_descriptor {
 terra_ubo_descriptor_t terra_ubo_descriptor_default(void);
 
 terra_status_t terra_ubo_new(
-    terra_app_t *app, uint64_t size, terra_buffer_t *out
+    terra_app_t *app, const char *name, uint64_t size, terra_buffer_t *out
 );
 
 #ifdef __cplusplus

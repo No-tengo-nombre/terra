@@ -14,13 +14,19 @@ terra_ubo_descriptor_t terra_ubo_descriptor_default(void) {
 }
 
 terra_status_t terra_ubo_new(
-    terra_app_t *app, uint64_t size, terra_buffer_t *out
+    terra_app_t *app, const char *name, uint64_t size, terra_buffer_t *out
 ) {
   logi_debug("Creating uniform buffer");
+
+  char ubo_name[TERRA_MESH_MAXNAME + 4];
+  strncpy(ubo_name, name, TERRA_MESH_MAXNAME);
+  strcat(ubo_name, ".ubo");
+
   TERRA_CALL_I(
       terra_buffer_new(
           app,
           size,
+          ubo_name,
           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
           VK_SHARING_MODE_EXCLUSIVE,
           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |

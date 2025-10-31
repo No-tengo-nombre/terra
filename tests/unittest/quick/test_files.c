@@ -16,22 +16,22 @@ terra_status_t test_readline(terra_app_t *app) {
     logi_error("Could not open file '%s'", FILENAME);
     return TERRA_STATUS_FAILURE;
   }
-  char *line;
+  char line[1024];
 
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, NULL, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "Hello world!");
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, NULL, &line), "Failed reading line");
+  TERRA_CALL(terrau_readline(app, f, line), "Failed reading line");
   TERRA_ASSERT_STREQ(line, "This is a file for testing purposes");
   log_debug("Preallocating buffer");
   char *buffer = terrau_malloc(app, sizeof(char) * 128);
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, buffer, &line), "Failed reading line");
-  TERRA_ASSERT_STREQ(line, "Lorem ipsum and stuff");
+  TERRA_CALL(terrau_readline(app, f, buffer), "Failed reading line");
+  TERRA_ASSERT_STREQ(buffer, "Lorem ipsum and stuff");
   log_debug("Reading line");
-  TERRA_CALL(terrau_readline(app, f, buffer, &line), "Failed reading line");
-  TERRA_ASSERT_STREQ(line, "");
+  TERRA_CALL(terrau_readline(app, f, buffer), "Failed reading line");
+  TERRA_ASSERT_STREQ(buffer, "");
 
   fclose(f);
   terrau_free(app, buffer);

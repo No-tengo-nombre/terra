@@ -43,7 +43,8 @@ configure:
 		-S . \
 		-B build \
 		$(config_args) \
-		-DCMAKE_BUILD_TYPE=$(build_type);
+		-DCMAKE_BUILD_TYPE=$(build_type) \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=1;
 		# -DBUILD_SHARED_LIBS=ON;
 
 build: configure
